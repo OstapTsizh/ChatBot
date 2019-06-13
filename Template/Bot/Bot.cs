@@ -5,15 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Template.Core;
+using Template.Core.Interfaces;
 
 namespace Template.Bot
 {
     public class Bot : IBot
     {
+        private IQuestionCtor _questionCtor;
         
-        public Bot()
+        public Bot(IQuestionCtor questionCtor)
         {
-            
+            _questionCtor = questionCtor;
         }
 
         public async Task OnTurnAsync(ITurnContext context, CancellationToken cancellationToken = default(CancellationToken))
@@ -25,9 +28,12 @@ namespace Template.Bot
             // If current user continues dialog
 
             string validatedUserText = GetUserText(context, context.Activity).ToString();
-            
+
             //
             // Dialog.Run(validatedUserText)
+            // or
+            // await QuestionConstructor.GetQuestionOrResult(validatedUserText, previousKeyWords)
+            await _questionCtor.GetQuestionOrResult();
 
         }
 
@@ -41,5 +47,7 @@ namespace Template.Bot
             IMessageActivity validatedUserText = null;
             return validatedUserText;
         }
+
+
     }
 }
