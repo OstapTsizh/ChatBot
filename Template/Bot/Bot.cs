@@ -77,7 +77,6 @@ namespace Template.Bot
             await context.SendActivityAsync(nextMessage);
 
             //return nextMessage;
-
         }
     }
 }
