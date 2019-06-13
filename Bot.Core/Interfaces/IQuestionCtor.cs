@@ -5,6 +5,6 @@ namespace Template.Core.Interfaces
     public interface IQuestionCtor
     {
 
-        string GetQuestionOrResult();
+        string GetQuestionOrResult(string topic);
     }
 }

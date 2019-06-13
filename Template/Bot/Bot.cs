@@ -5,13 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Template.Core;
 using Template.Core.Interfaces;
+using Template.QAModels;
 
 namespace Template.Bot
 {
     public class Bot : IBot
     {
+        // Where to save previous Key words or state?
+        // in the Model or in Some Context (in the Bot or in the QAConstructor)
+
         private IQuestionCtor _questionCtor;
         
         public Bot(IQuestionCtor questionCtor)
@@ -33,7 +38,11 @@ namespace Template.Bot
             // Dialog.Run(validatedUserText)
             // or
             // await QuestionConstructor.GetQuestionOrResult(validatedUserText, previousKeyWords)
-            await _questionCtor.GetQuestionOrResult();
+
+            
+            // return next Question or Answer to user
+            // call some method that chooses correct Prompt (message)
+            await SendMessageToUser(validatedUserText);
 
         }
 
@@ -49,5 +58,22 @@ namespace Template.Bot
         }
 
 
+        private async Task SendMessageToUser(ITurnContext<IMessageActivity> turnContext, string validatedUserText)
+        {
+            // Getting next question or result from Question Constructor
+            // received Json as string
+            var QCResult =_questionCtor.GetQuestionOrResult(validatedUserText);
+
+            // Deserialize QCResult into the model to send next question or
+            // final result
+            var qcResponse = JsonConvert.DeserializeObject<QCResponse>(QCResult);
+
+            // ToDo
+            // Some logic here to choose correct Prompt or simple message etc.
+
+            
+
+            
+        }
     }
 }
