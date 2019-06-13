@@ -43,7 +43,11 @@ namespace Template.Bot
             
             // return next Question or Answer to user
             // call some method that chooses correct Prompt (message)
+<<<<<<< HEAD
             await SendMessageToUser(context, validatedUserText);
+=======
+            await SendMessageToUser(validatedUserText);
+>>>>>>> 5f6ea3ed42b4d2b923ab38f531b5d93f5ead075f
 
         }
 
@@ -59,7 +63,11 @@ namespace Template.Bot
         }
 
 
+<<<<<<< HEAD
         private async Task SendMessageToUser(ITurnContext context, string validatedUserText)
+=======
+        private async Task SendMessageToUser(ITurnContext<IMessageActivity> turnContext, string validatedUserText)
+>>>>>>> 5f6ea3ed42b4d2b923ab38f531b5d93f5ead075f
         {
             // Getting next question or result from Question Constructor
             // received Json as string
@@ -72,11 +80,17 @@ namespace Template.Bot
             // ToDo
             // Some logic here to choose correct Prompt or simple message etc.
 
+<<<<<<< HEAD
 
             IMessageActivity nextMessage = null;
             await context.SendActivityAsync(nextMessage);
 
             //return nextMessage;
+=======
+            
+
+            
+>>>>>>> 5f6ea3ed42b4d2b923ab38f531b5d93f5ead075f
         }
     }
 }
