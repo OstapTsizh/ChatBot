@@ -1,14 +1,14 @@
 ﻿using System;
 using Template.Core.Interfaces;
 
-namespace QuestionConstructor
+namespace DecisionMakers
 {
-    public class QAConstructor : IQuestionCtor
+    public class DecisionMaker : IDecisionMaker
     {
         // Where to save previous Keywords or state?
         // in the Model or in Some Context (in the Bot or in the QAConstructor)
         
-        public QAConstructor() { }
+        public DecisionMaker() { }
 
         public string GetQuestionOrResult(string topic)
         {
