@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template_old", "Template\Template_old.csproj", "{EC97806A-258B-4A4A-9CBB-7567D598ED48}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecisionMakers", "QuestionConstructor\DecisionMakers.csproj", "{C7DDF1CB-98F1-4AB1-B63E-42C747580063}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Core", "Bot.Core\Template.Core.csproj", "{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{EC97806A-258B-4A4A-9CBB-7567D598ED48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EC97806A-258B-4A4A-9CBB-7567D598ED48}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EC97806A-258B-4A4A-9CBB-7567D598ED48}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EC97806A-258B-4A4A-9CBB-7567D598ED48}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C7DDF1CB-98F1-4AB1-B63E-42C747580063}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C7DDF1CB-98F1-4AB1-B63E-42C747580063}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7DDF1CB-98F1-4AB1-B63E-42C747580063}.Release|Any CPU.ActiveCfg = Release|Any CPU
