@@ -5,6 +5,7 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using DecisionMakers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -25,16 +26,17 @@ namespace Template.Bots
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
-        protected readonly IDecisionMaker QuestionCtor;
+        protected readonly IDecisionMaker DecisionMaker;
+
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor )
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker)
         {
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
             Logger = logger;
-            QuestionCtor = questionCtor;
+            DecisionMaker = decisionMaker;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -43,15 +45,16 @@ namespace Template.Bots
 
             // Save any state changes that might have occured during the turn.
             await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
-            await UserState.SaveChangesAsync(turnContext, false, cancellationToken);
+            await UserState.SaveChangesAsync(turnContext, false, cancellationToken);            
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             Logger.LogInformation("Running dialog with Message Activity.");
-
             // Run the Dialog with the new message Activity.
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
+
+        
     }
 }
