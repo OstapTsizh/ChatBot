@@ -4,6 +4,7 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
@@ -11,7 +12,6 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
-using DecisionMakers;
 using Template.Core.Interfaces;
 
 namespace Template.Dialogs
@@ -48,7 +48,18 @@ namespace Template.Dialogs
             {
                 await stepContext.Context.SendActivityAsync(
                     MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
-                
+
+                // Just for testing LoadQAList method.
+                List<Core.Interfaces.DecisionModel> models = DecisionMaker.LoadQAList();
+                foreach (var qa in models)
+                {
+                    await stepContext.Context.SendActivityAsync($"{qa.Topic}\n{qa.Question}\n{qa.IsWaterfallQuestion}\n{qa.HasNextQuestion}\nOptions:");
+                    foreach (var opt in qa.Options)
+                    {
+                        await stepContext.Context.SendActivityAsync(opt);
+                    }
+                }
+
                 return await stepContext.NextAsync(null, cancellationToken);
             }
             else
