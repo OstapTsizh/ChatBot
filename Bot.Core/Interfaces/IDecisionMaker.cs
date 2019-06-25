@@ -1,8 +1,4 @@
-﻿using Microsoft.Bot.Schema;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Template.Core.Models;
+﻿using Template.Core.Models;
 
 namespace Template.Core.Interfaces
 {

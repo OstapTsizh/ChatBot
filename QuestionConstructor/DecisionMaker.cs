@@ -19,9 +19,8 @@ namespace DecisionMakers
         public DecisionMaker() { }
 
         public QuestionModel GetQuestionOrResult(string topic)
-        {
-            // TODO: Create DB
-            var path = @"D:\GitHub\Template\Bot.Core\Dialogs.json";
+        {            
+            var path = @"..\Bot.Core\Dialogs.json";
 
             var json = File.ReadAllText(path);
 
@@ -49,15 +48,25 @@ namespace DecisionMakers
                 {
                     var keywords = item["model"]["keywords"];
                     var questions = item["model"]["questions"];
-                    var decisions = item["model"]["decisions"];
+                    var decisions = item["model"]["decisions"].Children();
 
                     model.Name = (string)item["model"]["name"];
                     model.Keywords = keywords.ToObject<string[]>();
                     model.Questions = questions.ToObject<List<string>>();
+                    model.Decisions = new List<DecisionModel>();
 
-                    // This doesnt work
-                    // Possible fix: select inner token and create decision models
-                    // model.Decisions = questions.ToObject<List<DecisionModel>>();
+
+                    foreach(var decision in decisions)
+                    {
+                        var meta = decision["meta"];
+                        model.Decisions.Add(new DecisionModel
+                        {
+                            Meta = meta.ToObject<string[]>(),
+                            Answer = (string)decision["answer"],
+                            Resources = (string)decision["resources"]
+                        });
+                    }
+
                 }
             }
 
