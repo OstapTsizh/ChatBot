@@ -4,111 +4,101 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DecisionMakers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
+using Template.Core.Interfaces;
+using Template.Core.Models;
+using Template.Core.Services;
 
 namespace Template.Dialogs
 {
     public class LoopingDialog : CancelAndHelpDialog
     {
-        public LoopingDialog()
+        protected readonly IDecisionMaker DecisionMaker;
+        protected QuestionAndAnswerModel QuestionAndAnswerModel;
+        protected int numberOfQuestion;
+        protected List<string> UserAnswers;
+
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel)
             : base(nameof(LoopingDialog))
         {
+            DecisionMaker = decisionMaker;
+            QuestionAndAnswerModel = questionAndAnswerModel;
+            
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
-            AddDialog(new DateResolverDialog());
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                DestinationStepAsync,
-                OriginStepAsync,
-                TravelDateStepAsync,
-                ConfirmStepAsync,
-                FinalStepAsync,
+                FirstStepAsync,
+                FillAnswerStepAsync
             }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Options;
 
-            if (bookingDetails.Destination == null)
+            if (QuestionAndAnswerModel.QuestionModel == null)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken);
             }
-            else
+
+            
+            var prompt = QuestionAndAnswerModel.QuestionModel.Questions.FirstOrDefault(q => q.IsAnswered == "false");
+
+            numberOfQuestion = QuestionAndAnswerModel.QuestionModel.Questions.IndexOf(prompt);
+
+            var promptText = MessageFactory.Text(prompt.Text);
+            var choices = new List<Choice>();
+
+            foreach (var option in prompt.Keywords)
             {
-                return await stepContext.NextAsync(bookingDetails.Destination, cancellationToken);
+                choices.Add(new Choice(option));
             }
+
+            var options = new PromptOptions()
+            {
+                Prompt = promptText,
+                RetryPrompt = MessageFactory.Text("try one more time"),
+                Choices = choices,
+                Style = ListStyle.HeroCard
+            };
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FillAnswerStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var answer = (string) (stepContext.Result as FoundChoice).Value;
+            QuestionAndAnswerModel.Answers.Add(answer);
 
-            bookingDetails.Destination = (string)stepContext.Result;
+            QuestionAndAnswerModel.QuestionModel.Questions.ElementAt(numberOfQuestion).IsAnswered = "true";
 
-            if (bookingDetails.Origin == null)
+            if(QuestionAndAnswerModel.Answers.Count < QuestionAndAnswerModel.QuestionModel.Questions.Count)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where are you traveling from?") }, cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), QuestionAndAnswerModel, cancellationToken);
             }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
-            }
+            
+            return await stepContext.EndDialogAsync(QuestionAndAnswerModel, cancellationToken);
+
         }
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+        
+        // UNDONE: decisions.resources == null
 
-            bookingDetails.Origin = (string)stepContext.Result;
+      
 
-            if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
-            {
-                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
-            }
-        }
-
-        private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            bookingDetails.TravelDate = (string)stepContext.Result;
-
-            var msg = $"Please confirm, I have you traveling to: {bookingDetails.Destination} from: {bookingDetails.Origin} on: {bookingDetails.TravelDate}";
-
-            return await stepContext.PromptAsync(nameof(ConfirmPrompt), new PromptOptions { Prompt = MessageFactory.Text(msg) }, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            if ((bool)stepContext.Result)
-            {
-                var bookingDetails = (BookingDetails)stepContext.Options;
-
-                return await stepContext.EndDialogAsync(bookingDetails, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.EndDialogAsync(null, cancellationToken);
-            }
-        }
-
-        private static bool IsAmbiguous(string timex)
-        {
-            var timexProperty = new TimexProperty(timex);
-            return !timexProperty.Types.Contains(Constants.TimexTypes.Definite);
-        }
     }
 }

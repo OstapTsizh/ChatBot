@@ -15,6 +15,7 @@ using Template.Bots;
 using Template.Core.Interfaces;
 using Template.Dialogs;
 using DecisionMakers;
+using Template.Core.Services;
 
 namespace Template
 {
@@ -50,6 +51,9 @@ namespace Template
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();
 
+            // ToDo
+            // change name
+            services.AddSingleton<IUserAnswerResolveService, UserAnswerResolveService>();
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();

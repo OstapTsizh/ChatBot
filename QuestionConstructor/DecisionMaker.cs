@@ -16,8 +16,9 @@ namespace DecisionMakers
 
         public DecisionMaker() { }
 
-        public string[] GetStartTopics()
+        public List<string> GetStartTopics()
         {
+
             var path = @"..\Bot.Core\Dialogs.json";
 
             var json = File.ReadAllText(path);
@@ -33,7 +34,7 @@ namespace DecisionMakers
                 result.Add((string)item["topic"]);
             }
 
-            return result.ToArray();
+            return result;
 
         }
 
@@ -75,6 +76,7 @@ namespace DecisionMakers
                     model.Questions = new List<Question>();
                     model.Decisions = new List<DecisionModel>();
 
+                   
 
                     foreach(var decision in decisions)
                     {
@@ -83,18 +85,20 @@ namespace DecisionMakers
                         {
                             Meta = meta.ToObject<string[]>(),
                             Answer = (string)decision["answer"],
-                            Resources = (string)decision["resources"]
+                            Resources = (string)decision["resourses"]
                         });
                     }
 
                     foreach (var question in questions)
-                    {
+                    {                        
                         model.Questions.Add(new Question
                         {
                             Text = (string)question["Text"],
-                            IsAnswered = (string)question["IsAnswered"]
+                            IsAnswered = (string)question["IsAnswered"],
+                            Keywords = question["keywords"].ToObject<string[]>()
                         });
                     }
+
 
                 }
             }

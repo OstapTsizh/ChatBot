@@ -7,14 +7,17 @@
         "questions": [
           {
             "Text": "What technology do you interested in?",
+            "keywords": [".net", "java"],
             "IsAnswered": "false"
           },
           {
             "Text": "How much time are you ready to spend on study (per day)?",
+            "keywords": [ "1-2 hours", "3-5 hours", "6+ hours" ],
             "IsAnswered": "false"
           },
           {
             "Text": "Select difficulty",
+            "keywords": [ "novice", "intermediate", "expert" ],
             "IsAnswered": "false"
           }
         ],

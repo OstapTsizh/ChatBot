@@ -1,4 +1,5 @@
-﻿using Template.Core.Models;
+﻿using System.Collections.Generic;
+using Template.Core.Models;
 
 namespace Template.Core.Interfaces
 {
@@ -16,7 +17,8 @@ namespace Template.Core.Interfaces
         /// decision(s).</param>
         /// <returns>Model with name, keywords, questions, decisions" </returns>
         QuestionModel GetQuestionOrResult(string name);
-        
+
+        List<string> GetStartTopics();
     }
 
     
