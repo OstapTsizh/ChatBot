@@ -1,13 +1,22 @@
   [
     {
-      "KEY": "start",
+      "topic": "courses",
       "model": {
         "name": "Searching .NET courses",
         "keywords": [ "courses", "learn", "study" ],
         "questions": [
-          "What technology do you interested in?",
-          "How much time are you ready to spend on study (per day)?",
-          "Select difficulty"
+          {
+            "Text": "What technology do you interested in?",
+            "IsAnswered": "false"
+          },
+          {
+            "Text": "How much time are you ready to spend on study (per day)?",
+            "IsAnswered": "false"
+          },
+          {
+            "Text": "Select difficulty",
+            "IsAnswered": "false"
+          }
         ],
         "decisions": [
           {
@@ -25,7 +34,7 @@
     },
 
     {
-      "KEY": "second",
+      "topic": "job",
       "model": {
         "name": "blah blah",
         "keywords": [ "blah blah", "blah blah", "blah blah" ],
