@@ -26,7 +26,7 @@ namespace Template.Dialogs
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
-            Logger = logger;
+            Logger = logger;    
             DecisionMaker = decisionMaker;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
