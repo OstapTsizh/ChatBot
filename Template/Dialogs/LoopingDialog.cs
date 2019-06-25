@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DecisionMakers;
@@ -23,13 +24,15 @@ namespace Template.Dialogs
     {
         protected readonly IDecisionMaker DecisionMaker;
         protected QuestionModel QuestionModel;
+        protected int numberOfQuestion;
+        protected List<string> UserAnswers;
 
-        public LoopingDialog(IDecisionMaker decisionMaker, QuestionModel questionModel)
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionModel questionModel, List<string> userAnswers)
             : base(nameof(LoopingDialog))
         {
             DecisionMaker = decisionMaker;
             QuestionModel = questionModel;
-
+            
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -37,7 +40,7 @@ namespace Template.Dialogs
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
-                OriginStepAsync,
+                FillAnswerStepAsync,
                 TravelDateStepAsync,
                 ConfirmStepAsync,
                 FinalStepAsync,
@@ -49,37 +52,26 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            
+            QuestionModel = (QuestionModel)stepContext.Options;
 
-            var topic = (string) stepContext.Options;
-            if (topic == null)
+            if (QuestionModel==null)
             {
-                topic = "start";
-                return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), topic, cancellationToken);
+                return await stepContext.EndDialogAsync(cancellationToken);
             }
 
-            var model = DecisionMaker.GetQuestionOrResult((string)stepContext.Options);
-            var choices = new List<Choice>();
-            var buttonsValues = new List<Choice>();
-
-            foreach (var question in model.Questions)
-            {
-                choices.Add(new Choice(question));
-            }
             
-            var options = new PromptOptions()
-            {
-                Prompt = MessageFactory.Text(model.Name),
-                RetryPrompt = MessageFactory.Text("try one more time"),
-                Choices = choices,
-                Style = ListStyle.HeroCard
-            };
+            var prompt = QuestionModel.Questions.FirstOrDefault(q => q.IsAnswered == "false");
+            var promptText = MessageFactory.Text(prompt.Text);
+            numberOfQuestion = QuestionModel.Questions.IndexOf(prompt);
 
-            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
+            return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions(){ Prompt = promptText }, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FillAnswerStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var answer = (string) stepContext.Result;
+
+
             var bookingDetails = (BookingDetails)stepContext.Options;
 
             bookingDetails.Destination = (string)stepContext.Result;

@@ -51,18 +51,31 @@ namespace Template.Dialogs
         
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            QuestionModel.Questions = DecisionMaker.GetStartQuestions();
+
+
+            var topics = DecisionMaker.GetStartTopics();
+            var choices = new List<Choice>();
             
-            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionModel, cancellationToken);
-            
+            foreach (var topic in topics)
+            {
+                choices.Add(new Choice(topic));
+            }
+            var options = new PromptOptions()
+            {
+                Prompt = MessageFactory.Text("Choose needed topic, please."),
+                RetryPrompt = MessageFactory.Text("try one more time"),
+                Choices = choices,
+                Style = ListStyle.HeroCard
+            };
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // TODO: Refactor naming.
-            var bookingDetails = new BookingDetails();
+            QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
             
-            return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

@@ -16,7 +16,7 @@ namespace DecisionMakers
 
         public DecisionMaker() { }
 
-        public string[] GetStartTopics()
+        public List<string> GetStartTopics()
         {
 
             var path = @"..\Bot.Core\Dialogs.json";
@@ -34,7 +34,7 @@ namespace DecisionMakers
                 result.Add((string)item["topic"]);
             }
 
-            return result.ToArray();
+            return result;
 
         }
 
