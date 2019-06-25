@@ -12,7 +12,6 @@ namespace Template.Core.Services
     {
         private readonly UserAnswersModel userAnswers;
         private readonly QuestionModel questionModel;
-        // UNDONE: Create model for saving state of users answers.
 
         public UserAnswerResolveService(UserAnswersModel userAnswers, QuestionModel questionModel)
         {

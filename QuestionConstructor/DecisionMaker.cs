@@ -30,7 +30,7 @@ namespace DecisionMakers
 
             foreach (var item in tokens)
             {
-                result.Add((string)item["KEY"]);
+                result.Add((string)item["topic"]);
             }
 
             return result.ToArray();
@@ -64,15 +64,15 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if((string)item["KEY"] == topic)
+                if((string)item["topic"] == topic)
                 {
                     var keywords = item["model"]["keywords"];
-                    var questions = item["model"]["questions"];
+                    var questions = item["model"]["questions"].Children();
                     var decisions = item["model"]["decisions"].Children();
 
                     model.Name = (string)item["model"]["name"];
                     model.Keywords = keywords.ToObject<string[]>();
-                    model.Questions = questions.ToObject<List<string>>();
+                    model.Questions = new List<Question>();
                     model.Decisions = new List<DecisionModel>();
 
 
@@ -84,6 +84,15 @@ namespace DecisionMakers
                             Meta = meta.ToObject<string[]>(),
                             Answer = (string)decision["answer"],
                             Resources = (string)decision["resources"]
+                        });
+                    }
+
+                    foreach (var question in questions)
+                    {
+                        model.Questions.Add(new Question
+                        {
+                            Text = (string)question["Text"],
+                            IsAnswered = (string)question["IsAnswered"]
                         });
                     }
 
