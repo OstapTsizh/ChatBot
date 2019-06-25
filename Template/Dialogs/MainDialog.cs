@@ -9,6 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
@@ -30,7 +32,9 @@ namespace Template.Dialogs
             DecisionMaker = decisionMaker;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new BookingDialog());
+            AddDialog(new LoopingDialog(DecisionMaker));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -42,12 +46,13 @@ namespace Template.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+        
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var model = DecisionMaker.GetQuestionOrResult("start");
+            string topic = "start";
 
-            return await stepContext.NextAsync(null, cancellationToken);
-          
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), topic, cancellationToken);
+            
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

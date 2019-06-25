@@ -4,27 +4,36 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using DecisionMakers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
+using Template.Core.Interfaces;
 
 namespace Template.Dialogs
 {
     public class LoopingDialog : CancelAndHelpDialog
     {
-        public LoopingDialog()
+        protected readonly IDecisionMaker DecisionMaker;
+
+        public LoopingDialog(IDecisionMaker decisionMaker)
             : base(nameof(LoopingDialog))
         {
+            DecisionMaker = decisionMaker;
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new DateResolverDialog());
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                DestinationStepAsync,
+                FirstStepAsync,
                 OriginStepAsync,
                 TravelDateStepAsync,
                 ConfirmStepAsync,
@@ -35,18 +44,33 @@ namespace Template.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> DestinationStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var bookingDetails = (BookingDetails)stepContext.Options;
+            var topic = (string) stepContext.Options;
+            if (topic == null)
+            {
+                topic = "start";
+                return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), topic, cancellationToken);
+            }
 
-            if (bookingDetails.Destination == null)
+            var model = DecisionMaker.GetQuestionOrResult((string)stepContext.Options);
+            var choices = new List<Choice>();
+            var buttonsValues = new List<Choice>();
+
+            foreach (var question in model.Questions)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where would you like to travel to?") }, cancellationToken);
+                choices.Add(new Choice(question));
             }
-            else
+            
+            var options = new PromptOptions()
             {
-                return await stepContext.NextAsync(bookingDetails.Destination, cancellationToken);
-            }
+                Prompt = MessageFactory.Text(model.Name),
+                RetryPrompt = MessageFactory.Text("try one more time"),
+                Choices = choices,
+                Style = ListStyle.HeroCard
+            };
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
         private async Task<DialogTurnResult> OriginStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

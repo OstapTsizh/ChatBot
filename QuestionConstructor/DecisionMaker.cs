@@ -21,7 +21,7 @@ namespace DecisionMakers
         public QuestionModel GetQuestionOrResult(string topic)
         {
             // TODO: Create DB
-            var path = @"D:\GitHub\Template\Bot.Core\Dialogs.json";
+            var path = @"..\Bot.Core\Dialogs.json"; //D:\GitHub\Template
 
             var json = File.ReadAllText(path);
 
