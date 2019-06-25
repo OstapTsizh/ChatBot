@@ -13,10 +13,31 @@ namespace DecisionMakers
 {
     public class DecisionMaker : IDecisionMaker
     {
-        // Where to save previous Keywords or state?
-        // in the Model or in Some Context (in the Bot or in the QAConstructor)
 
         public DecisionMaker() { }
+
+        public string[] GetStartTopics()
+        {
+            var path = @"..\Bot.Core\Dialogs.json";
+
+            var json = File.ReadAllText(path);
+
+            var jArray = JArray.Parse(json);
+
+            var result = new List<string>();
+
+            var tokens = jArray.Children();
+
+            foreach (var item in tokens)
+            {
+                result.Add((string)item["KEY"]);
+            }
+
+            return result.ToArray();
+
+        }
+
+        
 
         public QuestionModel GetQuestionOrResult(string topic)
         {            
@@ -24,7 +45,7 @@ namespace DecisionMakers
 
             var json = File.ReadAllText(path);
 
-            var jObject = JArray.Parse(json); // was - JObject
+            var jObject = JArray.Parse(json); 
 
             var model = GetModel(jObject, topic);
             
@@ -32,7 +53,6 @@ namespace DecisionMakers
             return model;
         }
 
-       
 
         private QuestionModel GetModel(JArray rss, string topic)
         {
