@@ -46,6 +46,8 @@ namespace Template.Dialogs
         {
             var model = DecisionMaker.GetQuestionOrResult("start");
 
+            // Services.Method(model)
+
             return await stepContext.NextAsync(null, cancellationToken);
           
         }
