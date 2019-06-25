@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
+using Template.Core.Models;
 
 namespace Template.Dialogs
 {
@@ -23,7 +24,8 @@ namespace Template.Dialogs
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-
+        protected QuestionModel QuestionModel;
+        
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
             : base(nameof(MainDialog))
         {
@@ -34,7 +36,7 @@ namespace Template.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new BookingDialog());
-            AddDialog(new LoopingDialog(DecisionMaker));
+            AddDialog(new LoopingDialog(DecisionMaker, QuestionModel));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -49,9 +51,9 @@ namespace Template.Dialogs
         
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            string topic = "start";
-
-            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), topic, cancellationToken);
+            QuestionModel.Questions = DecisionMaker.GetStartQuestions();
+            
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionModel, cancellationToken);
             
         }
 

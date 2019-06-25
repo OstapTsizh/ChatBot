@@ -15,17 +15,20 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
+using Template.Core.Models;
 
 namespace Template.Dialogs
 {
     public class LoopingDialog : CancelAndHelpDialog
     {
         protected readonly IDecisionMaker DecisionMaker;
+        protected QuestionModel QuestionModel;
 
-        public LoopingDialog(IDecisionMaker decisionMaker)
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionModel questionModel)
             : base(nameof(LoopingDialog))
         {
             DecisionMaker = decisionMaker;
+            QuestionModel = questionModel;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
@@ -46,6 +49,8 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            
+
             var topic = (string) stepContext.Options;
             if (topic == null)
             {

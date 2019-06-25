@@ -13,19 +13,40 @@ namespace DecisionMakers
 {
     public class DecisionMaker : IDecisionMaker
     {
-        // Where to save previous Keywords or state?
-        // in the Model or in Some Context (in the Bot or in the QAConstructor)
 
         public DecisionMaker() { }
 
-        public QuestionModel GetQuestionOrResult(string topic)
+        public string[] GetStartTopics()
         {
-            // TODO: Create DB
-            var path = @"..\Bot.Core\Dialogs.json"; //D:\GitHub\Template
+
+            var path = @"..\Bot.Core\Dialogs.json";
 
             var json = File.ReadAllText(path);
 
-            var jObject = JArray.Parse(json); // was - JObject
+            var jArray = JArray.Parse(json);
+
+            var result = new List<string>();
+
+            var tokens = jArray.Children();
+
+            foreach (var item in tokens)
+            {
+                result.Add((string)item["topic"]);
+            }
+
+            return result.ToArray();
+
+        }
+
+        
+
+        public QuestionModel GetQuestionOrResult(string topic)
+        {            
+            var path = @"..\Bot.Core\Dialogs.json";
+
+            var json = File.ReadAllText(path);
+
+            var jObject = JArray.Parse(json); 
 
             var model = GetModel(jObject, topic);
             
@@ -33,7 +54,6 @@ namespace DecisionMakers
             return model;
         }
 
-       
 
         private QuestionModel GetModel(JArray rss, string topic)
         {
@@ -45,19 +65,38 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if((string)item["KEY"] == topic)
+                if((string)item["topic"] == topic)
                 {
                     var keywords = item["model"]["keywords"];
-                    var questions = item["model"]["questions"];
-                    var decisions = item["model"]["decisions"];
+                    var questions = item["model"]["questions"].Children();
+                    var decisions = item["model"]["decisions"].Children();
 
                     model.Name = (string)item["model"]["name"];
                     model.Keywords = keywords.ToObject<string[]>();
-                    model.Questions = questions.ToObject<List<string>>();
+                    model.Questions = new List<Question>();
+                    model.Decisions = new List<DecisionModel>();
 
-                    // This doesnt work
-                    // Possible fix: select inner token and create decision models
-                    // model.Decisions = questions.ToObject<List<DecisionModel>>();
+
+                    foreach(var decision in decisions)
+                    {
+                        var meta = decision["meta"];
+                        model.Decisions.Add(new DecisionModel
+                        {
+                            Meta = meta.ToObject<string[]>(),
+                            Answer = (string)decision["answer"],
+                            Resources = (string)decision["resources"]
+                        });
+                    }
+
+                    foreach (var question in questions)
+                    {
+                        model.Questions.Add(new Question
+                        {
+                            Text = (string)question["Text"],
+                            IsAnswered = (string)question["IsAnswered"]
+                        });
+                    }
+
                 }
             }
 
