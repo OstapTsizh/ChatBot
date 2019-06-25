@@ -73,34 +73,17 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var res = stepContext.Result as FoundChoice;
-            var value = res.Value;
-            var dm = DecisionMaker.GetQuestionOrResult(value);
-            _QuestionAndAnswerModel.QuestionModel = dm;
-            
+            _QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
+
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("BookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
-            if (stepContext.Result != null)
-            {
-                var result = (BookingDetails)stepContext.Result;
+           
+            
 
-                // Now we have all the booking details call the booking service.
 
-                // If the call to the booking service was successful tell the user.
-
-                var timeProperty = new TimexProperty(result.TravelDate);
-                var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-                var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
-            }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
-            }
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
