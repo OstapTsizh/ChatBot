@@ -38,12 +38,10 @@ namespace Template.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new DateResolverDialog());
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
                 FillAnswerStepAsync,
-                TravelDateStepAsync,
                 ConfirmStepAsync,
                 FinalStepAsync,
             }));
@@ -54,7 +52,7 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            QuestionAndAnswerModel.QuestionModel = (QuestionModel)stepContext.Options;
+            QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Options;
 
             if (QuestionAndAnswerModel.QuestionModel == null)
             {
@@ -72,6 +70,7 @@ namespace Template.Dialogs
         private async Task<DialogTurnResult> FillAnswerStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var answer = (string) stepContext.Result;
+            QuestionAndAnswerModel.Answers = new List<string>();
             QuestionAndAnswerModel.Answers.Add(answer);
 
             QuestionAndAnswerModel.QuestionModel.Questions.ElementAt(numberOfQuestion).IsAnswered = "true";
@@ -87,21 +86,8 @@ namespace Template.Dialogs
             return await stepContext.EndDialogAsync(QuestionAndAnswerModel, cancellationToken);
 
         }
-        private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            bookingDetails.Origin = (string)stepContext.Result;
-
-            if (bookingDetails.TravelDate == null || IsAmbiguous(bookingDetails.TravelDate))
-            {
-                return await stepContext.BeginDialogAsync(nameof(DateResolverDialog), bookingDetails.TravelDate, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.TravelDate, cancellationToken);
-            }
-        }
+        
+        // UNDONE: decisions.resources == null
 
         private async Task<DialogTurnResult> ConfirmStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
@@ -128,10 +114,5 @@ namespace Template.Dialogs
             }
         }
 
-        private static bool IsAmbiguous(string timex)
-        {
-            var timexProperty = new TimexProperty(timex);
-            return !timexProperty.Types.Contains(Constants.TimexTypes.Definite);
-        }
     }
 }

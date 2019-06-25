@@ -24,7 +24,7 @@ namespace Template.Dialogs
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-        protected QuestionAndAnswerModel QuestionAndAnswerModel;
+        protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
             : base(nameof(MainDialog))
@@ -32,11 +32,11 @@ namespace Template.Dialogs
             Configuration = configuration;
             Logger = logger;
             DecisionMaker = decisionMaker;
+            _QuestionAndAnswerModel = new QuestionAndAnswerModel();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new BookingDialog());
-            AddDialog(new LoopingDialog(DecisionMaker, QuestionAndAnswerModel));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -73,9 +73,12 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
+            var res = stepContext.Result as FoundChoice;
+            var value = res.Value;
+            var dm = DecisionMaker.GetQuestionOrResult(value);
+            _QuestionAndAnswerModel.QuestionModel = dm;
             
-            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionAndAnswerModel, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
