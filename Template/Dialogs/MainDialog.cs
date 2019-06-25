@@ -24,7 +24,7 @@ namespace Template.Dialogs
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-        protected QuestionModel QuestionModel;
+        protected QuestionAndAnswerModel QuestionAndAnswerModel;
         
         public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
             : base(nameof(MainDialog))
@@ -36,7 +36,7 @@ namespace Template.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new BookingDialog());
-            AddDialog(new LoopingDialog(DecisionMaker, QuestionModel));
+            AddDialog(new LoopingDialog(DecisionMaker, QuestionAndAnswerModel));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -73,9 +73,9 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
+            QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
             
-            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionModel, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), QuestionAndAnswerModel, cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
