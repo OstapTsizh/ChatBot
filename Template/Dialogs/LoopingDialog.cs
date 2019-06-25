@@ -17,21 +17,23 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
 using Template.Core.Models;
+using Template.Core.Services;
 
 namespace Template.Dialogs
 {
     public class LoopingDialog : CancelAndHelpDialog
     {
         protected readonly IDecisionMaker DecisionMaker;
-        protected QuestionModel QuestionModel;
+        protected QuestionAndAnswerModel QuestionAndAnswerModel;
+        protected IUserAnswerResolveService UserAnswerResolveService;
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
 
-        public LoopingDialog(IDecisionMaker decisionMaker, QuestionModel questionModel, List<string> userAnswers)
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel)
             : base(nameof(LoopingDialog))
         {
             DecisionMaker = decisionMaker;
-            QuestionModel = questionModel;
+            QuestionAndAnswerModel = questionAndAnswerModel;
             
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
@@ -52,17 +54,17 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            QuestionModel = (QuestionModel)stepContext.Options;
+            QuestionAndAnswerModel.QuestionModel = (QuestionModel)stepContext.Options;
 
-            if (QuestionModel==null)
+            if (QuestionAndAnswerModel.QuestionModel == null)
             {
                 return await stepContext.EndDialogAsync(cancellationToken);
             }
 
             
-            var prompt = QuestionModel.Questions.FirstOrDefault(q => q.IsAnswered == "false");
+            var prompt = QuestionAndAnswerModel.QuestionModel.Questions.FirstOrDefault(q => q.IsAnswered == "false");
             var promptText = MessageFactory.Text(prompt.Text);
-            numberOfQuestion = QuestionModel.Questions.IndexOf(prompt);
+            numberOfQuestion = QuestionAndAnswerModel.QuestionModel.Questions.IndexOf(prompt);
 
             return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions(){ Prompt = promptText }, cancellationToken);
         }
@@ -70,20 +72,20 @@ namespace Template.Dialogs
         private async Task<DialogTurnResult> FillAnswerStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var answer = (string) stepContext.Result;
+            QuestionAndAnswerModel.Answers.Add(answer);
 
+            QuestionAndAnswerModel.QuestionModel.Questions.ElementAt(numberOfQuestion).IsAnswered = "true";
 
-            var bookingDetails = (BookingDetails)stepContext.Options;
-
-            bookingDetails.Destination = (string)stepContext.Result;
-
-            if (bookingDetails.Origin == null)
+            if(QuestionAndAnswerModel.Answers.Count < QuestionAndAnswerModel.QuestionModel.Questions.Count)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("Where are you traveling from?") }, cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), QuestionAndAnswerModel, cancellationToken);
             }
-            else
-            {
-                return await stepContext.NextAsync(bookingDetails.Origin, cancellationToken);
-            }
+
+
+            UserAnswerResolveService.GetDecision(QuestionAndAnswerModel.Answers, QuestionAndAnswerModel.QuestionModel);
+
+            return await stepContext.EndDialogAsync(QuestionAndAnswerModel, cancellationToken);
+
         }
         private async Task<DialogTurnResult> TravelDateStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
