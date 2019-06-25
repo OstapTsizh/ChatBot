@@ -16,6 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
 using Template.Core.Models;
+using Template.Core.Services;
 
 namespace Template.Dialogs
 {
@@ -24,15 +25,22 @@ namespace Template.Dialogs
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
+        protected IUserAnswerResolveService UserAnswerResolveService;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
+        protected DecisionModel _DecisionModel;
         
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker, 
+            IUserAnswerResolveService userAnswerResolveService)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
             Logger = logger;
             DecisionMaker = decisionMaker;
+            UserAnswerResolveService = userAnswerResolveService;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
+            _QuestionAndAnswerModel.Answers = new List<string>();
+            
+            _DecisionModel = new DecisionModel();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -41,7 +49,8 @@ namespace Template.Dialogs
             {
                 IntroStepAsync,
                 ActStepAsync,
-                FinalStepAsync,
+                PreFinalStepAsync,
+                FinalStepAsync
             }));
 
             // The initial child Dialog to run.
@@ -78,12 +87,38 @@ namespace Template.Dialogs
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
         }
 
+        private async Task<DialogTurnResult> PreFinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+
+            _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
+
+           _DecisionModel =  UserAnswerResolveService.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+
+
+            var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
+
+
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), 
+                new PromptOptions()
+                {
+                    Prompt = MessageFactory.Text("Would you like to continue?"),
+                    Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
+                },
+                cancellationToken);
+        }
+
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-           
+            var foundChoice = (stepContext.Result as FoundChoice).Value; 
+
+            if (foundChoice == "yes")
+            {
+                return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
+            }
             
-
-
+           
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }
