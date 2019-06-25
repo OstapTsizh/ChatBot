@@ -1,0 +1,53 @@
+  [
+    {
+      "KEY": "start",
+      "model": {
+        "name": "Searching .NET courses",
+        "keywords": [ "courses", "learn", "study" ],
+        "questions": [
+          "What technology do you interested in?",
+          "How much time are you ready to spend on study (per day)?",
+          "Select difficulty"
+        ],
+        "decisions": [
+          {
+            "meta": [ ".NET webApi", "1 hour per day", "advanced" ],
+            "answer": "We have super hero course for you",
+            "resourses": "epam.learn.com/super-hero/courses/web-api"
+          },
+          {
+            "meta": [ "Azure", "1 hour per day", "expert" ],
+            "answer": "You are lucky! here is your course",
+            "resourses": "epam.learn.com/death-match/azure"
+          }
+        ]
+      }
+    },
+
+    {
+      "KEY": "second",
+      "model": {
+        "name": "blah blah",
+        "keywords": [ "blah blah", "blah blah", "blah blah" ],
+        "questions": [
+          "blah blah?",
+          "blah blah"
+        ],
+        "decisions": [
+          {
+            "meta": [ "blah blah", "blah blah", "blah blah" ],
+            "answer": "blah blah",
+            "resourses": "blah blah"
+          },
+          {
+            "meta": [ "blah blah", "blah blah", "blah blah" ],
+            "answer": "blah blah",
+            "resourses": "blah blah"
+          }
+        ]
+      }
+    }
+  ]
+
+
+

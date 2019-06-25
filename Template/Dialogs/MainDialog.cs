@@ -44,43 +44,17 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(Configuration["LuisAppId"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
-            {
-                await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
+            var model = DecisionMaker.GetQuestionOrResult("start");
 
-                // Just for testing LoadQAList method.
-                List<Core.Interfaces.DecisionModel> models = DecisionMaker.LoadQAList();
-                foreach (var qa in models)
-                {
-                    await stepContext.Context.SendActivityAsync($"{qa.Topic}\n{qa.Question}\n{qa.IsWaterfallQuestion}\n{qa.HasNextQuestion}\nOptions:");
-                    foreach (var opt in qa.Options)
-                    {
-                        await stepContext.Context.SendActivityAsync(opt);
-                    }
-                }
-
-                return await stepContext.NextAsync(null, cancellationToken);
-            }
-            else
-            {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?\nSay something like \"Book a flight from Paris to Berlin on March 22, 2020\"") }, cancellationToken);
-            }
+            return await stepContext.NextAsync(null, cancellationToken);
+          
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
-            var bookingDetails = stepContext.Result != null
-                    ?
-                await LuisHelper.ExecuteLuisQuery(Configuration, Logger, stepContext.Context, cancellationToken)
-                    :
-                new BookingDetails();
-
-            // In this sample we only have a single Intent we are concerned with. However, typically a scenario
-            // will have multiple different Intents each corresponding to starting a different child Dialog.
-
-            // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
+            // TODO: Refactor naming.
+            var bookingDetails = new BookingDetails();
+            
             return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
         }
 
