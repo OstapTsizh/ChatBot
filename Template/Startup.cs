@@ -46,13 +46,11 @@ namespace Template
             services.AddSingleton<ConversationState>();
 
 
-            // ToDo
-            // maybe change to Transient
+            
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();
 
-            // ToDo
-            // change name
+            //Create Service which resolves user's answerss
             services.AddSingleton<IUserAnswerResolveService, UserAnswerResolveService>();
 
             // The Dialog that will be run by the bot.

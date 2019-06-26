@@ -5,6 +5,9 @@ using Template.Core.Models;
 
 namespace Template.Core.Interfaces
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IUserAnswerResolveService
     {
         DecisionModel GetDecision(List<string> answers, QuestionModel questionModel);
