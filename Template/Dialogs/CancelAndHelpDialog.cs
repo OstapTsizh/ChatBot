@@ -47,9 +47,10 @@ namespace Template.Dialogs
 
                 switch (text)
                 {
-                    case "help":
-                    case "?":
-                        await innerDc.Context.SendActivityAsync($"Show Help...", cancellationToken: cancellationToken);
+                    case "restart":
+                    case "again":
+                    case "new":
+                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":

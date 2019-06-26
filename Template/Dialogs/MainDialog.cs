@@ -3,20 +3,16 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
 using Template.Core.Models;
-using Template.Core.Services;
 
 namespace Template.Dialogs
 {
@@ -72,7 +68,7 @@ namespace Template.Dialogs
             var options = new PromptOptions()
             {
                 Prompt = MessageFactory.Text("Choose needed topic, please."),
-                RetryPrompt = MessageFactory.Text("try one more time"),
+                RetryPrompt = MessageFactory.Text("Try one more time, please."),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
@@ -82,6 +78,8 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _QuestionAndAnswerModel.Answers = new List<string>();
+
             _QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
 
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
@@ -97,8 +95,6 @@ namespace Template.Dialogs
 
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
-
-            _QuestionAndAnswerModel.Answers = new List<string>();
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), 
                 new PromptOptions()

@@ -3,21 +3,15 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DecisionMakers;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
 using Template.Core.Models;
-using Template.Core.Services;
 
 namespace Template.Dialogs
 {
@@ -35,7 +29,6 @@ namespace Template.Dialogs
             QuestionAndAnswerModel = questionAndAnswerModel;
             
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -72,7 +65,7 @@ namespace Template.Dialogs
             var options = new PromptOptions()
             {
                 Prompt = promptText,
-                RetryPrompt = MessageFactory.Text("try one more time"),
+                RetryPrompt = MessageFactory.Text("Try one more time, please"),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
@@ -93,12 +86,7 @@ namespace Template.Dialogs
             }
             
             return await stepContext.EndDialogAsync(QuestionAndAnswerModel, cancellationToken);
-
         }
         
-        // UNDONE: decisions.resources == null
-
-      
-
     }
 }
