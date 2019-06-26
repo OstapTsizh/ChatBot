@@ -98,7 +98,7 @@ namespace Template.Dialogs
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
 
-
+            _QuestionAndAnswerModel.Answers = new List<string>();
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), 
                 new PromptOptions()
@@ -117,7 +117,8 @@ namespace Template.Dialogs
             {
                 return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
             }
-            
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
            
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }

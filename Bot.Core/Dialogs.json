@@ -7,7 +7,7 @@
         "questions": [
           {
             "Text": "What technology do you interested in?",
-            "keywords": [".net", "java"],
+            "keywords": [".net", "java", "python"],
             "IsAnswered": "false"
           },
           {
