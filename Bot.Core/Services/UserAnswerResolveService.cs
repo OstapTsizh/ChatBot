@@ -13,15 +13,20 @@ namespace Template.Core.Services
     {
         public DecisionModel GetDecision(List<string> answers, QuestionModel questionModel)
         {
-            var Answers = answers.ToArray();
-            var decision = new DecisionModel();
-            for (var i = 0; i < questionModel.Decisions.Count; i++) 
+            var metaStr = new List<string>();
+            
+            for(var i = 0; i < questionModel.Decisions.Count(); i++)
             {
-                decision = questionModel.Decisions[i];
-                if (decision.Meta.ToString() == Answers.ToString())
+                for(var j = 0; j < questionModel.Decisions[i].Meta.Count(); j++)
                 {
-                    return decision;
+                    metaStr.Add(questionModel.Decisions[i].Meta[j]);
                 }
+                if(metaStr.Count == answers.Count && !metaStr.Except(answers).Any())
+                {
+                    return questionModel.Decisions[i];
+                }
+
+                metaStr.Clear();
             }
 
             return null;
