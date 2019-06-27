@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.271
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecisionMakers", "QuestionConstructor\DecisionMakers.csproj", "{C7DDF1CB-98F1-4AB1-B63E-42C747580063}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template.Core", "Bot.Core\Template.Core.csproj", "{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot.Core", "Bot.Core\StuddyBot.Core.csproj", "{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Template", "Template\Template.csproj", "{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot", "Template\StuddyBot.csproj", "{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

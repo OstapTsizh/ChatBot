@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Template.Core.Models;
+using StuddyBot.Core.Models;
 
-namespace Template.Core.Interfaces
+namespace StuddyBot.Core.Interfaces
 {
     /// <summary>
     /// An interface to implement in a class that will be
@@ -17,6 +17,15 @@ namespace Template.Core.Interfaces
         /// decision(s).</param>
         /// <returns>Model with name, keywords, questions, decisions" </returns>
         QuestionModel GetQuestionOrResult(string name);
+
+        /// <summary>
+        /// Finds right decision accoding to user's answers
+        /// </summary>
+        /// <param name="answers"> Stored user's answers</param>
+        /// <param name="questionModel">Topic Model</param>
+        /// <returns>DesicionModel object of <see cref="DecisionModel"/> class</returns>
+        DecisionModel GetDecision(List<string> answers, QuestionModel questionModel);
+
 
         List<string> GetStartTopics();
     }

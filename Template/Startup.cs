@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
+using DecisionMakers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,14 +11,12 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using StuddyBot.Bots;
+using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Services;
+using StuddyBot.Dialogs;
 
-using Template.Bots;
-using Template.Core.Interfaces;
-using Template.Dialogs;
-using DecisionMakers;
-using Template.Core.Services;
-
-namespace Template
+namespace StuddyBot
 {
     public class Startup
     {

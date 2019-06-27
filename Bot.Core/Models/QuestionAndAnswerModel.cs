@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Template.Core.Models
+namespace StuddyBot.Core.Models
 {
     public class QuestionAndAnswerModel
     {

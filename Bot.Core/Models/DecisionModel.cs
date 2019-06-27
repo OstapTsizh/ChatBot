@@ -1,5 +1,5 @@
 ﻿
-namespace Template.Core.Models
+namespace StuddyBot.Core.Models
 {
     /// <summary>
     /// Contains bot's final response to user.

@@ -6,7 +6,7 @@
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Configuration;
 
-namespace Template
+namespace StuddyBot
 {
     public class ConfigurationCredentialProvider : SimpleCredentialProvider
     {

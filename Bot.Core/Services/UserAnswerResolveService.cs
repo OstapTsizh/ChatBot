@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Template.Core.Interfaces;
-using Template.Core.Models;
+using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
-namespace Template.Core.Services
+namespace StuddyBot.Core.Services
 {
 
     public class UserAnswerResolveService : IUserAnswerResolveService

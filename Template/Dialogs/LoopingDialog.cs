@@ -10,12 +10,12 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Template.Core.Interfaces;
-using Template.Core.Models;
+using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
-namespace Template.Dialogs
+namespace StuddyBot.Dialogs
 {
-    public class LoopingDialog : CancelAndHelpDialog
+    public class LoopingDialog : CancelAndRestartDialog
     {
         protected readonly IDecisionMaker DecisionMaker;
         protected QuestionAndAnswerModel QuestionAndAnswerModel;

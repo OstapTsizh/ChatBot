@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Template
+namespace StuddyBot
 {
     public static class DialogExtensions
     {

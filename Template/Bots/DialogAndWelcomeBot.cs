@@ -10,9 +10,9 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using Template.Core.Interfaces;
+using StuddyBot.Core.Interfaces;
 
-namespace Template.Bots
+namespace StuddyBot.Bots
 {
     public class DialogAndWelcomeBot<T> : DialogBot<T> where T : Dialog
     {
