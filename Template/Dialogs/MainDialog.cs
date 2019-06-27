@@ -33,6 +33,8 @@ namespace Template.Dialogs
             Logger = logger;
             DecisionMaker = decisionMaker;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
+            _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
+            _QuestionAndAnswerModel.Answers = new List<string>();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
