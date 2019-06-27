@@ -3,17 +3,14 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
 using Template.Core.Interfaces;
 using Template.Core.Models;
 
@@ -24,17 +21,22 @@ namespace Template.Dialogs
         protected readonly IConfiguration Configuration;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
+        protected IUserAnswerResolveService UserAnswerResolveService;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
+        protected DecisionModel _DecisionModel;
         
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
+        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker, 
+            IUserAnswerResolveService userAnswerResolveService)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
-            Logger = logger;
+            Logger = logger;    
             DecisionMaker = decisionMaker;
+            UserAnswerResolveService = userAnswerResolveService;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
+            _DecisionModel = new DecisionModel();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -43,7 +45,8 @@ namespace Template.Dialogs
             {
                 IntroStepAsync,
                 ActStepAsync,
-                FinalStepAsync,
+                PreFinalStepAsync,
+                FinalStepAsync
             }));
 
             // The initial child Dialog to run.
@@ -65,7 +68,7 @@ namespace Template.Dialogs
             var options = new PromptOptions()
             {
                 Prompt = MessageFactory.Text("Choose needed topic, please."),
-                RetryPrompt = MessageFactory.Text("try one more time"),
+                RetryPrompt = MessageFactory.Text("Try one more time, please."),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
@@ -75,34 +78,44 @@ namespace Template.Dialogs
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var res = stepContext.Result as FoundChoice;
-            var value = res.Value;
-            var dm = DecisionMaker.GetQuestionOrResult(value);
-            _QuestionAndAnswerModel.QuestionModel = dm;
-            
+            _QuestionAndAnswerModel.Answers = new List<string>();
+
+            _QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
+
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> PreFinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+
+            _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
+
+           _DecisionModel =  UserAnswerResolveService.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+
+
+            var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), 
+                new PromptOptions()
+                {
+                    Prompt = MessageFactory.Text("Would you like to continue?"),
+                    Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
+                },
+                cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("BookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
-            if (stepContext.Result != null)
+            var foundChoice = (stepContext.Result as FoundChoice).Value; 
+
+            if (foundChoice == "yes")
             {
-                var result = (BookingDetails)stepContext.Result;
-
-                // Now we have all the booking details call the booking service.
-
-                // If the call to the booking service was successful tell the user.
-
-                var timeProperty = new TimexProperty(result.TravelDate);
-                var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-                var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
             }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
-            }
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
+           
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }

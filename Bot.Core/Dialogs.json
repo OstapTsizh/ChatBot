@@ -7,20 +7,23 @@
         "questions": [
           {
             "Text": "What technology do you interested in?",
+            "keywords": [".net", "java", "python"],
             "IsAnswered": "false"
           },
           {
             "Text": "How much time are you ready to spend on study (per day)?",
+            "keywords": [ "1-2 hours", "3-5 hours", "6+ hours" ],
             "IsAnswered": "false"
           },
           {
             "Text": "Select difficulty",
+            "keywords": [ "novice", "intermediate", "expert" ],
             "IsAnswered": "false"
           }
         ],
         "decisions": [
           {
-            "meta": [ ".NET webApi", "1 hour per day", "advanced" ],
+            "meta": [ ".net", "1-2 hours", "novice" ],
             "answer": "We have super hero course for you",
             "resourses": "epam.learn.com/super-hero/courses/web-api"
           },
@@ -36,22 +39,35 @@
     {
       "topic": "job",
       "model": {
-        "name": "blah blah",
-        "keywords": [ "blah blah", "blah blah", "blah blah" ],
+        "name": "Searching .NET courses",
+        "keywords": [ "courses", "learn", "study" ],
         "questions": [
-          "blah blah?",
-          "blah blah"
+          {
+            "Text": "What technology do you interested in?",
+            "keywords": [".net", "java"],
+            "IsAnswered": "false"
+          },
+          {
+            "Text": "How much time are you ready to spend on study (per day)?",
+            "keywords": [ "1-2 hours", "3-5 hours", "6+ hours" ],
+            "IsAnswered": "false"
+          },
+					{
+						"Text": "Select difficulty",
+						"keywords": [ "novice", "intermediate", "expert" ],
+						"IsAnswered": "false"
+					}
         ],
         "decisions": [
           {
-            "meta": [ "blah blah", "blah blah", "blah blah" ],
-            "answer": "blah blah",
-            "resourses": "blah blah"
+            "meta": [ ".net", "1-2 hours", "novice" ],
+            "answer": "We have super hero course for you",
+            "resourses": "epam.learn.com/super-hero/courses/web-api"
           },
           {
-            "meta": [ "blah blah", "blah blah", "blah blah" ],
-            "answer": "blah blah",
-            "resourses": "blah blah"
+            "meta": [ "Azure", "1 hour per day", "expert" ],
+            "answer": "You are lucky! here is your course",
+            "resourses": "epam.learn.com/death-match/azure"
           }
         ]
       }

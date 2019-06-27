@@ -10,7 +10,7 @@ namespace Template.Core.Models
 
         public string[] Keywords { get; set; }
 
-        public List<Question> Questions { get; set; }
+        public List<Question> Questions { get; set; }        
 
         public List<DecisionModel> Decisions { get; set; }
 

@@ -1,8 +1,5 @@
-﻿using Microsoft.Bot.Builder;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Template.Core.Interfaces;
 using Template.Core.Models;
 
@@ -13,9 +10,23 @@ namespace Template.Core.Services
     {
         public DecisionModel GetDecision(List<string> answers, QuestionModel questionModel)
         {
-            var decision = questionModel.Decisions.Where(d => d.Meta.Equals(answers.ToArray<string>())).First();
+            var metaStr = new List<string>();
             
-            return decision;
+            for(var i = 0; i < questionModel.Decisions.Count(); i++)
+            {
+                for(var j = 0; j < questionModel.Decisions[i].Meta.Count(); j++)
+                {
+                    metaStr.Add(questionModel.Decisions[i].Meta[j]);
+                }
+                if(metaStr.Count == answers.Count && !metaStr.Except(answers).Any())
+                {
+                    return questionModel.Decisions[i];
+                }
+
+                metaStr.Clear();
+            }
+
+            return null;
         }
     }
 }
