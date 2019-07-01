@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Bot.Core\Template.Core.csproj" />
+    <ProjectReference Include="..\Bot.Core\StuddyBot.Core.csproj" />
   </ItemGroup>
 
 </Project>

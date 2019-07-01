@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace Template.Dialogs
+namespace StuddyBot.Dialogs
 {
-    public class CancelAndHelpDialog : ComponentDialog
+    public class CancelAndRestartDialog : ComponentDialog
     {
-        public CancelAndHelpDialog(string id)
+        public CancelAndRestartDialog(string id)
             : base(id)
         {
         }

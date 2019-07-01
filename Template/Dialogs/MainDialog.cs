@@ -11,10 +11,10 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Template.Core.Interfaces;
-using Template.Core.Models;
+using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
-namespace Template.Dialogs
+namespace StuddyBot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
@@ -34,8 +34,8 @@ namespace Template.Dialogs
             DecisionMaker = decisionMaker;
             UserAnswerResolveService = userAnswerResolveService;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
+            _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
-            
             _DecisionModel = new DecisionModel();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));

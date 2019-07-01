@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Template.Core.Models;
+using StuddyBot.Core.Models;
 
-namespace Template.Core.Interfaces
+namespace StuddyBot.Core.Interfaces
 {
     /// <summary>
     /// Interface for getting proper bot responce accoding to user's answers.

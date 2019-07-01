@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Template.Core.Models
+namespace StuddyBot.Core.Models
 {
     public class QuestionModel
     {

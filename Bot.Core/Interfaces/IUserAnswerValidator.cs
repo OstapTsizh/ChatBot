@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Template.Core.Interfaces
+namespace StuddyBot.Core.Interfaces
 {
     public interface IUserAnswerValidator
     {
