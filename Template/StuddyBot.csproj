@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bot.Core\StuddyBot.Core.csproj" />
+    <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
     <ProjectReference Include="..\QuestionConstructor\DecisionMakers.csproj" />
   </ItemGroup>
 
