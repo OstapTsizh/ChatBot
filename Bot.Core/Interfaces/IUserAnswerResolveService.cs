@@ -6,12 +6,12 @@ using Template.Core.Models;
 namespace Template.Core.Interfaces
 {
     /// <summary>
-    /// Interface for getting proper bot responce accoding to user's answers
+    /// Interface for getting proper bot responce accoding to user's answers.
     /// </summary>
     public interface IUserAnswerResolveService
     {
         /// <summary>
-        /// Finds right decision accoding to user's answers
+        /// Finds right decision accoding to user's answers.
         /// </summary>
         /// <param name="answers"> Stored user's answers</param>
         /// <param name="questionModel">Topic Model</param>
