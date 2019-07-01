@@ -8,19 +8,19 @@ using System.IO;
 using System.Linq;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
+using System.Configuration;
 
 namespace DecisionMakers
 {
     public class DecisionMaker : IDecisionMaker
     {
 
+        public string path { get; set; } = @"..\Bot.Core\Dialogs.json";
+
         public DecisionMaker() { }
 
         public List<string> GetStartTopics()
         {
-
-            var path = @"..\Bot.Core\Dialogs.json";
-
             var json = File.ReadAllText(path);
 
             var jArray = JArray.Parse(json);
@@ -60,15 +60,13 @@ namespace DecisionMakers
         }
 
         public QuestionModel GetQuestionOrResult(string topic)
-        {            
-            var path = @"..\Bot.Core\Dialogs.json";
-
+        {
             var json = File.ReadAllText(path);
 
-            var jObject = JArray.Parse(json); 
+            var jObject = JArray.Parse(json);
 
             var model = GetModel(jObject, topic);
-            
+
 
             return model;
         }
@@ -84,7 +82,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if((string)item["topic"] == topic)
+                if ((string)item["topic"] == topic)
                 {
                     var keywords = item["model"]["keywords"];
                     var questions = item["model"]["questions"].Children();
@@ -95,9 +93,9 @@ namespace DecisionMakers
                     model.Questions = new List<Question>();
                     model.Decisions = new List<DecisionModel>();
 
-                   
 
-                    foreach(var decision in decisions)
+
+                    foreach (var decision in decisions)
                     {
                         var meta = decision["meta"];
                         model.Decisions.Add(new DecisionModel
@@ -109,7 +107,7 @@ namespace DecisionMakers
                     }
 
                     foreach (var question in questions)
-                    {                        
+                    {
                         model.Questions.Add(new Question
                         {
                             Text = (string)question["Text"],
@@ -122,10 +120,10 @@ namespace DecisionMakers
                 }
             }
 
-            
+
             return model;
         }
 
-       
+
     }
 }
