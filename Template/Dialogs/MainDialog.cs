@@ -21,20 +21,18 @@ namespace StuddyBot.Dialogs
     {
         protected readonly IConfiguration Configuration;
         protected readonly IDecisionMaker DecisionMaker;
-        protected IUserAnswerResolveService UserAnswerResolveService;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _myLogger;
 
 
         public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
-            IUserAnswerResolveService userAnswerResolveService, ThreadedLogger _myLogger)
+            ThreadedLogger _myLogger)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
             this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
-            UserAnswerResolveService = userAnswerResolveService;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
@@ -93,16 +91,20 @@ namespace StuddyBot.Dialogs
 
             _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
 
-           _DecisionModel =  UserAnswerResolveService.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+           _DecisionModel = DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
 
 
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
 
+            var prompt = MessageFactory.Text("Would you like to continue?");
+
+            _myLogger.LogMessage(prompt.Text);
+
             return await stepContext.PromptAsync(nameof(ChoicePrompt), 
                 new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("Would you like to continue?"),
+                    Prompt = prompt,
                     Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
                 },
                 cancellationToken);

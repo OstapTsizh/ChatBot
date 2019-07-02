@@ -8,4 +8,8 @@
     <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.4.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>
