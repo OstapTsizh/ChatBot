@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 
-namespace Template.Core.Interfaces
+namespace StuddyBot.Core.Interfaces
 {
     public interface IUserAnswerValidator
     {

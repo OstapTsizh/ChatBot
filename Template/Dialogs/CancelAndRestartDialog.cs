@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 
-namespace Template.Dialogs
+namespace StuddyBot.Dialogs
 {
-    public class CancelAndHelpDialog : ComponentDialog
+    public class CancelAndRestartDialog : ComponentDialog
     {
-        public CancelAndHelpDialog(string id)
+        public CancelAndRestartDialog(string id)
             : base(id)
         {
         }
@@ -47,13 +47,17 @@ namespace Template.Dialogs
 
                 switch (text)
                 {
-                    case "help":
-                    case "?":
-                        await innerDc.Context.SendActivityAsync($"Show Help...", cancellationToken: cancellationToken);
+                    case "restart":
+                    case "again":
+                    case "new":
+                    case "reload":
+                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":
                     case "quit":
+                    case "q":
+                    case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
                 }

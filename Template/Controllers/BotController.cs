@@ -4,11 +4,12 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 
-namespace Template.Controllers
+namespace StuddyBot.Controllers
 {
     // This ASP Controller is created to handle a request. Dependency Injection will provide the Adapter and IBot
     // implementation at runtime. Multiple different IBot implementations running at different endpoints can be
@@ -19,11 +20,13 @@ namespace Template.Controllers
     {
         private readonly IBotFrameworkHttpAdapter Adapter;
         private readonly IBot Bot;
+        protected ThreadedLogger _myLogger;
 
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, ThreadedLogger _myLogger)
         {
             Adapter = adapter;
             Bot = bot;
+            this._myLogger = _myLogger;
         }
 
         [HttpPost]
@@ -31,6 +34,7 @@ namespace Template.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
+            //_myLogger.LogMessage(Request.HttpContext.)
             await Adapter.ProcessAsync(Request, Response, Bot);
         }
     }

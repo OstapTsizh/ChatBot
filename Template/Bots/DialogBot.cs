@@ -5,14 +5,14 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using StuddyBot.Core.Interfaces;
 
-using Template.Core.Interfaces;
-
-namespace Template.Bots
+namespace StuddyBot.Bots
 {
     // This IBot implementation can run any type of Dialog. The use of type parameterization is to allows multiple different bots
     // to be run at different endpoints within the same project. This can be achieved by defining distinct Controller types
@@ -25,16 +25,19 @@ namespace Template.Bots
         protected readonly BotState ConversationState;
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
-        protected readonly IDecisionMaker QuestionCtor;
+        protected readonly IDecisionMaker DecisionMaker;
+        protected readonly ThreadedLogger _myLogger;
+
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor )
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
         {
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
             Logger = logger;
-            QuestionCtor = questionCtor;
+            DecisionMaker = decisionMaker;
+            this._myLogger = _myLogger;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -43,15 +46,20 @@ namespace Template.Bots
 
             // Save any state changes that might have occured during the turn.
             await ConversationState.SaveChangesAsync(turnContext, false, cancellationToken);
-            await UserState.SaveChangesAsync(turnContext, false, cancellationToken);
+            await UserState.SaveChangesAsync(turnContext, false, cancellationToken);            
         }
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Running dialog with Message Activity.");
+            //Logger.LogInformation("Running dialog with Message Activity.");
+
+
+            _myLogger.LogMessage(turnContext.Activity.Text);
 
             // Run the Dialog with the new message Activity.
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
+
+        
     }
 }

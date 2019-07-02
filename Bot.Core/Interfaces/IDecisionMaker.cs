@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using StuddyBot.Core.Models;
 
-namespace Template.Core.Interfaces
+namespace StuddyBot.Core.Interfaces
 {
     /// <summary>
     /// An interface to implement in a class that will be
@@ -14,43 +13,22 @@ namespace Template.Core.Interfaces
         /// <summary>
         /// Return a string with topic(s), question(s)/answer(s), next keywords.
         /// </summary>
-        /// <param name="topic">A topic to look for question(s)/answer(s),
+        /// <param name="name">A topic to look for question(s)/answer(s),
         /// decision(s).</param>
-        /// <returns>A dictionary with Topic, Keywords,
-        /// question(s)/answer(s), decision(s).</returns>
-        string GetQuestionOrResult(string topic);
-        List<DecisionModel> LoadQAList(); 
+        /// <returns>Model with name, keywords, questions, decisions" </returns>
+        QuestionModel GetQuestionOrResult(string name);
+
+        /// <summary>
+        /// Finds right decision according to user's answers
+        /// </summary>
+        /// <param name="answers"> Stored user's answers</param>
+        /// <param name="questionModel">Topic Model</param>
+        /// <returns>DecisionModel object of <see cref="DecisionModel"/> class</returns>
+        DecisionModel GetDecision(List<string> answers, QuestionModel questionModel);
+
+
+        List<string> GetStartTopics();
     }
 
-    public class DecisionModel
-    {
-        // List<string> Topics ???
-
-        /// <summary>
-        /// A topic question is related to.
-        /// </summary>
-        public string Topic { get; set; }
-
-        /// <summary>
-        /// A question to ask user.
-        /// </summary>
-        public string Question { get; set; }
-
-        /// <summary>
-        /// Is this question from few sub-questions
-        /// to make next decision?
-        /// </summary>
-        public bool IsWaterfallQuestion { get; set; }
-
-        /// <summary>
-        /// Is this question final or we have next question in the tree?
-        /// </summary>
-        public bool HasNextQuestion { get; set; }
-
-        /// <summary>
-        /// A list of possible choices (answers) in
-        /// the body of a question for a user.
-        /// </summary>
-        public List<string> Options { get; set; }
-    }
+    
 }

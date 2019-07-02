@@ -3,107 +3,124 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Recognizers.Text.DataTypes.TimexExpression;
-using Template.Core.Interfaces;
+using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
-namespace Template.Dialogs
+namespace StuddyBot.Dialogs
 {
     public class MainDialog : ComponentDialog
     {
         protected readonly IConfiguration Configuration;
-        protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
+        protected QuestionAndAnswerModel _QuestionAndAnswerModel;
+        protected DecisionModel _DecisionModel;
+        protected ThreadedLogger _myLogger;
 
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker)
+
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
+            ThreadedLogger _myLogger)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
-            Logger = logger;
+            this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
+            _QuestionAndAnswerModel = new QuestionAndAnswerModel();
+            _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
+            _QuestionAndAnswerModel.Answers = new List<string>();
+            _DecisionModel = new DecisionModel();
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new BookingDialog());
+            AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _myLogger));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
                 ActStepAsync,
-                FinalStepAsync,
+                PreFinalStepAsync,
+                FinalStepAsync
             }));
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+        
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(Configuration["LuisAppId"]) || string.IsNullOrEmpty(Configuration["LuisAPIKey"]) || string.IsNullOrEmpty(Configuration["LuisAPIHostName"]))
-            {
-                await stepContext.Context.SendActivityAsync(
-                    MessageFactory.Text("NOTE: LUIS is not configured. To enable all capabilities, add 'LuisAppId', 'LuisAPIKey' and 'LuisAPIHostName' to the appsettings.json file."), cancellationToken);
 
-                // Just for testing LoadQAList method.
-                List<Core.Interfaces.DecisionModel> models = DecisionMaker.LoadQAList();
-                foreach (var qa in models)
-                {
-                    await stepContext.Context.SendActivityAsync($"{qa.Topic}\n{qa.Question}\n{qa.IsWaterfallQuestion}\n{qa.HasNextQuestion}\nOptions:");
-                    foreach (var opt in qa.Options)
-                    {
-                        await stepContext.Context.SendActivityAsync(opt);
-                    }
-                }
 
-                return await stepContext.NextAsync(null, cancellationToken);
-            }
-            else
+            var topics = DecisionMaker.GetStartTopics();
+            var choices = new List<Choice>();
+            
+            foreach (var topic in topics)
             {
-                return await stepContext.PromptAsync(nameof(TextPrompt), new PromptOptions { Prompt = MessageFactory.Text("What can I help you with today?\nSay something like \"Book a flight from Paris to Berlin on March 22, 2020\"") }, cancellationToken);
+                choices.Add(new Choice(topic));
             }
+            var options = new PromptOptions()
+            {
+                Prompt = MessageFactory.Text("Choose needed topic, please."),
+                RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                Choices = choices,
+                Style = ListStyle.HeroCard
+            };
+
+            _myLogger.LogMessage(options.Prompt.Text);
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
         private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // Call LUIS and gather any potential booking details. (Note the TurnContext has the response to the prompt.)
-            var bookingDetails = stepContext.Result != null
-                    ?
-                await LuisHelper.ExecuteLuisQuery(Configuration, Logger, stepContext.Context, cancellationToken)
-                    :
-                new BookingDetails();
+            _QuestionAndAnswerModel.Answers = new List<string>();
 
-            // In this sample we only have a single Intent we are concerned with. However, typically a scenario
-            // will have multiple different Intents each corresponding to starting a different child Dialog.
+            _QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
 
-            // Run the BookingDialog giving it whatever details we have from the LUIS call, it will fill out the remainder.
-            return await stepContext.BeginDialogAsync(nameof(BookingDialog), bookingDetails, cancellationToken);
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> PreFinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+
+            _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
+
+           _DecisionModel = DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+
+
+            var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
+
+            var prompt = MessageFactory.Text("Would you like to continue?");
+
+            _myLogger.LogMessage(prompt.Text);
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), 
+                new PromptOptions()
+                {
+                    Prompt = prompt,
+                    Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
+                },
+                cancellationToken);
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            // If the child dialog ("BookingDialog") was cancelled or the user failed to confirm, the Result here will be null.
-            if (stepContext.Result != null)
+            var foundChoice = (stepContext.Result as FoundChoice).Value; 
+
+            if (foundChoice == "yes")
             {
-                var result = (BookingDetails)stepContext.Result;
-
-                // Now we have all the booking details call the booking service.
-
-                // If the call to the booking service was successful tell the user.
-
-                var timeProperty = new TimexProperty(result.TravelDate);
-                var travelDateMsg = timeProperty.ToNaturalLanguage(DateTime.Now);
-                var msg = $"I have you booked to {result.Destination} from {result.Origin} on {travelDateMsg}";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
             }
-            else
-            {
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you."), cancellationToken);
-            }
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
+           
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
         }
     }

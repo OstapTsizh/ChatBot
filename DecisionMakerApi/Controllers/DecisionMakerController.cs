@@ -1,33 +1,29 @@
-﻿using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using StuddyBot.Core.Interfaces;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using System.IO;
 using StuddyBot.Core.Models;
-using System.Configuration;
 
-namespace DecisionMakers
+namespace DecisionMakerApi.Controllers
 {
-    public class DecisionMaker : IDecisionMaker
+    [Route("[controller]")]
+    [ApiController]
+    public class DecisionMakerController : ControllerBase
     {
-
-        public string Path { get; set; } = @"..\Bot.Core\Dialogs.json";
-
-        public DecisionMaker() { }
-
-        public List<string> GetStartTopics()
+        // GET: DecisionMaker/?????????????????
+        [HttpGet(Name = "GetStartTopics")]
+        public async Task<List<string>> GetStartTopics()
         {
-            var json = File.ReadAllText(Path);
-
-            var jArray = JArray.Parse(json);
+            var path = @"..\Bot.Core\Dialogs.json";
 
             var result = new List<string>();
 
-            var tokens = jArray.Children();
+            var tokens = JArray.Parse(
+                await System.IO.File.ReadAllTextAsync(path)
+                ).Children();
 
             foreach (var item in tokens)
             {
@@ -35,10 +31,10 @@ namespace DecisionMakers
             }
 
             return result;
-
         }
 
-        public DecisionModel GetDecision(List<string> answers, QuestionModel questionModel)
+        [HttpGet(Name = "GetDecision")]
+        public async Task<DecisionModel> GetDecision(List<string> answers, QuestionModel questionModel)
         {
             var metaStr = new List<string>();
 
@@ -59,24 +55,26 @@ namespace DecisionMakers
             return null;
         }
 
-        public QuestionModel GetQuestionOrResult(string topic)
+        [HttpGet(Name = "GetQuestionOrResult")]
+        public async Task<QuestionModel> GetQuestionOrResult(string topic)
         {
-            var json = File.ReadAllText(Path);
+            var path = @"..\Bot.Core\Dialogs.json";
+
+            var json = await System.IO.File.ReadAllTextAsync(path);
 
             var jObject = JArray.Parse(json);
 
-            var model = GetModel(jObject, topic);
-
+            var model = await GetModelAsync(jObject, topic);
 
             return model;
         }
 
 
-        private QuestionModel GetModel(JArray rss, string topic)
+        private async Task<QuestionModel> GetModelAsync(JArray rss, string topic)
         {
             var model = new QuestionModel();
 
-            // Taking array of all tokens.
+            // Get array of all tokens.
             var tokens = rss.Children();
 
             // Searching in array token with given topic 
@@ -84,18 +82,12 @@ namespace DecisionMakers
             {
                 if ((string)item["topic"] == topic)
                 {
-                    var keywords = item["model"]["keywords"];
-                    var questions = item["model"]["questions"].Children();
-                    var decisions = item["model"]["decisions"].Children();
-
                     model.Name = (string)item["model"]["name"];
-                    model.Keywords = keywords.ToObject<string[]>();
+                    model.Keywords = item["model"]["keywords"].ToObject<string[]>();
                     model.Questions = new List<Question>();
                     model.Decisions = new List<DecisionModel>();
 
-
-
-                    foreach (var decision in decisions)
+                    foreach (var decision in item["model"]["decisions"].Children())
                     {
                         var meta = decision["meta"];
                         model.Decisions.Add(new DecisionModel
@@ -106,7 +98,7 @@ namespace DecisionMakers
                         });
                     }
 
-                    foreach (var question in questions)
+                    foreach (var question in item["model"]["questions"].Children())
                     {
                         model.Questions.Add(new Question
                         {
@@ -116,10 +108,8 @@ namespace DecisionMakers
                         });
                     }
 
-
                 }
             }
-
 
             return model;
         }

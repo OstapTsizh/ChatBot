@@ -1,13 +1,14 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
-
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace StuddyBot
+namespace DecisionMakerApi
 {
     public class Program
     {
@@ -18,11 +19,6 @@ namespace StuddyBot
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-                .ConfigureLogging((logging) =>
-                {
-                    logging.AddDebug();
-                    logging.AddConsole();
-                })
                 .UseStartup<Startup>();
     }
 }
