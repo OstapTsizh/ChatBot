@@ -6,6 +6,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -19,18 +20,19 @@ namespace StuddyBot.Dialogs
     public class MainDialog : ComponentDialog
     {
         protected readonly IConfiguration Configuration;
-        protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
         protected IUserAnswerResolveService UserAnswerResolveService;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
-        
-        public MainDialog(IConfiguration configuration, ILogger<MainDialog> logger, IDecisionMaker decisionMaker, 
-            IUserAnswerResolveService userAnswerResolveService)
+        protected ThreadedLogger _myLogger;
+
+
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
+            IUserAnswerResolveService userAnswerResolveService, ThreadedLogger _myLogger)
             : base(nameof(MainDialog))
         {
             Configuration = configuration;
-            Logger = logger;    
+            this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
             UserAnswerResolveService = userAnswerResolveService;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
@@ -40,7 +42,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _myLogger));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -73,6 +75,7 @@ namespace StuddyBot.Dialogs
                 Style = ListStyle.HeroCard
             };
 
+            _myLogger.LogMessage(options.Prompt.Text);
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 

@@ -1,12 +1,9 @@
-// Copyright (c) Microsoft Corporation. All rights reserved.
-// Licensed under the MIT License.
-//
-// Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
@@ -17,17 +14,19 @@ namespace StuddyBot.Dialogs
 {
     public class LoopingDialog : CancelAndRestartDialog
     {
-        protected readonly IDecisionMaker DecisionMaker;
+        //protected readonly IDecisionMaker DecisionMaker;
         protected QuestionAndAnswerModel QuestionAndAnswerModel;
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
+        protected ThreadedLogger _myLogger;
 
-        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel)
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger)
             : base(nameof(LoopingDialog))
         {
-            DecisionMaker = decisionMaker;
+            //DecisionMaker = decisionMaker;
             QuestionAndAnswerModel = questionAndAnswerModel;
-            
+            this._myLogger = _myLogger;
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -70,6 +69,7 @@ namespace StuddyBot.Dialogs
                 Style = ListStyle.HeroCard
             };
 
+            _myLogger.LogMessage(promptText.Text);
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
