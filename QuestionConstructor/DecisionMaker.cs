@@ -15,13 +15,13 @@ namespace DecisionMakers
     public class DecisionMaker : IDecisionMaker
     {
 
-        public string path { get; set; } = @"..\Bot.Core\Dialogs.json";
+        public string Path { get; set; } = @"..\Bot.Core\Dialogs.json";
 
         public DecisionMaker() { }
 
         public List<string> GetStartTopics()
         {
-            var json = File.ReadAllText(path);
+            var json = File.ReadAllText(Path);
 
             var jArray = JArray.Parse(json);
 
@@ -61,7 +61,7 @@ namespace DecisionMakers
 
         public QuestionModel GetQuestionOrResult(string topic)
         {
-            var json = File.ReadAllText(path);
+            var json = File.ReadAllText(Path);
 
             var jObject = JArray.Parse(json);
 
