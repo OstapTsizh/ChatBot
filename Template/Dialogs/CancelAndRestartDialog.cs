@@ -13,11 +13,11 @@ namespace StuddyBot.Dialogs
 {
     public class CancelAndRestartDialog : ComponentDialog
     {
-        protected MyDialog _myDialog;
-        public CancelAndRestartDialog(string id, MyDialog myDialog)//, MyDialog myDialog
+       // protected MyDialog _myDialog;
+        public CancelAndRestartDialog(string id)//, MyDialog myDialog
             : base(id)
         {
-            _myDialog = myDialog;
+           // _myDialog = myDialog;
         }
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -54,7 +54,7 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        _myDialog.DialogsId = 0;
+                       // _myDialog.DialogsId = 0;
                         
                         await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
                         Thread.Sleep(500);
@@ -64,7 +64,7 @@ namespace StuddyBot.Dialogs
                     case "quit":
                     case "q":
                     case "exit":
-                        _myDialog.DialogsId = 0;
+                       // _myDialog.DialogsId = 0;
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
                 }

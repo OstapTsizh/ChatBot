@@ -20,14 +20,14 @@ namespace StuddyBot.Dialogs
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
         protected ThreadedLogger _myLogger;
-        protected readonly MyDialog _myDialog;
+      //  protected readonly MyDialog _myDialog;
 
-        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger, MyDialog myDialog)
-            : base(nameof(LoopingDialog), myDialog)//, myDialog
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger)
+            : base(nameof(LoopingDialog))//, myDialog
         {
             //DecisionMaker = decisionMaker;
             QuestionAndAnswerModel = questionAndAnswerModel;
-            _myDialog = myDialog;
+           // _myDialog = myDialog;
             this._myLogger = _myLogger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -73,11 +73,12 @@ namespace StuddyBot.Dialogs
             };
 
 
-            _myDialog.Message = options.Prompt.Text;
-            _myDialog.Time = stepContext.Context.Activity.Timestamp.Value;
+            var message = options.Prompt.Text;
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
            
 
-            _myLogger.LogMessage(_myDialog);
+            _myLogger.LogMessage(message, sender, time);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }

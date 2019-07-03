@@ -14,12 +14,12 @@ namespace StuddyBot.Bots
 {
     public class DialogAndWelcomeBot<T> : DialogBot<T> where T : Dialog
     {
-        protected MyDialog _myDialog;
+       // protected MyDialog _myDialog;
         public DialogAndWelcomeBot(ConversationState conversationState, UserState userState, T dialog, 
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger _myLogger, MyDialog myDialog)
-            : base(conversationState, userState, dialog, logger, questionCtor, _myLogger, myDialog)
+            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger _myLogger)
+            : base(conversationState, userState, dialog, logger, questionCtor, _myLogger)
         {
-            _myDialog = myDialog;
+           // _myDialog = myDialog;
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -31,12 +31,12 @@ namespace StuddyBot.Bots
                 {                    
                     await turnContext.SendActivityAsync(MessageFactory.Text("Hello! Say something"), cancellationToken);
                     _myLogger.LogUser(turnContext.Activity.From.Id);
-                    _myDialog.DialogsId = _myLogger.LogDialog();
+                  //  _myLogger.LogDialog();
                 }
                 else
                 {
                     _myLogger.GetExistingUserId(turnContext.Activity.From.Id);
-                    _myDialog.DialogsId = _myLogger.LogDialog();
+                  //  _myLogger.LogDialog();
                 }
             }
 

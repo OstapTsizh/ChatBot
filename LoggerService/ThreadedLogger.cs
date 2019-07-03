@@ -46,20 +46,23 @@ namespace LoggerService
             }
         }
 
-        public async Task LogMessage(MyDialog myDialog)
+        public async Task LogMessage(string message, string sender, DateTimeOffset time)
         {
             lock (queue)
             {
-                queue.Enqueue(() =>  LogMessageAsync(myDialog));
+                queue.Enqueue(() =>  LogMessageAsync(message, sender, time));
             }
             
         }
 
-        protected async Task LogMessageAsync(MyDialog myDialog)
+        protected async Task LogMessageAsync(string message, string sender, DateTimeOffset time)
         {
-             Console.WriteLine(myDialog.Message);
+             Console.WriteLine(message);
             _MyDialog = new MyDialog();
-            _MyDialog = myDialog;
+            _MyDialog.Message = message;
+            _MyDialog.Sender = message;
+            _MyDialog.Time = time;
+            _MyDialog.DialogsId = _Dialogs.Id;
            
             _unitOfWork.MyDialogs.Create(_MyDialog);
 
@@ -81,10 +84,13 @@ namespace LoggerService
 
         public int LogDialog()
         {
-            _unitOfWork.Dialogs.Create(new Dialogs { UserId = _User.Id });
+            _Dialogs = new Dialogs { UserId = _User.Id };
+            _unitOfWork.Dialogs.Create(_Dialogs);
             _unitOfWork.Save();
 
-            return _unitOfWork.Dialogs.Find(d => d.UserId == _User.Id).Max(d => d.Id);
+            _Dialogs.Id = _unitOfWork.Dialogs.Find(d => d.UserId == _User.Id).Max(d => d.Id);
+
+            return _Dialogs.Id;
         }
 
     }

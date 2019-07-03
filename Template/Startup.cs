@@ -55,7 +55,7 @@ namespace StuddyBot
             //LOGGER////////////////////////////////////////////////////
             services.AddSingleton((s) => new ThreadedLogger(s.GetService<IUnitOfWork>()));
 
-            services.AddTransient((s) => new MyDialog());
+         //   services.AddTransient((s) => new MyDialog());
             
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();

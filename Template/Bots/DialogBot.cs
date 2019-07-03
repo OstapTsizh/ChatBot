@@ -29,11 +29,11 @@ namespace StuddyBot.Bots
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
         protected readonly ThreadedLogger _myLogger;
-        protected MyDialog _MyDialog;
+       // protected MyDialog _MyDialog;
 
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger, MyDialog myDialog)
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
         { 
             ConversationState = conversationState;
             UserState = userState;
@@ -41,7 +41,7 @@ namespace StuddyBot.Bots
             Logger = logger;
             DecisionMaker = decisionMaker;
             this._myLogger = _myLogger;
-            _MyDialog = myDialog;
+          //  _MyDialog = myDialog;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -56,11 +56,11 @@ namespace StuddyBot.Bots
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
            
-            _MyDialog.Message = turnContext.Activity.Text;
-            _MyDialog.Sender = "user";
-            _MyDialog.Time = turnContext.Activity.Timestamp.Value;
+            var message = turnContext.Activity.Text;
+            var sender = "user";
+            var time = turnContext.Activity.Timestamp.Value;
           
-            _myLogger.LogMessage(_MyDialog);
+            _myLogger.LogMessage(message, sender,time);
 
             // Run the Dialog with the new message Activity.
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
