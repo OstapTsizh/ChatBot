@@ -7,6 +7,7 @@ using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -19,12 +20,14 @@ namespace StuddyBot.Dialogs
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
         protected ThreadedLogger _myLogger;
+        protected readonly MyDialog _myDialog;
 
-        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger)
-            : base(nameof(LoopingDialog))
+        public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger, MyDialog myDialog)
+            : base(nameof(LoopingDialog), myDialog)//, myDialog
         {
             //DecisionMaker = decisionMaker;
             QuestionAndAnswerModel = questionAndAnswerModel;
+            _myDialog = myDialog;
             this._myLogger = _myLogger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -69,7 +72,13 @@ namespace StuddyBot.Dialogs
                 Style = ListStyle.HeroCard
             };
 
-            _myLogger.LogMessage(promptText.Text);
+
+            _myDialog.Message = options.Prompt.Text;
+            _myDialog.Time = stepContext.Context.Activity.Timestamp.Value;
+           
+
+            _myLogger.LogMessage(_myDialog);
+
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 

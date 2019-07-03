@@ -12,6 +12,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -21,20 +22,21 @@ namespace StuddyBot.Dialogs
     {
         protected readonly IConfiguration Configuration;
         protected readonly IDecisionMaker DecisionMaker;
-        protected IUserAnswerResolveService UserAnswerResolveService;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _myLogger;
+        protected MyDialog _myDialog;
+        
 
 
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
-            IUserAnswerResolveService userAnswerResolveService, ThreadedLogger _myLogger)
-            : base(nameof(MainDialog))
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
+            ThreadedLogger _myLogger, MyDialog myDialog)
+            : base(nameof(MainDialog))//, myDialog
         {
             Configuration = configuration;
             this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
-            UserAnswerResolveService = userAnswerResolveService;
+            _myDialog = myDialog;
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
@@ -42,7 +44,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _myLogger));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _myLogger, _myDialog));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync,
@@ -58,7 +60,11 @@ namespace StuddyBot.Dialogs
         
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-
+            if (_myDialog.DialogsId == 0)
+            {
+                var dialogId = _myLogger.LogDialog();
+                _myDialog.DialogsId = dialogId;
+            }
 
             var topics = DecisionMaker.GetStartTopics();
             var choices = new List<Choice>();
@@ -74,8 +80,13 @@ namespace StuddyBot.Dialogs
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
+            _myDialog.Message = options.Prompt.Text;
+            _myDialog.Sender = "bot";
+            _myDialog.Time = stepContext.Context.Activity.Timestamp.Value;
+           
+           
+            _myLogger.LogMessage(_myDialog);
 
-            _myLogger.LogMessage(options.Prompt.Text);
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
@@ -93,11 +104,19 @@ namespace StuddyBot.Dialogs
 
             _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
 
-           _DecisionModel =  UserAnswerResolveService.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+           _DecisionModel =  DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
 
 
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
+            
+
+            _myDialog.Message = response + "\n" + "Would you like to continue?";
+            _myDialog.Time = stepContext.Context.Activity.Timestamp.Value;
+
+            _myLogger.LogMessage(_myDialog);
+
+           
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), 
                 new PromptOptions()
@@ -106,17 +125,22 @@ namespace StuddyBot.Dialogs
                     Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
                 },
                 cancellationToken);
+
+           
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var foundChoice = (stepContext.Result as FoundChoice).Value; 
+            var foundChoice = (stepContext.Result as FoundChoice).Value;
+
+            stepContext.Context.Activity.Text = "restart";
 
             if (foundChoice == "yes")
             {
+               
                 return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
             }
-
+            
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
            
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);

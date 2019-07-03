@@ -10,6 +10,8 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 
 namespace StuddyBot.Bots
@@ -27,17 +29,19 @@ namespace StuddyBot.Bots
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
         protected readonly ThreadedLogger _myLogger;
+        protected MyDialog _MyDialog;
 
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
-        {
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger, MyDialog myDialog)
+        { 
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
             Logger = logger;
             DecisionMaker = decisionMaker;
             this._myLogger = _myLogger;
+            _MyDialog = myDialog;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,10 +55,12 @@ namespace StuddyBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            //Logger.LogInformation("Running dialog with Message Activity.");
-
-
-            _myLogger.LogMessage(turnContext.Activity.Text);
+           
+            _MyDialog.Message = turnContext.Activity.Text;
+            _MyDialog.Sender = "user";
+            _MyDialog.Time = turnContext.Activity.Timestamp.Value;
+          
+            _myLogger.LogMessage(_MyDialog);
 
             // Run the Dialog with the new message Activity.
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
