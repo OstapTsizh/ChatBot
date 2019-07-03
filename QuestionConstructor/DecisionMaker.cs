@@ -1,8 +1,4 @@
-﻿using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,11 +7,21 @@ using StuddyBot.Core.Models;
 
 namespace DecisionMakers
 {
+    /// <summary>
+    /// The main DecisionMaker class.
+    /// Provides communication between the bot and the json file.
+    /// </summary>
     public class DecisionMaker : IDecisionMaker
     {
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
+        /// </summary>
         public DecisionMaker() { }
 
+        /// <summary>
+        /// Method which get all topics from json file.
+        /// </summary>
+        /// <returns> List of all topics. </returns>
         public List<string> GetStartTopics()
         {
 
@@ -59,6 +65,11 @@ namespace DecisionMakers
             return null;
         }
 
+        /// <summary>
+        /// Method which get result or question according to topic.
+        /// </summary>
+        /// <param name="topic"> Topic from which the result or question will be taken. </param>
+        /// <returns> QuestionModel object of <see cref="QuestionModel"/> class. </returns>
         public QuestionModel GetQuestionOrResult(string topic)
         {            
             var path = @"..\Bot.Core\Dialogs.json";
@@ -73,7 +84,12 @@ namespace DecisionMakers
             return model;
         }
 
-
+        /// <summary>
+        /// Method that takes and store all info about topic. 
+        /// </summary>
+        /// <param name="rss"> Array of tokens in json file. </param>
+        /// <param name="topic"> Topic from which info will be taken. </param>
+        /// <returns> New instance of <see cref="QuestionModel"/> class. </returns>
         private QuestionModel GetModel(JArray rss, string topic)
         {
             var model = new QuestionModel();
