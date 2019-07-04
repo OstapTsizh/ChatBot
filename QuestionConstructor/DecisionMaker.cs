@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
+using System.Configuration;
 
 namespace DecisionMakers
 {
@@ -13,6 +14,9 @@ namespace DecisionMakers
     /// </summary>
     public class DecisionMaker : IDecisionMaker
     {
+
+        public readonly string _path = @"..\Bot.Core\Dialogs.json";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
         /// </summary>
@@ -24,10 +28,7 @@ namespace DecisionMakers
         /// <returns> List of all topics. </returns>
         public List<string> GetStartTopics()
         {
-
-            var path = @"..\Bot.Core\Dialogs.json";
-
-            var json = File.ReadAllText(path);
+            var json = File.ReadAllText(_path);
 
             var jArray = JArray.Parse(json);
 
@@ -71,15 +72,13 @@ namespace DecisionMakers
         /// <param name="topic"> Topic from which the result or question will be taken. </param>
         /// <returns> QuestionModel object of <see cref="QuestionModel"/> class. </returns>
         public QuestionModel GetQuestionOrResult(string topic)
-        {            
-            var path = @"..\Bot.Core\Dialogs.json";
+        {
+            var json = File.ReadAllText(_path);
 
-            var json = File.ReadAllText(path);
-
-            var jObject = JArray.Parse(json); 
+            var jObject = JArray.Parse(json);
 
             var model = GetModel(jObject, topic);
-            
+
 
             return model;
         }
@@ -100,7 +99,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if((string)item["topic"] == topic)
+                if ((string)item["topic"] == topic)
                 {
                     var keywords = item["model"]["keywords"];
                     var questions = item["model"]["questions"].Children();
@@ -111,9 +110,9 @@ namespace DecisionMakers
                     model.Questions = new List<Question>();
                     model.Decisions = new List<DecisionModel>();
 
-                   
 
-                    foreach(var decision in decisions)
+
+                    foreach (var decision in decisions)
                     {
                         var meta = decision["meta"];
                         model.Decisions.Add(new DecisionModel
@@ -125,7 +124,7 @@ namespace DecisionMakers
                     }
 
                     foreach (var question in questions)
-                    {                        
+                    {
                         model.Questions.Add(new Question
                         {
                             Text = (string)question["Text"],
@@ -138,10 +137,10 @@ namespace DecisionMakers
                 }
             }
 
-            
+
             return model;
         }
 
-       
+
     }
 }

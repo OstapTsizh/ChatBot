@@ -20,7 +20,7 @@ using StuddyBot.Core.BLL.Repositories;
 using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
-using StuddyBot.Core.Services;
+using StuddyBot.Core;
 using StuddyBot.Dialogs;
 using System.Linq;
 

@@ -1,4 +1,7 @@
 ﻿
+using System;
+using System.Collections.Generic;
+
 namespace StuddyBot.Core.Models
 {
     /// <summary>
@@ -20,5 +23,10 @@ namespace StuddyBot.Core.Models
         /// Resource that bot gives to user. 
         /// </summary>
         public string Resources { get; set; }
+
+        public static implicit operator List<object>(DecisionModel v)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
