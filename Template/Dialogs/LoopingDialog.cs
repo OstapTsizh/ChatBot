@@ -15,19 +15,17 @@ namespace StuddyBot.Dialogs
 {
     public class LoopingDialog : CancelAndRestartDialog
     {
-        //protected readonly IDecisionMaker DecisionMaker;
         protected QuestionAndAnswerModel QuestionAndAnswerModel;
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
         protected ThreadedLogger _myLogger;
-      //  protected readonly MyDialog _myDialog;
+        protected int _dialogId;
 
         public LoopingDialog(IDecisionMaker decisionMaker, QuestionAndAnswerModel questionAndAnswerModel, ThreadedLogger _myLogger)
-            : base(nameof(LoopingDialog))//, myDialog
+            : base(nameof(LoopingDialog))
         {
-            //DecisionMaker = decisionMaker;
+            
             QuestionAndAnswerModel = questionAndAnswerModel;
-           // _myDialog = myDialog;
             this._myLogger = _myLogger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -44,6 +42,7 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _dialogId = _myLogger.GetExistingDialogId();
             QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Options;
 
             if (QuestionAndAnswerModel.QuestionModel == null)
@@ -78,7 +77,7 @@ namespace StuddyBot.Dialogs
             var time = stepContext.Context.Activity.Timestamp.Value;
            
 
-            _myLogger.LogMessage(message, sender, time);
+            _myLogger.LogMessage(message, sender, time, _dialogId);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }

@@ -3,6 +3,7 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace StuddyBot.Dialogs
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _myLogger;
-      //  protected MyDialog _myDialog;
+        protected int _dialogId;
         
 
 
@@ -56,11 +57,15 @@ namespace StuddyBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+
+
         
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _myLogger.LogDialog();
-          
+
+            _dialogId = _myLogger.LogDialog();
+            logDialog(stepContext.Context.Activity.Text, stepContext.Context.Activity.Timestamp.Value);
+
             var topics = DecisionMaker.GetStartTopics();
             var choices = new List<Choice>();
             
@@ -80,7 +85,7 @@ namespace StuddyBot.Dialogs
            var time = stepContext.Context.Activity.Timestamp.Value;
            
            
-            _myLogger.LogMessage(message, sender, time);
+            _myLogger.LogMessage(message, sender, time, _dialogId);
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
@@ -111,7 +116,7 @@ namespace StuddyBot.Dialogs
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
-            _myLogger.LogMessage(message, sender, time);
+            _myLogger.LogMessage(message, sender, time, _dialogId);
 
            
 
@@ -132,8 +137,6 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
 
-            stepContext.Context.Activity.Text = "restart";
-
             if (foundChoice == "yes")
             {
                
@@ -143,6 +146,22 @@ namespace StuddyBot.Dialogs
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
            
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+        }
+
+        protected override Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return base.OnBeginDialogAsync(innerDc, options, cancellationToken);
+        }
+
+        protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            logDialog(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
+            return base.OnContinueDialogAsync(innerDc, cancellationToken);
+        }
+
+        private void logDialog(string message, DateTimeOffset time)
+        {
+            _myLogger.LogMessage(message, "user", time, _dialogId);
         }
     }
 }
