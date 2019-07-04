@@ -15,7 +15,6 @@ namespace StuddyBot.Dialogs
 {
     public class LoopingDialog : CancelAndRestartDialog
     {
-        //protected readonly IDecisionMaker DecisionMaker;
         protected QuestionAndAnswerModel QuestionAndAnswerModel;
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
@@ -27,7 +26,6 @@ namespace StuddyBot.Dialogs
         {
             
             QuestionAndAnswerModel = questionAndAnswerModel;
-            //_dialogId = dialogId;
             this._myLogger = _myLogger;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));

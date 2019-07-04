@@ -15,13 +15,9 @@ namespace StuddyBot.Dialogs
 {
     public class CancelAndRestartDialog : ComponentDialog
     {
-        //protected int _dialogId;
-        //protected ThreadedLogger _myLogger;
-        public CancelAndRestartDialog(string id)//, MyDialog myDialog
+        public CancelAndRestartDialog(string id)
             : base(id)
         {
-            //_dialogId = dialogId;
-            //_myLogger = myLogger;
         }
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -37,7 +33,6 @@ namespace StuddyBot.Dialogs
 
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken)
         {
-            //logDialog(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
@@ -74,12 +69,6 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
-
-        //private void logDialog(string message, DateTimeOffset time)
-        //{
-
-        //    _myLogger.LogMessage(message, "user", time, _dialogId);
-        //}
-
+        
     }
 }

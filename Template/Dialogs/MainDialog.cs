@@ -150,8 +150,6 @@ namespace StuddyBot.Dialogs
 
         protected override Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
         {
-            //  _dialogId = _myLogger.LogDialog();
-            //  logDialog(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
             return base.OnBeginDialogAsync(innerDc, options, cancellationToken);
         }
 
@@ -160,12 +158,6 @@ namespace StuddyBot.Dialogs
             logDialog(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
             return base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
-
-        //protected override Task OnEndDialogAsync(ITurnContext context, DialogInstance instance, DialogReason reason, CancellationToken cancellationToken = default(CancellationToken))
-        //{
-        //   // logDialog(context.Activity.Text, context.Activity.Timestamp.Value);
-        //    return base.OnEndDialogAsync(context, instance, reason, cancellationToken);
-        //}
 
         private void logDialog(string message, DateTimeOffset time)
         {
