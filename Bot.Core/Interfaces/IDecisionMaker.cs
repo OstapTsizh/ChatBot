@@ -19,11 +19,11 @@ namespace StuddyBot.Core.Interfaces
         QuestionModel GetQuestionOrResult(string name);
 
         /// <summary>
-        /// Finds right decision accoding to user's answers
+        /// Finds right decision according to user's answers
         /// </summary>
         /// <param name="answers"> Stored user's answers</param>
         /// <param name="questionModel">Topic Model</param>
-        /// <returns>DesicionModel object of <see cref="DecisionModel"/> class</returns>
+        /// <returns>DecisionModel object of <see cref="DecisionModel"/> class</returns>
         DecisionModel GetDecision(List<string> answers, QuestionModel questionModel);
 
 

@@ -12,8 +12,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -30,14 +28,15 @@ namespace StuddyBot.Dialogs
         
 
 
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
             ThreadedLogger _myLogger)
-            : base(nameof(MainDialog))//, myDialog
+            : base(nameof(MainDialog))
+         
         {
             Configuration = configuration;
             this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
-           // _myDialog = myDialog;
+
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
@@ -105,7 +104,8 @@ namespace StuddyBot.Dialogs
 
             _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
 
-           _DecisionModel =  DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+           _DecisionModel = DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
+
 
 
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
@@ -117,6 +117,8 @@ namespace StuddyBot.Dialogs
             var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _dialogId);
+
+           
 
            
 
