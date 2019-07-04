@@ -22,7 +22,7 @@ namespace StuddyBot.Core.DAL.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-1I6TUGA;Initial Catalog=StuddyBotBD;Integrated Security=True;");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
            
         }
 
