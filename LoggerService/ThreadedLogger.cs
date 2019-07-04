@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using StuddyBot.Core.BLL.Interfaces;
 using StuddyBot.Core.DAL.Entities;
@@ -19,8 +20,7 @@ namespace LoggerService
         public ThreadedLogger(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-           // _unitOfWork.Dialogs.Create(new Dialogs { UserId = "125" });
-            _unitOfWork.Save();
+           // _unitOfWork.Save();
             ProcessQueue();            
         }
 
@@ -29,7 +29,8 @@ namespace LoggerService
         {
             while (true)
             {
-                await Task.Delay(10_000);
+                
+                await Task.Delay(15_000);
 
                 Queue<Action> queueCopy;
 
@@ -41,56 +42,63 @@ namespace LoggerService
 
                 foreach (var log in queueCopy)
                 {
-                    log.Invoke();
+                    log();
                 }
+               // _unitOfWork.Save();
             }
         }
 
-        public async Task LogMessage(string message, string sender, DateTimeOffset time)
+        public async Task LogMessage(string message, string sender, DateTimeOffset time, int dialogId)
         {
             lock (queue)
             {
-                queue.Enqueue(() =>  LogMessageAsync(message, sender, time));
+                queue.Enqueue(() =>  LogMessageAsync(message, sender, time, dialogId));
             }
-            
+
+           
         }
 
-        protected async Task LogMessageAsync(string message, string sender, DateTimeOffset time)
+        protected async Task LogMessageAsync(string message, string sender, DateTimeOffset time, int dialogId)
         {
-             Console.WriteLine(message);
+             Console.WriteLine(message + "      THREAD: {0}", Thread.CurrentThread.ManagedThreadId);
             _MyDialog = new MyDialog();
             _MyDialog.Message = message;
-            _MyDialog.Sender = message;
+            _MyDialog.Sender = sender;
             _MyDialog.Time = time;
-            _MyDialog.DialogsId = _Dialogs.Id;
+
+            _MyDialog.DialogsId = dialogId;
            
             _unitOfWork.MyDialogs.Create(_MyDialog);
 
             _unitOfWork.Save();
         }
 
-        public void GetExistingUserId(string user_id)
+        public async Task GetExistingUserId(string user_id)
         {
             _User = new User { Id = user_id };
         }
 
-        public string LogUser(string user_id)
+        public int GetExistingDialogId()
+        {
+            return _Dialogs.Id;
+        }
+
+        public async Task LogUser(string user_id)
         {
             _User = new User { Id = user_id };
             _unitOfWork.Users.Create(_User);
             _unitOfWork.Save();
-            return user_id;
         }
 
-        public int LogDialog()
+        public  int LogDialog()
         {
             _Dialogs = new Dialogs { UserId = _User.Id };
             _unitOfWork.Dialogs.Create(_Dialogs);
             _unitOfWork.Save();
 
-            _Dialogs.Id = _unitOfWork.Dialogs.Find(d => d.UserId == _User.Id).Max(d => d.Id);
-
+            _Dialogs.Id = _unitOfWork.Dialogs.GetAll().Max(d => d.Id);
             return _Dialogs.Id;
+
         }
 
     }

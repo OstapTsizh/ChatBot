@@ -56,11 +56,11 @@ namespace StuddyBot.Bots
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
            
-            var message = turnContext.Activity.Text;
-            var sender = "user";
-            var time = turnContext.Activity.Timestamp.Value;
+            //var message = turnContext.Activity.Text;
+            //var sender = "user";
+            //var time = turnContext.Activity.Timestamp.Value;
           
-            _myLogger.LogMessage(message, sender,time);
+            //_myLogger.LogMessage(message, sender,time);
 
             // Run the Dialog with the new message Activity.
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);

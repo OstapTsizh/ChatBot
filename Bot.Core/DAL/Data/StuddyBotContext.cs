@@ -26,11 +26,11 @@ namespace StuddyBot.Core.DAL.Data
            
         }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    // использование Fluent API
-        //    base.OnModelCreating(modelBuilder);
-        //}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // использование Fluent API
+            base.OnModelCreating(modelBuilder);
+        }
 
 
 

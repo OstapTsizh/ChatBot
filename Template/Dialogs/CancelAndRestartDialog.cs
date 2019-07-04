@@ -3,8 +3,10 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using StuddyBot.Core.DAL.Entities;
@@ -13,11 +15,13 @@ namespace StuddyBot.Dialogs
 {
     public class CancelAndRestartDialog : ComponentDialog
     {
-       // protected MyDialog _myDialog;
+        //protected int _dialogId;
+        //protected ThreadedLogger _myLogger;
         public CancelAndRestartDialog(string id)//, MyDialog myDialog
             : base(id)
         {
-           // _myDialog = myDialog;
+            //_dialogId = dialogId;
+            //_myLogger = myLogger;
         }
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -33,6 +37,7 @@ namespace StuddyBot.Dialogs
 
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken)
         {
+            //logDialog(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
@@ -54,8 +59,6 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                       // _myDialog.DialogsId = 0;
-                        
                         await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
                         Thread.Sleep(500);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
@@ -64,7 +67,6 @@ namespace StuddyBot.Dialogs
                     case "quit":
                     case "q":
                     case "exit":
-                       // _myDialog.DialogsId = 0;
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
                 }
@@ -72,5 +74,12 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
+
+        //private void logDialog(string message, DateTimeOffset time)
+        //{
+
+        //    _myLogger.LogMessage(message, "user", time, _dialogId);
+        //}
+
     }
 }
