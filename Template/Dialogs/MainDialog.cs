@@ -11,7 +11,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -24,15 +23,19 @@ namespace StuddyBot.Dialogs
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _myLogger;
+      //  protected MyDialog _myDialog;
+        
 
 
         public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
             ThreadedLogger _myLogger)
             : base(nameof(MainDialog))
+         
         {
             Configuration = configuration;
             this._myLogger = _myLogger;    
             DecisionMaker = decisionMaker;
+
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
@@ -56,8 +59,8 @@ namespace StuddyBot.Dialogs
         
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-
-
+            _myLogger.LogDialog();
+          
             var topics = DecisionMaker.GetStartTopics();
             var choices = new List<Choice>();
             
@@ -72,8 +75,13 @@ namespace StuddyBot.Dialogs
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
+            var message = options.Prompt.Text;
+            var sender = "bot";
+           var time = stepContext.Context.Activity.Timestamp.Value;
+           
+           
+            _myLogger.LogMessage(message, sender, time);
 
-            _myLogger.LogMessage(options.Prompt.Text);
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
@@ -94,31 +102,44 @@ namespace StuddyBot.Dialogs
            _DecisionModel = DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
 
 
+
             var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
+            
 
-            var prompt = MessageFactory.Text("Would you like to continue?");
+            var message = response + "\n" + "Would you like to continue?";
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
-            _myLogger.LogMessage(prompt.Text);
+            _myLogger.LogMessage(message, sender, time);
+
+           
+
+           
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), 
                 new PromptOptions()
                 {
-                    Prompt = prompt,
+                    Prompt = MessageFactory.Text("Would you like to continue?"),
                     Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
                 },
                 cancellationToken);
+
+           
         }
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var foundChoice = (stepContext.Result as FoundChoice).Value; 
+            var foundChoice = (stepContext.Result as FoundChoice).Value;
+
+            stepContext.Context.Activity.Text = "restart";
 
             if (foundChoice == "yes")
             {
+               
                 return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
             }
-
+            
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
            
             return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
