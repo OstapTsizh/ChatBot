@@ -23,6 +23,7 @@ using StuddyBot.Core.Interfaces;
 using StuddyBot.Core;
 using StuddyBot.Dialogs;
 using System.Linq;
+using StuddyBot.Core.Models;
 
 namespace StuddyBot
 {
@@ -48,6 +49,8 @@ namespace StuddyBot
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
+
+            services.AddTransient((s) => new DialogInfo());
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();

@@ -14,11 +14,13 @@ namespace StuddyBot.Bots
 {
     public class DialogAndWelcomeBot<T> : DialogBot<T> where T : Dialog
     {
-       // protected MyDialog _myDialog;
+        // protected MyDialog _myDialog;
+        protected ThreadedLogger _myLogger;
         public DialogAndWelcomeBot(ConversationState conversationState, UserState userState, T dialog, 
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger _myLogger)
-            : base(conversationState, userState, dialog, logger, questionCtor, _myLogger)
+            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger myLogger)
+            : base(conversationState, userState, dialog, logger, questionCtor)
         {
+            _myLogger = myLogger;
            // _myDialog = myDialog;
         }
 

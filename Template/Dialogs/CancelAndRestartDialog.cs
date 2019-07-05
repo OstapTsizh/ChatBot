@@ -54,8 +54,7 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
-                        Thread.Sleep(500);
+                        await innerDc.ReplaceDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":

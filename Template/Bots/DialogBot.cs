@@ -28,19 +28,19 @@ namespace StuddyBot.Bots
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-        protected readonly ThreadedLogger _myLogger;
+       // protected readonly ThreadedLogger _myLogger;
        // protected MyDialog _MyDialog;
 
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker)//, ThreadedLogger _myLogger
         { 
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
             Logger = logger;
             DecisionMaker = decisionMaker;
-            this._myLogger = _myLogger;
+         //   this._myLogger = _myLogger;
           //  _MyDialog = myDialog;
         }
 
@@ -55,14 +55,18 @@ namespace StuddyBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-           
+
             //var message = turnContext.Activity.Text;
             //var sender = "user";
             //var time = turnContext.Activity.Timestamp.Value;
-          
+
             //_myLogger.LogMessage(message, sender,time);
 
-            // Run the Dialog with the new message Activity.
+            // Run the Dialog with the new message Activity.s
+            var userStateAccessors = UserState.CreateProperty<int>("DilaogId");
+            var DilaogId = await userStateAccessors.GetAsync(turnContext, () => new int());
+            
+
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 
