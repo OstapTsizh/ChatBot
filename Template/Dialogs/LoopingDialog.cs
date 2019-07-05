@@ -55,6 +55,10 @@ namespace StuddyBot.Dialogs
         {
             if (stepContext.Options.ToString() == "begin")
             {
+                QuestionAndAnswerModel = new QuestionAndAnswerModel();
+                QuestionAndAnswerModel.Answers = new List<string>();
+                _DecisionModel = new DecisionModel();
+
                 _DialogInfo.DialogId = _myLogger.LogDialog();
                 isNeededToGetQuestions = true;
 
@@ -195,9 +199,9 @@ namespace StuddyBot.Dialogs
 
             if (foundChoice == "yes")
             {
-                QuestionAndAnswerModel = new QuestionAndAnswerModel();
-                QuestionAndAnswerModel.Answers = new List<string>();
-                _DecisionModel = new DecisionModel();
+            //    QuestionAndAnswerModel = new QuestionAndAnswerModel();
+            //    QuestionAndAnswerModel.Answers = new List<string>();
+            //    _DecisionModel = new DecisionModel();
                 return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog),"begin", cancellationToken);
             }
 

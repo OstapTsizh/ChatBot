@@ -54,7 +54,9 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        await innerDc.ReplaceDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
+                        innerDc.Context.Activity.Text = "begin";
+                        await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
+                        await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":
