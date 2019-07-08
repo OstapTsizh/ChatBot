@@ -3,13 +3,10 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LoggerService;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using StuddyBot.Core.DAL.Entities;
 
 namespace StuddyBot.Dialogs
 {
@@ -54,8 +51,9 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
-                        Thread.Sleep(500);
+                        innerDc.Context.Activity.Text = "begin";
+                        await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
+                        await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":

@@ -18,7 +18,7 @@ namespace StuddyBot.Core.BLL.Repositories
             db = context;
         }
 
-        public User Get(int id)
+        public User Get(object id)
         {
             return db.User.Find(id);
         }
@@ -38,7 +38,7 @@ namespace StuddyBot.Core.BLL.Repositories
             db.Entry(item).State = EntityState.Modified;
         }
 
-        public void Delete(int id)
+        public void Delete(object id)
         {
             User user = db.User.Find(id);
             if (user != null)
