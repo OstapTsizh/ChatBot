@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecisionMakerApi", "Decisio
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{72B87271-49D2-4058-A8AD-0F851EA4FD4B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBotTests", "StuddyBotTests\StuddyBotTests.csproj", "{58735BCD-A3E3-4EBF-A030-ACBCCB015334}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

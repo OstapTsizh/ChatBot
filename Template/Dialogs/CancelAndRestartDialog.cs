@@ -22,7 +22,7 @@ namespace StuddyBot.Dialogs
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
-                return result;
+                return result;  
             }
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
