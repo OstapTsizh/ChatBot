@@ -24,10 +24,7 @@ namespace StuddyBot.Core.DAL.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
-           
-
-
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");           
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -50,8 +47,6 @@ namespace StuddyBot.Core.DAL.Data
             base.OnModelCreating(modelBuilder);
 
         }
-
-
 
     }
 }
