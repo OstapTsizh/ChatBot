@@ -36,7 +36,6 @@ namespace StuddyBot.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            //_myLogger.LogMessage(Request.HttpContext.)
             await Adapter.ProcessAsync(Request, Response, Bot);
         }
     }

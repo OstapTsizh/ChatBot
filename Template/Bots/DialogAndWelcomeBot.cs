@@ -6,8 +6,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using StuddyBot.Core.BLL.Interfaces;
-using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 
 namespace StuddyBot.Bots
@@ -43,7 +41,7 @@ namespace StuddyBot.Bots
 
         }
 
-
+       
 
     }
 }

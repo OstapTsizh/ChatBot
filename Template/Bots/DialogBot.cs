@@ -10,8 +10,6 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
-using StuddyBot.Core.BLL.Interfaces;
-using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 
 namespace StuddyBot.Bots
@@ -29,9 +27,9 @@ namespace StuddyBot.Bots
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
         protected readonly ThreadedLogger _myLogger;
-       // protected MyDialog _MyDialog;
+        // protected MyDialog _MyDialog;
 
-
+            
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
             ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
         { 
@@ -41,7 +39,7 @@ namespace StuddyBot.Bots
             Logger = logger;
             DecisionMaker = decisionMaker;
             this._myLogger = _myLogger;
-          //  _MyDialog = myDialog;
+            //  _MyDialog = myDialog;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -66,6 +64,6 @@ namespace StuddyBot.Bots
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 
-        
+
     }
 }

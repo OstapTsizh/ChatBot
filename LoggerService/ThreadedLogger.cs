@@ -9,7 +9,7 @@ namespace LoggerService
 {
     public class ThreadedLogger
     {
-       IUnitOfWork _unitOfWork;
+        IUnitOfWork _unitOfWork;
         private Dialogs _Dialogs { get; set; }
         private MyDialog _MyDialog { get; set; }
         private User _User { get; set; }

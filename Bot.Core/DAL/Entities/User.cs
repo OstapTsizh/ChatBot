@@ -9,5 +9,8 @@ namespace StuddyBot.Core.DAL.Entities
         public string Id { get; set; }
 
         public ICollection<Dialogs> Dialogs { get; set; }
+
+        public ICollection<UserCourse> UserCourses { get; set; }
+
     }
 }

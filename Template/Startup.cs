@@ -5,6 +5,7 @@
 
 using DecisionMakers;
 using LoggerService;
+using Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -23,6 +24,8 @@ using StuddyBot.Core.Interfaces;
 using StuddyBot.Core;
 using StuddyBot.Dialogs;
 using System.Linq;
+using System.Collections.Concurrent;
+using Microsoft.Bot.Schema;
 
 namespace StuddyBot
 {
@@ -62,9 +65,13 @@ namespace StuddyBot
 
             services.AddTransient((s) => new StuddyBotContext(
                 new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(
-                    @"Data Source=DESKTOP-1I6TUGA;Initial Catalog=StuddyBotBD;Integrated Security=True;").Options));
+                    @"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;").Options));
 
               services.AddTransient<IUnitOfWork, UnitOfWork>();
+
+            services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
+
+            //services.AddSingleton<NotificationService>();
 
             // The Dialog that will be run by the bot.
             services.AddSingleton<MainDialog>();
