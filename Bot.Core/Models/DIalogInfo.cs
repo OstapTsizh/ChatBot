@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace StuddyBot.Core.Models
+﻿namespace StuddyBot.Core.Models
 {
     public class DialogInfo
     {
+        public string UserId { get; set; }
         public int DialogId { get; set; }
     }
 }

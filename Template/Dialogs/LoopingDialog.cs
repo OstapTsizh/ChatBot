@@ -1,17 +1,13 @@
-
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DecisionMakers;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
-using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
-using System;
 
 namespace StuddyBot.Dialogs
 {
@@ -23,7 +19,6 @@ namespace StuddyBot.Dialogs
         protected int numberOfQuestion;
         protected List<string> UserAnswers;
         protected ThreadedLogger _myLogger;
-      //  protected UserState _UserState;
         protected DialogInfo _DialogInfo;
         private bool isNeededToGetQuestions = false;
 
@@ -59,7 +54,7 @@ namespace StuddyBot.Dialogs
                 QuestionAndAnswerModel.Answers = new List<string>();
                 _DecisionModel = new DecisionModel();
 
-                _DialogInfo.DialogId = _myLogger.LogDialog();
+                _DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
                 isNeededToGetQuestions = true;
 
                 var topics = DecisionMaker.GetStartTopics();
@@ -80,7 +75,6 @@ namespace StuddyBot.Dialogs
                 var message = options.Prompt.Text;
                 var sender = "bot";
                 var time = stepContext.Context.Activity.Timestamp.Value;
-
 
                 _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -169,13 +163,20 @@ namespace StuddyBot.Dialogs
 
             _DecisionModel = DecisionMaker.GetDecision(QuestionAndAnswerModel.Answers, QuestionAndAnswerModel.QuestionModel);
 
+            var message = "";
+            if (_DecisionModel == null)
+            {
+                message = "Sorry, there is no such course yet!";
+               await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
+               
+            }
+            else
+            {
+                message = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
+            }
 
-
-            var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
-
-
-            var message = response + "\n" + "Would you like to continue?";
+            message += "\nWould you like to continue?";
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
@@ -199,9 +200,6 @@ namespace StuddyBot.Dialogs
 
             if (foundChoice == "yes")
             {
-            //    QuestionAndAnswerModel = new QuestionAndAnswerModel();
-            //    QuestionAndAnswerModel.Answers = new List<string>();
-            //    _DecisionModel = new DecisionModel();
                 return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog),"begin", cancellationToken);
             }
 

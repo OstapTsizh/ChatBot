@@ -10,17 +10,14 @@ namespace LoggerService
 {
     public class ThreadedLogger
     {
-       IUnitOfWork _unitOfWork;
-        private Dialogs _Dialogs { get; set; }
+        IUnitOfWork _unitOfWork;
         private MyDialog _MyDialog { get; set; }
-        private User _User { get; set; }
 
         Queue<Action> queue = new Queue<Action>();
        
         public ThreadedLogger(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-           // _unitOfWork.Save();
             ProcessQueue();            
         }
 
@@ -44,7 +41,6 @@ namespace LoggerService
                 {
                     log();
                 }
-               // _unitOfWork.Save();
             }
         }
 
@@ -73,31 +69,24 @@ namespace LoggerService
             _unitOfWork.Save();
         }
 
-        public async Task GetExistingUserId(string user_id)
+        public async Task<string> LogUser(string user_id)
         {
-            _User = new User { Id = user_id };
+            var user = _unitOfWork.Users.Get(user_id);
+            if (user == null)
+            { 
+                _unitOfWork.Users.Create(new User { Id = user_id});
+                _unitOfWork.Save();
+            }
+
+            return user_id;
         }
 
-        public int GetExistingDialogId()
+        public async Task<int> LogDialog(string userId)
         {
-            return _Dialogs.Id;
-        }
-
-        public async Task LogUser(string user_id)
-        {
-            _User = new User { Id = user_id };
-            _unitOfWork.Users.Create(_User);
-            _unitOfWork.Save();
-        }
-
-        public  int LogDialog()
-        {
-            _Dialogs = new Dialogs { UserId = _User.Id };
-            _unitOfWork.Dialogs.Create(_Dialogs);
+            _unitOfWork.Dialogs.Create(new Dialogs { UserId = userId });
             _unitOfWork.Save();
 
-            _Dialogs.Id = _unitOfWork.Dialogs.GetAll().Max(d => d.Id);
-            return _Dialogs.Id;
+            return _unitOfWork.Dialogs.GetAll().Max(d => d.Id);
 
         }
 

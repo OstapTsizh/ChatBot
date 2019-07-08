@@ -18,7 +18,7 @@ namespace StuddyBot.Core.BLL.Repositories
             db = context;
         }
 
-        public Dialogs Get(int id)
+        public Dialogs Get(object id)
         {
             return db.Dialogs.Find(id);
         }
@@ -38,7 +38,7 @@ namespace StuddyBot.Core.BLL.Repositories
             db.Entry(item).State = EntityState.Modified;
         }
 
-        public void Delete(int id)
+        public void Delete(object id)
         {
             Dialogs dialog = db.Dialogs.Find(id);
             if (dialog != null)

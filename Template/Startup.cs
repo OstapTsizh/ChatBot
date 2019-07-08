@@ -13,16 +13,12 @@ using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using StuddyBot.Bots;
 using StuddyBot.Core.BLL.Interfaces;
 using StuddyBot.Core.BLL.Repositories;
 using StuddyBot.Core.DAL.Data;
-using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
-using StuddyBot.Core;
 using StuddyBot.Dialogs;
-using System.Linq;
 using StuddyBot.Core.Models;
 
 namespace StuddyBot
@@ -55,7 +51,7 @@ namespace StuddyBot
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
 
-            //LOGGER////////////////////////////////////////////////////
+            // LOGGER
             services.AddSingleton((s) => new ThreadedLogger(s.GetService<IUnitOfWork>()));
 
             // Create the Decision Maker which looks for proper answers/next questions

@@ -3,13 +3,10 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
-using LoggerService;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
-using StuddyBot.Core.DAL.Entities;
 
 namespace StuddyBot.Dialogs
 {
