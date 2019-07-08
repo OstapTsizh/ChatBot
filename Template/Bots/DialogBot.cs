@@ -5,7 +5,6 @@
 
 using System.Threading;
 using System.Threading.Tasks;
-using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -26,18 +25,16 @@ namespace StuddyBot.Bots
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-        protected readonly ThreadedLogger _myLogger;
 
-
+            
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
-            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger _myLogger)
-        {
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker)
+        { 
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
             Logger = logger;
             DecisionMaker = decisionMaker;
-            this._myLogger = _myLogger;
         }
 
         public override async Task OnTurnAsync(ITurnContext turnContext, CancellationToken cancellationToken = default(CancellationToken))
@@ -51,15 +48,11 @@ namespace StuddyBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            //Logger.LogInformation("Running dialog with Message Activity.");
-
-
-            _myLogger.LogMessage(turnContext.Activity.Text);
-
-            // Run the Dialog with the new message Activity.
+            // Run the Dialog with the new message Activity.s
+          
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 
-        
+
     }
 }

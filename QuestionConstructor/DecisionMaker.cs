@@ -1,8 +1,4 @@
-﻿using Microsoft.Bot.Schema;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
+﻿using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -12,16 +8,27 @@ using System.Configuration;
 
 namespace DecisionMakers
 {
+    /// <summary>
+    /// The main DecisionMaker class.
+    /// Provides communication between the bot and the json file.
+    /// </summary>
     public class DecisionMaker : IDecisionMaker
     {
 
-        public string Path { get; set; } = @"..\Bot.Core\Dialogs.json";
+        public readonly string _path = @"..\Bot.Core\Dialogs.json";
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
+        /// </summary>
         public DecisionMaker() { }
 
+        /// <summary>
+        /// Method which get all topics from json file.
+        /// </summary>
+        /// <returns> List of all topics. </returns>
         public List<string> GetStartTopics()
         {
-            var json = File.ReadAllText(Path);
+            var json = File.ReadAllText(_path);
 
             var jArray = JArray.Parse(json);
 
@@ -59,9 +66,14 @@ namespace DecisionMakers
             return null;
         }
 
+        /// <summary>
+        /// Method which get result or question according to topic.
+        /// </summary>
+        /// <param name="topic"> Topic from which the result or question will be taken. </param>
+        /// <returns> QuestionModel object of <see cref="QuestionModel"/> class. </returns>
         public QuestionModel GetQuestionOrResult(string topic)
         {
-            var json = File.ReadAllText(Path);
+            var json = File.ReadAllText(_path);
 
             var jObject = JArray.Parse(json);
 
@@ -71,7 +83,12 @@ namespace DecisionMakers
             return model;
         }
 
-
+        /// <summary>
+        /// Method that takes and store all info about topic. 
+        /// </summary>
+        /// <param name="rss"> Array of tokens in json file. </param>
+        /// <param name="topic"> Topic from which info will be taken. </param>
+        /// <returns> New instance of <see cref="QuestionModel"/> class. </returns>
         private QuestionModel GetModel(JArray rss, string topic)
         {
             var model = new QuestionModel();

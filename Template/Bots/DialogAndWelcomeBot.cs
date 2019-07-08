@@ -12,10 +12,14 @@ namespace StuddyBot.Bots
 {
     public class DialogAndWelcomeBot<T> : DialogBot<T> where T : Dialog
     {
+        // protected MyDialog _myDialog;
+        protected ThreadedLogger _Logger;
         public DialogAndWelcomeBot(ConversationState conversationState, UserState userState, T dialog, 
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger _myLogger)
-            : base(conversationState, userState, dialog, logger, questionCtor, _myLogger)
+            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger Logger)
+            : base(conversationState, userState, dialog, logger, questionCtor)
         {
+            _Logger = Logger;
+
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -25,11 +29,12 @@ namespace StuddyBot.Bots
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {                    
                     await turnContext.SendActivityAsync(MessageFactory.Text("Hello! Say something"), cancellationToken);
+                  
                 }
             }
         }
 
-
+       
 
     }
 }

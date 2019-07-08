@@ -8,6 +8,8 @@ using LoggerService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Entities;
 
 namespace StuddyBot.Controllers
 {
@@ -21,7 +23,7 @@ namespace StuddyBot.Controllers
         private readonly IBotFrameworkHttpAdapter Adapter;
         private readonly IBot Bot;
         protected ThreadedLogger _myLogger;
-
+        
         public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, ThreadedLogger _myLogger)
         {
             Adapter = adapter;
@@ -34,7 +36,6 @@ namespace StuddyBot.Controllers
         {
             // Delegate the processing of the HTTP POST to the adapter.
             // The adapter will invoke the bot.
-            //_myLogger.LogMessage(Request.HttpContext.)
             await Adapter.ProcessAsync(Request, Response, Bot);
         }
     }

@@ -3,6 +3,8 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,8 +12,9 @@ using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
+using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Services.NotificationService;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -23,105 +26,84 @@ namespace StuddyBot.Dialogs
         protected readonly IDecisionMaker DecisionMaker;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
-        protected ThreadedLogger _myLogger;
+        protected ThreadedLogger _Logger;
+        protected static DialogInfo _DialogInfo;
 
+        /// <summary>
+        /// conversations with users which subscribed to notifications
+        /// TODO: possible renaming needed
+        /// </summary>
+        private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;        
+        
 
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, 
-            ThreadedLogger _myLogger)
-            : base(nameof(MainDialog))
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
+            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo)
+            : base(nameof(MainDialog))         
         {
             Configuration = configuration;
-            this._myLogger = _myLogger;    
+            this._Logger = Logger;    
             DecisionMaker = decisionMaker;
+            _conversationReferences = conversationReferences;
+
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
             _QuestionAndAnswerModel.Answers = new List<string>();
             _DecisionModel = new DecisionModel();
+            _DialogInfo = dialogInfo;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _myLogger));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                IntroStepAsync,
-                ActStepAsync,
-                PreFinalStepAsync,
-                FinalStepAsync
+                IntroStepAsync
             }));
+
+
+            StartService();
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        
-        private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private void StartService()
         {
+            var service = new NotificationService();           
 
-
-            var topics = DecisionMaker.GetStartTopics();
-            var choices = new List<Choice>();
-            
-            foreach (var topic in topics)
+            var startServiceThread = new Thread(service.StartService)
             {
-                choices.Add(new Choice(topic));
-            }
-            var options = new PromptOptions()
-            {
-                Prompt = MessageFactory.Text("Choose needed topic, please."),
-                RetryPrompt = MessageFactory.Text("Try one more time, please."),
-                Choices = choices,
-                Style = ListStyle.HeroCard
+                IsBackground = true
             };
 
-            _myLogger.LogMessage(options.Prompt.Text);
-            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
+            startServiceThread.Start();
         }
 
-        private async Task<DialogTurnResult> ActStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _QuestionAndAnswerModel.Answers = new List<string>();
+            _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
 
-            _QuestionAndAnswerModel.QuestionModel = DecisionMaker.GetQuestionOrResult((stepContext.Result as FoundChoice).Value);
+            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
+        }        
 
-            return await stepContext.BeginDialogAsync(nameof(LoopingDialog), _QuestionAndAnswerModel, cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> PreFinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+       
+        protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (_DialogInfo.DialogId != 0) {
 
-            _QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
-
-           _DecisionModel = DecisionMaker.GetDecision(_QuestionAndAnswerModel.Answers, _QuestionAndAnswerModel.QuestionModel);
-
-
-            var response = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(response), cancellationToken);
-
-            var prompt = MessageFactory.Text("Would you like to continue?");
-
-            _myLogger.LogMessage(prompt.Text);
-
-            return await stepContext.PromptAsync(nameof(ChoicePrompt), 
-                new PromptOptions()
-                {
-                    Prompt = prompt,
-                    Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
-                },
-                cancellationToken);
-        }
-
-        private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-        {
-            var foundChoice = (stepContext.Result as FoundChoice).Value; 
-
-            if (foundChoice == "yes")
-            {
-                return await stepContext.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
+                LogMessage(innerDc.Context.Activity.Text, innerDc.Context.Activity.Timestamp.Value);
             }
-
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Thank you!"), cancellationToken);
-           
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            return base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
+
+        private void LogMessage(string message, DateTimeOffset time)
+        {
+            _Logger.LogMessage(message, "user", time, _DialogInfo.DialogId);
+        }
+
+
+
+       
+
     }
+
 }

@@ -1,30 +1,33 @@
-﻿using Microsoft.AspNetCore.Diagnostics.Elm;
-using NuGet.Common;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Entities;
 
 namespace LoggerService
 {
-    #region V - 1
-    public class ThreadedLogger : IDisposable
+    public class ThreadedLogger
     {
+        IUnitOfWork _unitOfWork;
+        private MyDialog _MyDialog { get; set; }
+
         Queue<Action> queue = new Queue<Action>();
        
-        public ThreadedLogger()
+        public ThreadedLogger(IUnitOfWork unitOfWork)
         {
+            _unitOfWork = unitOfWork;
             ProcessQueue();            
         }
 
-
+       
         async Task ProcessQueue()
         {
             while (true)
             {
-                await Task.Delay(10_000);
+                
+                await Task.Delay(15_000);
 
                 Queue<Action> queueCopy;
 
@@ -41,108 +44,51 @@ namespace LoggerService
             }
         }
 
-        public async Task LogMessage(string row)
+        public async Task LogMessage(string message, string sender, DateTimeOffset time, int dialogId)
         {
             lock (queue)
             {
-                queue.Enqueue(() =>  LogMessageAsync(row));
+                queue.Enqueue(() =>  LogMessageAsync(message, sender, time, dialogId));
             }
-            
-        }
 
-        protected async Task LogMessageAsync(string row)
-        {
-            // TODO: write async to db
-            // db -> DI
            
-            Console.WriteLine(row);
-            
-            
         }
 
-        public void Dispose()
+        protected async Task LogMessageAsync(string message, string sender, DateTimeOffset time, int dialogId)
         {
-            throw new NotImplementedException();
+             Console.WriteLine(message + "      THREAD: {0}", Thread.CurrentThread.ManagedThreadId);
+            _MyDialog = new MyDialog();
+            _MyDialog.Message = message;
+            _MyDialog.Sender = sender;
+            _MyDialog.Time = time;
+
+            _MyDialog.DialogsId = dialogId;
+           
+            _unitOfWork.MyDialogs.Create(_MyDialog);
+
+            _unitOfWork.Save();
+        }
+
+        public async Task<string> LogUser(string user_id)
+        {
+            var user = _unitOfWork.Users.Get(user_id);
+            if (user == null)
+            { 
+                _unitOfWork.Users.Create(new User { Id = user_id});
+                _unitOfWork.Save();
+            }
+
+            return user_id;
+        }
+
+        public async Task<int> LogDialog(string userId)
+        {
+            _unitOfWork.Dialogs.Create(new Dialogs { UserId = userId });
+            _unitOfWork.Save();
+
+            return _unitOfWork.Dialogs.GetAll().Max(d => d.Id);
+
         }
 
     }
-
-    #endregion
-
-    #region V - 2
-    //public class ThreadedLogger : LoggerBase
-    //{
-
-    //    Queue<Action> queue = new Queue<Action>();
-    //    AutoResetEvent hasNewItems = new AutoResetEvent(false);
-    //    volatile bool waiting = false;
-
-    //    public ThreadedLogger() : base()
-    //    {
-    //        Thread loggingThread = new Thread(new ThreadStart(ProcessQueue));
-    //        loggingThread.IsBackground = true;
-    //        loggingThread.Start();
-    //    }
-
-
-    //    void ProcessQueue()
-    //    {
-    //        while (true)
-    //        {
-    //            waiting = true;
-    //            hasNewItems.WaitOne(10_000, true);
-    //            waiting = false;
-
-    //            Queue<Action> queueCopy;
-    //            lock (queue)
-    //            {
-    //                queueCopy = new Queue<Action>(queue);
-    //                queue.Clear();
-    //            }
-
-    //            foreach (var log in queueCopy)
-    //            {
-    //                log();
-    //            }
-    //        }
-    //    }
-
-    //    public void LogMessage(string row)
-    //    {
-    //        lock (queue)
-    //        {
-    //            queue.Enqueue(() => AsyncLogMessage(row));
-    //        }
-    //        hasNewItems.Set();
-    //    }
-
-    //    protected void AsyncLogMessage(string row)
-    //    { }
-
-
-    //    public void Flush()
-    //    {
-    //        while (!waiting)
-    //        {
-    //            Thread.Sleep(1);
-    //        }
-
-    //        foreach (var item in queue)
-    //        {
-    //            Console.WriteLine(queue.Dequeue());
-    //        }
-    //    }
-
-    //    public override void Log(ILogMessage message)
-    //    {
-
-    //    }
-
-    //    public override Task LogAsync(ILogMessage message)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
-
-    #endregion
 }

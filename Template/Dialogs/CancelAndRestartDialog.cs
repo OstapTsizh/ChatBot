@@ -43,7 +43,7 @@ namespace StuddyBot.Dialogs
         {
             if (innerDc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var text = innerDc.Context.Activity.Text.ToLowerInvariant();
+                var text = innerDc.Context.Activity.Text.ToLower();
 
                 switch (text)
                 {
@@ -51,7 +51,9 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
+                        innerDc.Context.Activity.Text = "begin";
+                        await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
+                        await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":
@@ -65,5 +67,6 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
+        
     }
 }
