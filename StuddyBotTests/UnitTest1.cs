@@ -1,10 +1,17 @@
 using System;
+using System.Collections.Concurrent;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Coderful.EntityFramework.Testing.Mock;
 using DecisionMakers;
 using LoggerService;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Adapters;
 using StuddyBot.Core.Models;
@@ -13,12 +20,17 @@ using Moq;
 using Microsoft.Extensions.DependencyInjection;
 using StuddyBot.Bots;
 using Microsoft.Bot.Builder.Dialogs;
-using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
+using Microsoft.Bot.Schema;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using StuddyBot.Dialogs;
+using StuddyBot.Controllers;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Entities;
+using StuddyBot.Core.BLL.Repositories;
+using StuddyBot.Core.DAL.Data;
 
 namespace StuddyBot.Tests
 {
@@ -33,7 +45,7 @@ namespace StuddyBot.Tests
         {
             _decisionMaker = new DecisionMaker
             {
-                Path = "../../../Dialogs.json"
+                _path = "../../../Dialogs.json"
             };
             qaModel = new QuestionAndAnswerModel()
             {
@@ -214,7 +226,6 @@ namespace StuddyBot.Tests
         public void Should_RegistersDependenciesCorrectly_When_ConfigureServices()
         {
             //  Arrange
-
             Mock<IConfigurationSection> configurationSectionStub = new Mock<IConfigurationSection>();
             configurationSectionStub.Setup(x => x["DefaultConnection"]).Returns("TestConnectionString");
             Mock<IConfiguration> configurationStub = new Mock<IConfiguration>();
@@ -224,15 +235,12 @@ namespace StuddyBot.Tests
             var target = new Startup();
 
             //  Act
-
             target.ConfigureServices(services);
             services.AddTransient<TestController>();
+            var serviceProvider = services.BuildServiceProvider();
+            var controller = serviceProvider.GetService<TestController>();
 
             //  Assert
-
-            var serviceProvider = services.BuildServiceProvider();
-
-            var controller = serviceProvider.GetService<TestController>();
             Assert.IsNotNull(controller);
         }
     }
@@ -428,7 +436,7 @@ namespace StuddyBot.Tests
             {
                 CallBase = true,
             };
-                
+
             userStateMock = new Mock<UserState>(memoryStorage)
             {
                 CallBase = true,
@@ -445,7 +453,7 @@ namespace StuddyBot.Tests
 
             decisionMakerMock = new Mock<DecisionMaker>();
 
-           threadedLoggerMock = new Mock<ThreadedLogger>();
+            threadedLoggerMock = new Mock<ThreadedLogger>(null);
         }
 
         [Test]
@@ -463,8 +471,8 @@ namespace StuddyBot.Tests
         public async Task Should_SaveTurnState_When_SaveChangesAsync()
         {
             //Assert
-           var welcomeBot = new DialogAndWelcomeBot<Dialog>(conversationStateMock.Object, userStateMock.Object,
-               dialogMock.Object, loggerMock.Object, decisionMakerMock.Object, threadedLoggerMock.Object);
+            var welcomeBot = new DialogAndWelcomeBot<Dialog>(conversationStateMock.Object, userStateMock.Object,
+                dialogMock.Object, loggerMock.Object, decisionMakerMock.Object, threadedLoggerMock.Object);
 
             //Act
             var adapter = new TestAdapter();
@@ -478,34 +486,183 @@ namespace StuddyBot.Tests
             userStateMock.Verify(x => x.SaveChangesAsync(It.IsAny<TurnContext>(), It.IsAny<bool>(),
                 It.IsAny<CancellationToken>()), Times.Once);
         }
+    }
+
+    [TestFixture]
+    public class ThreadedLoggerTest
+    {
+        private Mock<IUnitOfWork> unitOfWork;
+
+        [SetUp]
+        public void SetUp()
+        {
+            unitOfWork = new Mock<IUnitOfWork>();
+
+            unitOfWork
+                .Setup(x => x.Users.Get(It.IsAny<object>()))
+                .Returns(new User());
+            unitOfWork
+                .Setup(x => x.Dialogs.Get(It.IsAny<object>()));
+
+        }
 
         [Test]
-        public async Task Test()
+        public void Should_CreateLogger_When_Construct()
         {
-            //Assert
-            var welcomeBot = new DialogAndWelcomeBot<Dialog>(conversationStateMock.Object, userStateMock.Object,
-                dialogMock.Object, loggerMock.Object, decisionMakerMock.Object, threadedLoggerMock.Object);
+            //Arrange
+            var logger = new ThreadedLogger(unitOfWork.Object);
 
-            var logger = new Mock<ILogger<DialogAndWelcomeBot<Dialog>>>();
-            logger.Setup(x =>
-                x.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<object>(), null,
-                    It.IsAny<Func<object, Exception, string>>()));
+            //Assert
+            Assert.IsNotNull(logger);
+        }
+
+        [Test]
+        public async Task Should_LogUser_When_CallLogUser()
+        {
+            //Arrange
+            var logger = new ThreadedLogger(unitOfWork.Object);
 
             //Act
-            var adapter = new TestAdapter();
-            var testFlow = new TestFlow(adapter, welcomeBot);
-
-            await testFlow.Send("message").StartTestAsync();
+            await logger.LogUser("2");
 
             //Assert
-           /* logger.Verify(
-                x => x.Log(
-                    LogLevel.Information,
-                    It.IsAny<EventId>(),
-                    It.Is<object>(o => o.ToString() == ""),
-                    null,
-                    It.IsAny<Func<object, Exception, string>>()),
-                Times.Once);*/
+            unitOfWork.Verify(u => u.Users.Get("2"), Times.Once);
+        }
+
+        [Test]
+        public async Task test()
+        {
+            //Arrange
+            var logger = new ThreadedLogger(unitOfWork.Object);
+
+            unitOfWork.Object.Users.Get("2");
+            //Act
+            await logger.LogMessage("msg", "user1", new DateTime(23, 3, 2), 1);
+
+        }
+    }
+
+    [TestFixture]
+    public class StuddyContext
+    {
+        private Mock<StuddyBotContext> contextMock;
+        private List<User> userList;
+        private List<Core.DAL.Entities.Dialogs> dialogsList;
+
+        [SetUp]
+        public void SetUp()
+        {
+            userList = new List<User>()
+            {
+                new User() {Id = "1"},
+                new User() {Id = "2"}
+            };
+
+            dialogsList = new List<Core.DAL.Entities.Dialogs>()
+            {
+                new Core.DAL.Entities.Dialogs() {Id = 1}
+            };
+
+            contextMock = new Mock<StuddyBotContext>();
+
+            var usersMock = MockDbSet(userList);
+            var dialogsMock = MockDbSet(dialogsList);
+
+            contextMock
+                .Setup(x => x.Set<User>())
+                .Returns(() => usersMock);
+            
+            /*contextMock
+                .Setup(x => x.Set<Core.DAL.Entities.Dialogs>())
+                .Returns(() => dialogsMock);*/
+            
+
+        }
+
+        private static DbSet<T> MockDbSet<T>(IEnumerable<T> list) where T : class, new()
+        {
+            IQueryable<T> queryableList = list.AsQueryable();
+            Mock<DbSet<T>> dbSetMock = new Mock<DbSet<T>>();
+            dbSetMock.As<IQueryable<T>>().Setup(x => x.Provider).Returns(queryableList.Provider);
+            dbSetMock.As<IQueryable<T>>().Setup(x => x.Expression).Returns(queryableList.Expression);
+            dbSetMock.As<IQueryable<T>>().Setup(x => x.ElementType).Returns(queryableList.ElementType);
+            dbSetMock.As<IQueryable<T>>().Setup(x => x.GetEnumerator()).Returns(queryableList.GetEnumerator());
+            return dbSetMock.Object;
+        }
+
+        [Test]
+        public void Test()
+        {
+            var uow = new UnitOfWork(contextMock.Object);
+
+            var result = uow.Users.Get("1");
+        }
+    }
+
+    [TestFixture]
+    public class BotControllersTests
+    {
+        private Mock<HttpRequest> request;
+        private Mock<HttpResponse> response;
+        private Mock<HttpContext> mockHttpContext;
+        private Mock<IBotFrameworkHttpAdapter> mockAdapter;
+
+        [SetUp]
+        public void SetUp()
+        {
+            request = new Mock<HttpRequest>();
+            response = new Mock<HttpResponse>();
+            mockHttpContext = new Mock<HttpContext>();
+            mockHttpContext.Setup(c => c.Request).Returns(request.Object);
+            mockHttpContext.Setup(c => c.Response).Returns(response.Object);
+
+            mockAdapter = new Mock<IBotFrameworkHttpAdapter>();
+            mockAdapter.Setup(x => x.ProcessAsync(It.IsAny<HttpRequest>(), It.IsAny<HttpResponse>(), It.IsAny<IBot>(), It.IsAny<CancellationToken>()))
+                .Returns(Task.CompletedTask);
+        }
+
+        [Test]
+        public async Task BotControllerTest()
+        {
+            //Arrange
+            var actionContext = new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor());
+            var logger = new ThreadedLogger(new UnitOfWork(new StuddyBotContext()));
+            
+            var mockBot = new Mock<IBot>();
+            
+            var sut = new BotController(mockAdapter.Object, mockBot.Object, logger)
+            {
+                ControllerContext = new ControllerContext(actionContext),
+            };
+            
+            //Act
+            await sut.PostAsync();
+
+            // Assert
+            mockAdapter.Verify(
+                x => x.ProcessAsync(
+                    It.Is<HttpRequest>(o => o == request.Object),
+                    It.Is<HttpResponse>(o => o == response.Object),
+                    It.Is<IBot>(o => o == mockBot.Object),
+                    It.IsAny<CancellationToken>()),
+                Times.Once);
+        }
+
+        [Test]
+        public async Task NotificationControllerTest()
+        {
+            //Arrange
+            var actionContext = new ActionContext(mockHttpContext.Object, new RouteData(), new ControllerActionDescriptor());
+
+            var cred = new SimpleCredentialProvider();
+
+            var sut = new NotificationController(mockAdapter.Object, cred, new ConcurrentDictionary<string, ConversationReference>())
+            {
+                ControllerContext = new ControllerContext(actionContext),
+            };
+
+            //Act
+            await sut.Get();
         }
     }
 }

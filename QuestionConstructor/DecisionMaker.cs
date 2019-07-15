@@ -15,7 +15,7 @@ namespace DecisionMakers
     public class DecisionMaker : IDecisionMaker
     {
 
-        public readonly string _path = @"..\Bot.Core\Dialogs.json";
+        public string _path = @"..\Bot.Core\Dialogs.json";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
