@@ -26,7 +26,10 @@ namespace StuddyBot.Core.Interfaces
         /// <returns>DecisionModel object of <see cref="DecisionModel"/> class</returns>
         DecisionModel GetDecision(List<string> answers, QuestionModel questionModel);
 
-
+        /// <summary>
+        /// Gets the first (starting) topics from the dbContext.
+        /// </summary>
+        /// <returns></returns>
         List<string> GetStartTopics();
     }
 

@@ -50,6 +50,7 @@ namespace StuddyBot
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
 
+            // Create the model with information about a Dialog.
             services.AddTransient((s) => new DialogInfo());
 
             // Create the Conversation state. (Used by the Dialog system itself.)
@@ -61,12 +62,15 @@ namespace StuddyBot
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();
 
+            // Create the database context as StuddyBotContext.
             services.AddTransient((s) => new StuddyBotContext(
                 new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(
                     @"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;").Options));
 
-              services.AddTransient<IUnitOfWork, UnitOfWork>();
+            // Create a pattern Unit Of Work for accessing Database.
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
 
+            // Create a dictionary with Conversation References to make possible user notification for courses.
             services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
 
             //services.AddSingleton<NotificationService>();

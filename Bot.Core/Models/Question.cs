@@ -12,7 +12,7 @@ namespace StuddyBot.Core.Models
         public string Text { get; set; }
 
         /// <summary>
-        /// indicates if user answered the question.
+        /// Indicates if user answered the question.
         /// </summary>
         public string IsAnswered { get; set; }
 
