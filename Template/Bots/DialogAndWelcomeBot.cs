@@ -14,6 +14,7 @@ namespace StuddyBot.Bots
     {
         // protected MyDialog _myDialog;
         protected ThreadedLogger _Logger;
+
         public DialogAndWelcomeBot(ConversationState conversationState, UserState userState, T dialog, 
             ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger Logger)
             : base(conversationState, userState, dialog, logger, questionCtor)
@@ -28,7 +29,7 @@ namespace StuddyBot.Bots
             {                
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {                    
-                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello! Say something"), cancellationToken);
+                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello! Say something to start dialog"), cancellationToken);
                   
                 }
             }
