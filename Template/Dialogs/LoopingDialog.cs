@@ -224,6 +224,7 @@ namespace StuddyBot.Dialogs
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
+
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions()
                {
@@ -333,6 +334,5 @@ namespace StuddyBot.Dialogs
             var conversationReference = activity.GetConversationReference();
             _conversationReferences.TryRemove(conversationReference.User.Id, out _);
         }
-
     }
 }

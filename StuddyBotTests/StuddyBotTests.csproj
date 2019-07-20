@@ -8,17 +8,17 @@
 
   <ItemGroup>
     <PackageReference Include="Coderful.EntityFramework.Testing" Version="1.5.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.4.5" />
-    <PackageReference Include="Microsoft.Bot.Schema" Version="4.4.5" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Bot.Schema" Version="4.5.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="2.2.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
     <PackageReference Include="Moq" Version="4.12.0" />
     <PackageReference Include="nunit" Version="3.12.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
   </ItemGroup>
 
   <ItemGroup>

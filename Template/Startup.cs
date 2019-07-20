@@ -22,15 +22,24 @@ using StuddyBot.Core.Interfaces;
 using StuddyBot.Dialogs;
 using System.Linq;
 using System.Collections.Concurrent;
+using System.Configuration;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
+using StuddyBot.Core.BLL.Helpers;
 using StuddyBot.Core.Models;
 
 namespace StuddyBot
 {
     public class Startup
     {
+        public IConfiguration Configuration;
+
         public Startup()
         {
+            var builder = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", false, true)
+                .AddEnvironmentVariables();
+            Configuration = builder.Build();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -62,10 +71,13 @@ namespace StuddyBot
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();
 
-            // Create the database context as StuddyBotContext.
-            services.AddTransient((s) => new StuddyBotContext(
-                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(
-                    @"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;").Options));
+            //Create the Subscription Manager for user subscriptions.
+            services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
+
+           // Create the database context as StuddyBotContext.
+           services.AddTransient((s) => new StuddyBotContext(
+               new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(Configuration
+                   .GetConnectionString("DefaultConnection")).Options));
 
             // Create a pattern Unit Of Work for accessing Database.
             services.AddTransient<IUnitOfWork, UnitOfWork>();

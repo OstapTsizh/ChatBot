@@ -28,6 +28,7 @@ namespace StuddyBot.Dialogs
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _Logger;
         protected static DialogInfo _DialogInfo;
+        protected readonly ISubscriptionManager SubscriptionManager;
 
         /// <summary>
         /// conversations with users which subscribed to notifications
@@ -37,13 +38,14 @@ namespace StuddyBot.Dialogs
         
 
         public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
-            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo)
+            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, ISubscriptionManager subscriptionManager)
             : base(nameof(MainDialog))         
         {
             Configuration = configuration;
             this._Logger = Logger;    
             DecisionMaker = decisionMaker;
             _conversationReferences = conversationReferences;
+            SubscriptionManager = subscriptionManager;
 
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
@@ -54,6 +56,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 StartLoopingDialogAsync
@@ -101,9 +104,8 @@ namespace StuddyBot.Dialogs
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
 
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
-        }        
+        }
 
-        
         protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_DialogInfo.DialogId != 0) {
