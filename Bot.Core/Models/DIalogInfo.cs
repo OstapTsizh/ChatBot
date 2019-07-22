@@ -8,5 +8,15 @@
         public string UserId { get; set; }
 
         public int DialogId { get; set; }
+
+        /// <summary>
+        /// Specified country name.
+        /// </summary>
+        public string Country { get; set; }
+
+        /// <summary>
+        /// Specified city in country.
+        /// </summary>
+        public string City { get; set; }
     }
 }
