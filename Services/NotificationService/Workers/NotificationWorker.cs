@@ -1,5 +1,9 @@
-﻿using Services.Helpers;
+﻿using Microsoft.AspNetCore.Mvc;
+using Services.Helpers;
+using Services.Helpers.Interfaces;
 using Services.NotificationService.Interfaces;
+using StuddyBot.Core.BLL.Helpers;
+using StuddyBot.Core.DAL.Data;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -15,15 +19,14 @@ namespace Services.NotificationService.Workers
         private DateTime _lastExecuting;
 
         private static HttpClient _httpClient;
-
-        //private StuddyBotContext _db; 
-
+        
+        private IGetCoursesHelper _coursesHelper;
 
         public void Initialize()
         {
             _checkPeriod = ApplicationConfiguration.AlphaWorkerPeriod;
 
-            _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:3978") };
+            _httpClient = new HttpClient { BaseAddress = new Uri("http://localhost:3978") };                        
         }
 
         public string WorkerName
@@ -58,16 +61,13 @@ namespace Services.NotificationService.Workers
             //Do what you want to do here
             Console.WriteLine("Notificating users...", WorkerName);
 
-            // TODO: collection of courses
-            // foreach course in courses where startDate <= 7days
-            //       course.NotificateUsers
-
             var _uri = new UriBuilder(_httpClient.BaseAddress);
 
             _uri.Path += "api/Notify";
 
             await _httpClient.GetAsync(_uri.ToString());
         }
+
 
         private bool HasOccurrence()
         {

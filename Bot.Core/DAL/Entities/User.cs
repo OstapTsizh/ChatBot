@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Bot.Schema;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -12,5 +13,6 @@ namespace StuddyBot.Core.DAL.Entities
 
         public ICollection<UserCourse> UserCourses { get; set; }
 
+        public string ConversationReference { get; set; }
     }
 }
