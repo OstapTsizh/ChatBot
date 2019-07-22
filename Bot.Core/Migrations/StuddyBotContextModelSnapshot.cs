@@ -19,6 +19,23 @@ namespace StuddyBot.Core.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("StuddyBot.Core.DAL.Entities.Course", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("RegistrationStartDate");
+
+                    b.Property<DateTime>("StartDate");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Courses");
+                });
+
             modelBuilder.Entity("StuddyBot.Core.DAL.Entities.Dialogs", b =>
                 {
                     b.Property<int>("Id")
@@ -60,9 +77,24 @@ namespace StuddyBot.Core.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ConversationReference");
+
                     b.HasKey("Id");
 
                     b.ToTable("User");
+                });
+
+            modelBuilder.Entity("StuddyBot.Core.DAL.Entities.UserCourse", b =>
+                {
+                    b.Property<string>("UserId");
+
+                    b.Property<int>("CourseId");
+
+                    b.HasKey("UserId", "CourseId");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("UserCourses");
                 });
 
             modelBuilder.Entity("StuddyBot.Core.DAL.Entities.Dialogs", b =>
@@ -77,6 +109,19 @@ namespace StuddyBot.Core.Migrations
                     b.HasOne("StuddyBot.Core.DAL.Entities.Dialogs", "Dialogs")
                         .WithMany("MyDialogs")
                         .HasForeignKey("DialogsId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("StuddyBot.Core.DAL.Entities.UserCourse", b =>
+                {
+                    b.HasOne("StuddyBot.Core.DAL.Entities.Course", "Course")
+                        .WithMany("UserCourses")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("StuddyBot.Core.DAL.Entities.User", "User")
+                        .WithMany("UserCourses")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

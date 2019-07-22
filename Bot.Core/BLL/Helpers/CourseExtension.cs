@@ -11,13 +11,13 @@ namespace StuddyBot.Core.BLL.Helpers
 {
     public static class CourseExtension
     {
-        
-        public static async Task NotificateUsers(this Course course, StuddyBotContext db)
+        private static StuddyBotContext db;
+
+        public static async Task<IQueryable<User>> NotificateUsers(this Course course, UriBuilder uri)
         {
-            var query = db.User
+            return db.User
                 .Where(s => s.UserCourses
                                 .Any(e => e.Course.Id == course.Id));
-
 
 
         }
