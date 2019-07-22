@@ -56,18 +56,16 @@ namespace StuddyBot.Dialogs
                     case "reload":
                         innerDc.Context.Activity.Text = "begin";
                         await innerDc.ReplaceDialogAsync(nameof(LocationDialog), "begin", cancellationToken);
+                        //await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
+                        //await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
+
                     case "cancel":
                     case "quit":
                     case "q":
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
-                    case "sub":
-                    case "subscription":
-                        await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
-                            cancellationToken: cancellationToken);
-                        return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
 
