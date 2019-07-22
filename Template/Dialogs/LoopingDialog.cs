@@ -18,13 +18,13 @@ namespace StuddyBot.Dialogs
 {
     public class LoopingDialog : CancelAndRestartDialog
     {
-        protected QuestionAndAnswerModel QuestionAndAnswerModel;
-        protected DecisionModel _DecisionModel;
-        protected readonly IDecisionMaker DecisionMaker;
-        protected int numberOfQuestion;
-        protected List<string> UserAnswers;
-        protected ThreadedLogger _myLogger;
-        protected DialogInfo _DialogInfo;
+        private QuestionAndAnswerModel QuestionAndAnswerModel;
+        private DecisionModel _DecisionModel;
+        private readonly IDecisionMaker DecisionMaker;
+        private int numberOfQuestion;
+        private List<string> UserAnswers;
+        private readonly ThreadedLogger _myLogger;
+        private DialogInfo _DialogInfo;
         private bool isNeededToGetQuestions = false;
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
@@ -67,6 +67,13 @@ namespace StuddyBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
+        /// <summary>
+        /// Generates new QuestionAndAnswerModel and returns ChoicePrompt
+        /// or passes on not modified QuestionAndAnswerModel to the next step.
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (stepContext.Options.ToString() == "begin")
@@ -108,6 +115,13 @@ namespace StuddyBot.Dialogs
 
         }
 
+        /// <summary>
+        /// Passes on not modified QuestionAndAnswerModel to the next step
+        /// or updates its QuestionModel.
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> FillQuestionModel(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             if (isNeededToGetQuestions == true)
@@ -121,6 +135,15 @@ namespace StuddyBot.Dialogs
 
         }
 
+
+        /// <summary>
+        /// Ends current dialog if there is not any question in
+        /// the QuestionModel or returns a ChoicePrompt to answer one
+        /// of possible questions from the QuestionModel
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> ActDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
@@ -161,6 +184,14 @@ namespace StuddyBot.Dialogs
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
         }
 
+        /// <summary>
+        /// Updates the Answers model and replaces current dialog
+        /// to get next answer if not all questions were answered.
+        /// Else passes on updated QuestionAndAnswerModel to the next step.
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> FillAnswerStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var answer = (string) (stepContext.Result as FoundChoice).Value;
@@ -177,25 +208,30 @@ namespace StuddyBot.Dialogs
             return await stepContext.NextAsync(QuestionAndAnswerModel, cancellationToken);
         }
 
+        /// <summary>
+        /// Asks a user if he/she want to be notified when
+        /// a registration for the current course will start.
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> AskNotifyStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             QuestionAndAnswerModel = (QuestionAndAnswerModel)stepContext.Result;
-
             _DecisionModel = DecisionMaker.GetDecision(QuestionAndAnswerModel.Answers, QuestionAndAnswerModel.QuestionModel);
 
             var message = "";
             if (_DecisionModel == null)
-            {
-                message = "Sorry, there is no such course yet!";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
-            }
-            else
-            {
-                message = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;                
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
-            }
 
-            message += "\nWould you like me to notify You when registration starts?";
+            {message = "Sorry, there is no such course yet!";}
+            else
+            {message = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;}
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
+
+
+            var notifyQuestion = "Would you like to be notified when registration starts?";
+            message += "\n" + notifyQuestion;
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
@@ -206,15 +242,22 @@ namespace StuddyBot.Dialogs
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions()
                {
-                   Prompt = MessageFactory.Text("Would you like me to notify You when registration starts?"),
+                   Prompt = MessageFactory.Text(notifyQuestion),
                    Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
                },
                cancellationToken);
         }
 
+        /// <summary>
+        /// Checks if a user want to be subscribed for notification
+        /// when a course registration starts and subscribes him.
+        /// Asks a user if he/she want to continue dialog(conversation).
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns>ChoicePrompt</returns>
         private async Task<DialogTurnResult> PreFinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-
             var foundChoice = (stepContext.Result as FoundChoice).Value;
             var activity = stepContext.Context.Activity as Activity;
             if (foundChoice == "yes")
@@ -250,6 +293,13 @@ namespace StuddyBot.Dialogs
 
         }
 
+        /// <summary>
+        /// Ends the current dialog or replaces it
+        /// if a user want to continue.
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;            
@@ -266,12 +316,22 @@ namespace StuddyBot.Dialogs
 
 
 
-
+        /// <summary>
+        /// Checks if current ConversationReference is in
+        /// the collection of ConversationReferences.
+        /// </summary>
+        /// <param name="activity"></param>
+        /// <returns></returns>
         private bool CheckConversationReference(Activity activity)
         {
             return _conversationReferences.ContainsKey(activity.GetConversationReference().User.Id);
         }
 
+        /// <summary>
+        /// Adds the current ConversationReference into
+        /// the collection of ConversationReferences.
+        /// </summary>
+        /// <param name="activity"></param>
         private void AddConversationReference(Activity activity)
         {
             // BD
@@ -297,6 +357,11 @@ namespace StuddyBot.Dialogs
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
         }
 
+        /// <summary>
+        /// Deletes the current ConversationReference from
+        /// the collection of ConversationReferences.
+        /// </summary>
+        /// <param name="activity"></param>
         private void DeleteConversationReference(Activity activity)
         {
             var conversationReference = activity.GetConversationReference();

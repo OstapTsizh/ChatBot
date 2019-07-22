@@ -62,17 +62,29 @@ namespace StuddyBot.Dialogs
             AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                IntroStepAsync
+                StartLoopingDialogAsync
             }));
 
 
-            StartService();
+            StartServices();
 
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private void StartService()
+        /// <summary>
+        /// Starts all services
+        /// </summary>
+        private void StartServices()
+        {
+            StartNotificationService();
+        }
+
+        /// <summary>
+        /// Starts the service responsible for users notification
+        /// who is subscribed for some course.
+        /// </summary>
+        private void StartNotificationService()
         {
             var service = new NotificationService();           
 
@@ -84,7 +96,13 @@ namespace StuddyBot.Dialogs
             startServiceThread.Start();
         }
 
-        private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        /// <summary>
+        /// Starts child (Looping) dialog after retrieving UserId
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<DialogTurnResult> StartLoopingDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
 
@@ -96,7 +114,7 @@ namespace StuddyBot.Dialogs
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
         }        
 
-       
+        
         protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_DialogInfo.DialogId != 0) {
@@ -106,6 +124,11 @@ namespace StuddyBot.Dialogs
             return base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
 
+        /// <summary>
+        /// Logs message from a user.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="time"></param>
         private void LogMessage(string message, DateTimeOffset time)
         {
             _Logger.LogMessage(message, "user", time, _DialogInfo.DialogId);

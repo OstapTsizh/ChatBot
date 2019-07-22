@@ -10,6 +10,9 @@ using Microsoft.Bot.Schema;
 
 namespace StuddyBot.Dialogs
 {
+    /// <summary>
+    /// A dialog to catch specified keywords on each user's activity.
+    /// </summary>
     public class CancelAndRestartDialog : ComponentDialog
     {
         public CancelAndRestartDialog(string id)
@@ -22,7 +25,7 @@ namespace StuddyBot.Dialogs
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
-                return result;
+                return result;  
             }
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
@@ -67,6 +70,5 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
-        
     }
 }
