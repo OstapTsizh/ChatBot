@@ -31,7 +31,55 @@ namespace StuddyBot.Core.Interfaces
         /// </summary>
         /// <returns></returns>
         List<string> GetStartTopics();
-    }
 
-    
+        /// <summary>
+        /// Gets all available countries from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        List<string> GetCountries();
+
+        /// <summary>
+        /// Gets all available cities in country from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        List<string> GetCities(string country);
+
+        /// <summary>
+        /// Gets all localized main menu items (e.g. navigation bar)
+        /// from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        List<MainMenuItem> GetMainMenuItems();
+
+        /// <summary>
+        /// Gets all main menu items (e.g. navigation bar) from the dbContext
+        /// in neutral language.
+        /// </summary>
+        /// <returns></returns>
+        List<string> GetMainMenuItemsNeutral();
+
+        /// <summary>
+        /// Gets all courses in selected city from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        List<Course> GetCourses();
+
+        ///// <summary>
+        ///// Gets about info from the dbContext.
+        ///// </summary>
+        ///// <returns></returns>
+        //List<string> GetAbout();
+
+        /// <summary>
+        /// Gets questions/answers from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetQAs();
+
+        /// <summary>
+        /// Gets planned events from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetPlannedEvents();
+    }
 }

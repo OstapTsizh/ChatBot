@@ -51,6 +51,8 @@ namespace StuddyBot.Dialogs
 
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
+            _QuestionAndAnswerModel.QuestionModel.Questions=new List<Question>();
+            _QuestionAndAnswerModel.QuestionModel.Decisions=new List<DecisionModel>();
             _QuestionAndAnswerModel.Answers = new List<string>();
             _DecisionModel = new DecisionModel();
             _DialogInfo = dialogInfo;
@@ -59,9 +61,14 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
+
+            //AddDialog(new LocationDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+            //AddDialog(new MainMenuDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
+                //StartLocationDialogAsync,
                 StartLoopingDialogAsync
             }));
 
@@ -94,6 +101,19 @@ namespace StuddyBot.Dialogs
             };
 
             startServiceThread.Start();
+        }
+
+        /// <summary>
+        /// Starts child (Location) dialog after retrieving UserId
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<DialogTurnResult> StartLocationDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
+
+            return await stepContext.BeginDialogAsync(nameof(LocationDialog), cancellationToken:cancellationToken);
         }
 
         /// <summary>

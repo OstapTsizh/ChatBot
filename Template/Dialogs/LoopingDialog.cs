@@ -80,6 +80,7 @@ namespace StuddyBot.Dialogs
             {
                 QuestionAndAnswerModel = new QuestionAndAnswerModel();
                 QuestionAndAnswerModel.Answers = new List<string>();
+                QuestionAndAnswerModel.QuestionModel = new QuestionModel();
                 _DecisionModel = new DecisionModel();
 
                 _DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;

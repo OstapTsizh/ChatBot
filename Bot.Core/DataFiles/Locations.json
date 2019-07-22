@@ -1,0 +1,20 @@
+[
+  {
+    "lang": [ "uk-ua" ],
+    "model": {
+      "country": "”крањна",
+      "cities": [ " ињв", "Ћьв≥в", "¬≥нниц€", "ƒн≥про", "’арк≥в" ]
+    }
+  },
+
+  {
+    "lang": [ "en-us", "en-gb" ],
+    "model": {
+      "country": "Ukraine",
+      "cities": [ "Kyiv", "Lviv", "Vinnytsia", "Dnipro", "Kharkiv" ]
+    }
+  }
+]
+
+
+

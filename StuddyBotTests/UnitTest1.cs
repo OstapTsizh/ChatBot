@@ -33,7 +33,7 @@ namespace StuddyBot.Tests
         {
             _decisionMaker = new DecisionMaker
             {
-                Path = "../../../Dialogs.json"
+                //Path = "../../../Dialogs.json"
             };
             qaModel = new QuestionAndAnswerModel()
             {
