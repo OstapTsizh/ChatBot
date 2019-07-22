@@ -67,8 +67,6 @@ namespace StuddyBot.Dialogs
                     case "subscription":
                         await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
                             cancellationToken: cancellationToken);
-                        //innerDc.Context.Activity.Text = "begin";
-                        //await innerDc.ReplaceDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }

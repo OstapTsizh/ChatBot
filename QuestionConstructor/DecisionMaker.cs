@@ -15,7 +15,11 @@ namespace DecisionMakers
     public class DecisionMaker : IDecisionMaker
     {
 
-        public string _path = @"..\Bot.Core\Dialogs.json";
+        public readonly string _path = @"..\Bot.Core\Dialogs.json";
+        public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
+        public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
+        public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
+        public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
@@ -142,5 +146,90 @@ namespace DecisionMakers
         }
 
 
+        // ToDo return correct data from jsons
+
+        /// <summary>
+        /// Gets all available countries from json file.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetCountries()
+        {
+            List<string> countries=new List<string>();
+
+            return countries;
+        }
+
+        /// <summary>
+        /// Gets all available cities in country from the json file.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetCities(string country)
+        {
+            var cities = new List<string>();
+
+            return cities;
+        }
+        
+        /// <summary>
+        /// Gets all localized main menu items (e.g. navigation bar)
+        /// from the json file.
+        /// </summary>
+        /// <returns></returns>
+        public List<MainMenuItem> GetMainMenuItems()
+        {
+            var mainMenuItems = new List<MainMenuItem>();
+
+            return mainMenuItems;
+        }
+
+        /// <summary>
+        /// Gets all main menu items (e.g. navigation bar) from the json
+        /// file in the neutral language.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetMainMenuItemsNeutral()
+        {
+            var mainMenuItems = new List<string>();
+
+            return mainMenuItems;
+        }
+
+        /// <summary>
+        /// Gets courses in selected city from the json file.
+        /// </summary>
+        /// <returns></returns>
+        public List<Course> GetCourses()
+        {
+            var courses = new List<Course>();
+
+            return courses;
+        }
+
+        //public List<string> GetAbout()
+        //{
+
+        //}
+
+        /// <summary>
+        /// Gets questions/answers from the json.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetQAs()
+        {
+            var qAs = new Dictionary<string, string>();
+
+            return qAs;
+        }
+
+        /// <summary>
+        /// Gets planned events from the json.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetPlannedEvents()
+        {
+            var events = new Dictionary<string, string>();
+
+            return events;
+        }
     }
 }

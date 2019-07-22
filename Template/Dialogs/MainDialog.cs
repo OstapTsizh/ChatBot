@@ -16,6 +16,8 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Services.NotificationService;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -31,15 +33,16 @@ namespace StuddyBot.Dialogs
         protected static DialogInfo _DialogInfo;
         protected readonly ISubscriptionManager SubscriptionManager;
 
+        private StuddyBotContext _db;
+
         /// <summary>
         /// conversations with users which subscribed to notifications
         /// TODO: possible renaming needed
         /// </summary>
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;        
         
-
         public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, IEmailSender emailSender,
-            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, ISubscriptionManager subscriptionManager)
+            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, ISubscriptionManager subscriptionManager, StuddyBotContext db)
             : base(nameof(MainDialog))         
         {
             Configuration = configuration;
@@ -50,16 +53,23 @@ namespace StuddyBot.Dialogs
 
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
+            _QuestionAndAnswerModel.QuestionModel.Questions=new List<Question>();
+            _QuestionAndAnswerModel.QuestionModel.Decisions=new List<DecisionModel>();
             _QuestionAndAnswerModel.Answers = new List<string>();
             _DecisionModel = new DecisionModel();
             _DialogInfo = dialogInfo;
 
+            _db = db;
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
             AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
+
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
+                //StartLocationDialogAsync,
                 StartLoopingDialogAsync
             }));
 
@@ -95,6 +105,19 @@ namespace StuddyBot.Dialogs
         }
 
         /// <summary>
+        /// Starts child (Location) dialog after retrieving UserId
+        /// </summary>
+        /// <param name="stepContext"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<DialogTurnResult> StartLocationDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
+
+            return await stepContext.BeginDialogAsync(nameof(LocationDialog), cancellationToken:cancellationToken);
+        }
+
+        /// <summary>
         /// Starts child (Looping) dialog after retrieving UserId
         /// </summary>
         /// <param name="stepContext"></param>
@@ -103,6 +126,11 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> StartLoopingDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
+
+            // assigning conversation reference
+            // TODO: Serialize to string and insert to db.            
+            _db.User.Find(stepContext.Context.Activity.From.Id).ConversationReference = stepContext.Context.Activity.GetConversationReference().Conversation.Id;
+            await _db.SaveChangesAsync();
 
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
         }

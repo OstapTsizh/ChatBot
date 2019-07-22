@@ -25,6 +25,8 @@ namespace StuddyBot.Core.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("Name");
+
                     b.Property<DateTime>("RegistrationStartDate");
 
                     b.Property<DateTime>("StartDate");
@@ -74,6 +76,8 @@ namespace StuddyBot.Core.Migrations
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ConversationReference");
 
                     b.HasKey("Id");
 

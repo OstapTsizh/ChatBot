@@ -29,6 +29,8 @@ using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using StuddyBot.Core.BLL.Helpers;
 using StuddyBot.Core.Models;
+using Services.Helpers;
+using Services.Helpers.Interfaces;
 
 namespace StuddyBot
 {
@@ -87,11 +89,14 @@ namespace StuddyBot
                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(Configuration
                    .GetConnectionString("DefaultConnection")).Options));
 
+
             // Create a pattern Unit Of Work for accessing Database.
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             // Create a dictionary with Conversation References to make possible user notification for courses.
             services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
+
+            services.AddScoped<IGetCoursesHelper, GetCoursesHelper>();
 
             //services.AddSingleton<NotificationService>();
 
