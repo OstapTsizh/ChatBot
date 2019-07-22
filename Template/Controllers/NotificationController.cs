@@ -50,26 +50,36 @@ namespace StuddyBot.Controllers
 
 
         public async Task Get()
-        {
+        {           
+
+            foreach (var conversationReference in _conversationReferences.Values)
+            {
+                await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+            }
+
             var courses = _db.Courses.Where(s => s.RegistrationStartDate == DateTime.Today);
 
-            if(courses != null)
+            if (courses != null)
             {
                 foreach (var course in courses)
                 {
-                // HACK: fix this!
-                // Following results with null!
-                // Possible fix -> remove conversion
-                // Issues after fix: incorrect conversation from string to ConversationReference;
-                // How to save conversationReference in db?
-                // Answer: serialize ConversationReference to a string and save it as string in db.
+                    // HACK: fix this!
+                    // Following results with null!
+                    // Possible fix -> remove conversion
+                    // Issues after fix: incorrect conversation from string to ConversationReference;
+                    // How to save conversationReference in db?
+                    // Answer: serialize ConversationReference to a string and save it as string in db.
 
-                    var notificationReferences = _db.UserCourses.Where(c => c.Course == course).Select(s => s.User.ConversationReference) as IEnumerable<ConversationReference>;
+                    //var notificationReferences = _db.UserCourses.Where(c => c.Course == course).Select(s => s.User.ConversationReference) as IEnumerable<ConversationReference>;
 
-                    foreach (var conversationReference in notificationReferences)
+                    foreach (var conversationReference in _conversationReferences.Values)
                     {
                         await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
                     }
+
+
+
+
                 }
             }
 
