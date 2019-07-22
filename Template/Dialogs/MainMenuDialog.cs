@@ -14,7 +14,7 @@ using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
-    public class MainMenuDialog : CancelAndRestartDialog
+    public class MainMenuDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
@@ -46,6 +46,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new QAsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new MailingDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -70,14 +71,14 @@ namespace StuddyBot.Dialogs
         {
             
             {
-                _menuItems = DecisionMaker.GetMainMenuItems();
+                _menuItems = DecisionMaker.GetMainMenuItems(_DialogInfo.Language);
                 //_menuItemsNeutral = DecisionMaker.GetMainMenuItemsNeutral();
 
                 var choices = new List<Choice>();
 
                 foreach (var item in _menuItems)
                 {
-                    choices.Add(new Choice(item.ItemName));
+                    choices.Add(new Choice(item.Name));
                 }
 
                 var options = new PromptOptions()
@@ -103,7 +104,7 @@ namespace StuddyBot.Dialogs
         {
             var selectedDialog = (string)(stepContext.Result as FoundChoice).Value;
 
-            switch (selectedDialog)
+            switch (_menuItems.FirstOrDefault(i => i.Name == selectedDialog).Dialog)
             {
                 case "About":
                 {

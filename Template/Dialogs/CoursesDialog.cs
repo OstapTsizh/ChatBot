@@ -14,7 +14,7 @@ using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
-    public class CoursesDialog : CancelAndRestartDialog
+    public class CoursesDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
@@ -58,7 +58,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskCourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            courses = DecisionMaker.GetCourses();
+            courses = DecisionMaker.GetCourses(_DialogInfo.Language);
 
             {
                 var choices = new List<Choice>();

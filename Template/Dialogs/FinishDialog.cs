@@ -17,7 +17,7 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about
     /// adding new question to the QA database.
     /// </summary>
-    public class FinishDialog : CancelAndRestartDialog
+    public class FinishDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
@@ -38,6 +38,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DidWeFinishStepAsync,
@@ -92,7 +93,7 @@ namespace StuddyBot.Dialogs
 
             if (choiceValue=="No")
             {
-                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
 

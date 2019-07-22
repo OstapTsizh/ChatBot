@@ -20,9 +20,10 @@ namespace StuddyBot.Dialogs
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
+        private List<Country> _countries;
         private Country _country;
         private readonly bool _onlyInUkraine = true;
-
+        
 
         public LocationDialog(IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
@@ -37,6 +38,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(new MainMenuDialog(DecisionMaker, _myLogger, _DialogInfo, _conversationReferences));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -62,19 +64,19 @@ namespace StuddyBot.Dialogs
 
             _country =new Country();
 
-            if (_onlyInUkraine)
-            {
-                _country.CountryName = "Ukraine";
-                return await stepContext.NextAsync(cancellationToken:cancellationToken);
-            }
+            //if (_onlyInUkraine)
+            //{
+            //    _country.CountryName = "Ukraine";
+            //    return await stepContext.NextAsync(cancellationToken:cancellationToken);
+            //}
 
             {
-                var countries = DecisionMaker.GetCountries();
+                _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
                 var choices = new List<Choice>();
 
-                foreach (var country in countries)
+                foreach (var country in _countries)
                 {
-                    choices.Add(new Choice(country));
+                    choices.Add(new Choice(country.CountryName));
                 }
 
                 var options = new PromptOptions()
@@ -98,15 +100,14 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetCityStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (!_onlyInUkraine)
+            //if (!_onlyInUkraine)
             {
-                _country.CountryName = (string)(stepContext.Result as FoundChoice).Value;
+                _country = _countries.FirstOrDefault(c=>c.CountryName==(stepContext.Result as FoundChoice).Value);
             }
 
-            var cities = DecisionMaker.GetCities(_country.CountryName);
             var choices = new List<Choice>();
 
-            foreach (var city in cities)
+            foreach (var city in _country.Cities)
             {
                 choices.Add(new Choice(city));
             }

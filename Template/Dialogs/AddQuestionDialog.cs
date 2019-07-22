@@ -17,7 +17,7 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about
     /// adding new question to the QA database.
     /// </summary>
-    public class AddQuestionDialog : CancelAndRestartDialog
+    public class AddQuestionDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;

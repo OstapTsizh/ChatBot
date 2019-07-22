@@ -16,14 +16,14 @@ namespace StuddyBot.Dialogs
     /// <summary>
     /// This dialog is responsible for the communication about questions/answers.
     /// </summary>
-    public class QAsDialog : CancelAndRestartDialog
+    public class QAsDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
-        private Dictionary<string, string> _QAs;
+        private Dictionary<string, List<string>> _QAs;
 
 
         public QAsDialog(IDecisionMaker decisionMaker, 
@@ -57,7 +57,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectQAStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _QAs = DecisionMaker.GetQAs();
+            _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
 
             var choices = new List<Choice>();
 
@@ -94,7 +94,7 @@ namespace StuddyBot.Dialogs
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
-            var msg = MessageFactory.Text(_QAs[choiceValue]);
+            var msg = MessageFactory.Text(string.Join("\n" ,_QAs[choiceValue]));
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 

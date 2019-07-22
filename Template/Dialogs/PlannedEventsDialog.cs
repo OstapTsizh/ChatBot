@@ -17,7 +17,7 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about questions/answers.
     /// information to the user's email.
     /// </summary>
-    public class PlannedEventsDialog : CancelAndRestartDialog
+    public class PlannedEventsDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;

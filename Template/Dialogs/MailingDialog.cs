@@ -18,7 +18,7 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about mailing
     /// information to the user's email.
     /// </summary>
-    public class MailingDialog : CancelAndRestartDialog
+    public class MailingDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
@@ -46,9 +46,11 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt("email"));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSendToEmailStepAsync,
+                AskEmailStepAsync,
                 SendDialogStepAsync
             }));
 
