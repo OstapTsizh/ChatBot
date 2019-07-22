@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,8 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -24,13 +27,19 @@ namespace StuddyBot.Dialogs
         protected DialogInfo _DialogInfo;
         private bool isNeededToGetQuestions = false;
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
+        /// <summary>
+        /// Name of the course
+        /// </summary>
+        private string _courseName = "";
 
         public LoopingDialog(IDecisionMaker decisionMaker, 
                              QuestionAndAnswerModel questionAndAnswerModel, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                             StuddyBotContext db)
             : base(nameof(LoopingDialog))
         {
             
@@ -39,6 +48,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -178,11 +188,10 @@ namespace StuddyBot.Dialogs
             {
                 message = "Sorry, there is no such course yet!";
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
-
             }
             else
             {
-                message = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;
+                message = _DecisionModel.Answer + "\n" + _DecisionModel.Resources;                
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
             }
 
@@ -191,6 +200,8 @@ namespace StuddyBot.Dialogs
             var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            _courseName = string.Join('_', _DecisionModel.Resources.Split('/').TakeLast(2));
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions()
@@ -263,6 +274,25 @@ namespace StuddyBot.Dialogs
 
         private void AddConversationReference(Activity activity)
         {
+            // BD
+            var user = _db.User.Find(activity.From.Id);
+            var course = _db.Courses.FirstOrDefault(s => s.Name == _courseName);
+
+            if (user != null && course != null)
+            {
+                var item = new Core.DAL.Entities.UserCourse
+                {
+                    User = user,
+                    Course = course
+                };
+
+
+                _db.UserCourses.Add(item);
+                _db.SaveChanges();
+            }
+
+            
+            // Singleton Dictionary
             var conversationReference = activity.GetConversationReference();
             _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
         }

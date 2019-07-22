@@ -11,10 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot", "Template\Studd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{72B87271-49D2-4058-A8AD-0F851EA4FD4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC} = {00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonEditor", "JsonEditor\JsonEditor.csproj", "{5243CD8F-EF38-47E1-BF08-FB6781685457}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +44,10 @@ Global
 		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

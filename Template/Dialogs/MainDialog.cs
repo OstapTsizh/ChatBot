@@ -15,6 +15,8 @@ using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using Services.NotificationService;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -29,6 +31,8 @@ namespace StuddyBot.Dialogs
         protected ThreadedLogger _Logger;
         protected static DialogInfo _DialogInfo;
 
+        private StuddyBotContext _db;
+
         /// <summary>
         /// conversations with users which subscribed to notifications
         /// TODO: possible renaming needed
@@ -37,7 +41,7 @@ namespace StuddyBot.Dialogs
         
 
         public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
-            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo)
+            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, StuddyBotContext db)
             : base(nameof(MainDialog))         
         {
             Configuration = configuration;
@@ -51,9 +55,11 @@ namespace StuddyBot.Dialogs
             _DecisionModel = new DecisionModel();
             _DialogInfo = dialogInfo;
 
+            _db = db;
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 IntroStepAsync
@@ -81,6 +87,11 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> IntroStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
+
+            // assigning conversation reference
+            // TODO: Serialize to string and insert to db.            
+            _db.User.Find(stepContext.Context.Activity.From.Id).ConversationReference = stepContext.Context.Activity.GetConversationReference().Conversation.Id;
+            await _db.SaveChangesAsync();
 
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
         }        

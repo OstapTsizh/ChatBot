@@ -3,6 +3,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -20,15 +21,20 @@ namespace StuddyBot.Controllers
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly string _appId;
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
-        public NotificationController(IBotFrameworkHttpAdapter adapter, ICredentialProvider credentials, ConcurrentDictionary<string, ConversationReference> conversationReferences)
+        public NotificationController(IBotFrameworkHttpAdapter adapter, 
+                                      ICredentialProvider credentials, 
+                                      ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                                      StuddyBotContext db)
         {
             _adapter = adapter;
-
-             // TODO: find only those conversations where users wanted to notify them
+                         
             _conversationReferences = conversationReferences;
 
             _appId = ((SimpleCredentialProvider)credentials).AppId;
+
+            _db = db;
 
             // If the channel is the Emulator, and authentication is not in use,
             // the AppId will be null.  We generate a random AppId for this case only.
@@ -37,15 +43,39 @@ namespace StuddyBot.Controllers
             {
                 _appId = Guid.NewGuid().ToString(); //if no AppId, use a random Guid
             }
+
+            // _appId = "123";
+
         }
 
 
         public async Task Get()
         {
-            foreach (var conversationReference in _conversationReferences.Values)
+            var courses = _db.Courses.Where(s => s.RegistrationStartDate == DateTime.Today);
+
+            if(courses != null)
             {
-                await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+                foreach (var course in courses)
+                {
+                // HACK: fix this!
+                // Following results with null!
+                // Possible fix -> remove conversion
+                // Issues after fix: incorrect conversation from string to ConversationReference;
+                // How to save conversationReference in db?
+                // Answer: serialize ConversationReference to a string and save it as string in db.
+
+                    var notificationReferences = _db.UserCourses.Where(c => c.Course == course).Select(s => s.User.ConversationReference) as IEnumerable<ConversationReference>;
+
+                    foreach (var conversationReference in notificationReferences)
+                    {
+                        await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+                    }
+                }
             }
+
+
+
+           
 
         }
 
