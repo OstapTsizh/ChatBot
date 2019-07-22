@@ -10,14 +10,14 @@ using StuddyBot.Core.DAL.Data;
 namespace StuddyBot.Core.Migrations
 {
     [DbContext(typeof(StuddyBotContext))]
-    [Migration("20190708113715_CourseTable")]
-    partial class CourseTable
+    [Migration("20190722131537_StuddyBotMigration")]
+    partial class StuddyBotMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -26,6 +26,8 @@ namespace StuddyBot.Core.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name");
 
                     b.Property<DateTime>("RegistrationStartDate");
 
@@ -76,6 +78,8 @@ namespace StuddyBot.Core.Migrations
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ConversationReference");
 
                     b.HasKey("Id");
 

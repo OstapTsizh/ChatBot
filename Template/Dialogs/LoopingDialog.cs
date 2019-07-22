@@ -239,7 +239,7 @@ namespace StuddyBot.Dialogs
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
             _courseName = string.Join('_', _DecisionModel.Resources.Split('/').TakeLast(2));
-
+            
             return await stepContext.PromptAsync(nameof(ChoicePrompt),
                new PromptOptions()
                {
@@ -368,6 +368,5 @@ namespace StuddyBot.Dialogs
             var conversationReference = activity.GetConversationReference();
             _conversationReferences.TryRemove(conversationReference.User.Id, out _);
         }
-
     }
 }
