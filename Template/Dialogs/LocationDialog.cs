@@ -38,6 +38,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new MainMenuDialog(decisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 GetCountryStepAsync,
@@ -110,6 +111,9 @@ namespace StuddyBot.Dialogs
             {
                 choices.Add(new Choice(city));
             }
+
+                    choices.Add(new Choice("Lviv"));
+
             var options = new PromptOptions()
             {
                 Prompt = MessageFactory.Text("Choose needed city, please."),

@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
@@ -30,7 +31,7 @@ namespace StuddyBot.Dialogs
             QuestionAndAnswerModel questionAndAnswerModel,
             ThreadedLogger _myLogger,
             DialogInfo dialogInfo,
-            ConcurrentDictionary<string, ConversationReference> conversationReferences) : base(nameof(SubscriptionDialog))
+            ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db) : base(nameof(SubscriptionDialog))
         {
             _subscriptionManager = subscriptionManager;
             EmailSender = emailSender;
@@ -38,7 +39,8 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new LoopingDialog(decisionMaker, questionAndAnswerModel, _myLogger, dialogInfo,
-                conversationReferences));
+                conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(decisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
@@ -54,12 +56,12 @@ namespace StuddyBot.Dialogs
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Subscription dialog was started"), cancellationToken);
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Send Test Message "), cancellationToken);
+           //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Send Test Message "), cancellationToken);
 
             var text = "Hi, it`s just a simple test message from StuddyBot.";
-            EmailSender.SendEmailAsync("mnadorozhniak@gmail.com", "StuddyBotRd", text);
+           //await EmailSender.SendEmailAsync("mnadorozhniak@gmail.com", "StuddyBotRd", text);
 
-            var Course = new Course() { Id = 1, RegistrationStartDate = DateTime.Now, StartDate = DateTime.Now.AddDays(5) };
+            //var Course = new Course() { Id = 1, RegistrationStartDate = DateTime.Now, StartDate = DateTime.Now.AddDays(5) };
             var User = new User() { Id = "1" };
 
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
@@ -90,7 +92,8 @@ namespace StuddyBot.Dialogs
             }
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("No subscriptions yet"), cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
+                cancellationToken: cancellationToken);
         }
 
         private async Task<DialogTurnResult> UnsubStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
@@ -112,8 +115,9 @@ namespace StuddyBot.Dialogs
                     cancellationToken);
             }
 
-            return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
-            //return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);
+            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
+                cancellationToken: cancellationToken);
+            //return await stepContext.ReplaceDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
         }
 
         private async Task<DialogTurnResult> DeleteSubscriptionStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)

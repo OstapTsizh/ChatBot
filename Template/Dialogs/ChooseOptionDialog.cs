@@ -14,7 +14,7 @@ using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
-    public class ChooseOptionDialog : CancelAndRestartDialog
+    public class ChooseOptionDialog : ComponentDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;

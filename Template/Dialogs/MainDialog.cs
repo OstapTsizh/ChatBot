@@ -63,14 +63,14 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-
+            AddDialog(new LocationDialog(decisionMaker, _Logger, dialogInfo, conversationReferences));
             AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
-            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
+            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger,dialogInfo, conversationReferences, _db));
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                //StartLocationDialogAsync,
-                StartLoopingDialogAsync
+                StartLocationDialogAsync,
+                //StartLoopingDialogAsync
             }));
 
 
