@@ -63,6 +63,10 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new MailingDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
             AddDialog(new LocationDialog(decisionMaker, _Logger, dialogInfo, conversationReferences));
             AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
             AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger,dialogInfo, conversationReferences, _db));
@@ -112,6 +116,9 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> StartLocationDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // ToDo language selection
+            _DialogInfo.Language = "uk-ua";
+
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
 
             return await stepContext.BeginDialogAsync(nameof(LocationDialog), cancellationToken:cancellationToken);
