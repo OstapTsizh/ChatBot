@@ -23,6 +23,8 @@ using StuddyBot.Dialogs;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Configuration;
+using EmailSender;
+using EmailSender.Interfaces;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Configuration;
 using StuddyBot.Core.BLL.Helpers;
@@ -71,11 +73,17 @@ namespace StuddyBot
             // Create the Decision Maker which looks for proper answers/next questions
             services.AddSingleton<IDecisionMaker, DecisionMaker>();
 
-            //Create the Subscription Manager for user subscriptions.
+            // Create the Subscription Manager for user subscriptions.
             services.AddSingleton<ISubscriptionManager, SubscriptionManager>();
 
-           // Create the database context as StuddyBotContext.
-           services.AddTransient((s) => new StuddyBotContext(
+            // Get settings for EmailSender.
+            services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
+
+            // Create the Email Sender for sending emails for users.
+            services.AddSingleton<IEmailSender, EmailSender.EmailSender>();
+
+            // Create the database context as StuddyBotContext.
+            services.AddTransient((s) => new StuddyBotContext(
                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(Configuration
                    .GetConnectionString("DefaultConnection")).Options));
 

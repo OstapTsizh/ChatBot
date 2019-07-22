@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -37,7 +38,7 @@ namespace StuddyBot.Dialogs
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;        
         
 
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, IEmailSender emailSender,
             ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, ISubscriptionManager subscriptionManager)
             : base(nameof(MainDialog))         
         {
@@ -56,7 +57,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
-            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
+            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 StartLoopingDialogAsync

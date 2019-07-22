@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -20,17 +21,19 @@ namespace StuddyBot.Dialogs
     {
         private readonly ISubscriptionManager _subscriptionManager;
         private ICollection<UserCourse> userSubscription;
+        protected readonly IEmailSender EmailSender;
 
         //delete
         private readonly List<UserCourse> _userCourses = new List<UserCourse>();
 
-        public SubscriptionDialog(ISubscriptionManager subscriptionManager, IDecisionMaker decisionMaker,
+        public SubscriptionDialog(ISubscriptionManager subscriptionManager, IDecisionMaker decisionMaker, IEmailSender emailSender,
             QuestionAndAnswerModel questionAndAnswerModel,
             ThreadedLogger _myLogger,
             DialogInfo dialogInfo,
             ConcurrentDictionary<string, ConversationReference> conversationReferences) : base(nameof(SubscriptionDialog))
         {
             _subscriptionManager = subscriptionManager;
+            EmailSender = emailSender;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -50,6 +53,11 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("Subscription dialog was started"), cancellationToken);
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Send Test Message "), cancellationToken);
+
+            var text = "Hi, it`s just a simple test message from StuddyBot.";
+            EmailSender.SendEmailAsync("mnadorozhniak@gmail.com", "StuddyBotRd", text);
 
             var Course = new Course() { Id = 1, RegistrationStartDate = DateTime.Now, StartDate = DateTime.Now.AddDays(5) };
             var User = new User() { Id = "1" };
