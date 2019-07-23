@@ -1,3 +1,43 @@
-<p>
-  main-menu works!
-</p>
+<button mat-raised-button color="primary" [routerLink]='["/add-new-menu"]'>Add</button>
+
+<hr>
+
+<div>
+
+  <div *ngFor="let item of data">
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th> {{ item.lang }} </th>
+          <th>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Name </th>
+                  <th> Dialog </th>
+                  <th> Resources </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inner of item.items">
+                  <td> {{ inner.name }} </td>
+                  <td> {{ inner.dialog }} </td>
+                  <td> {{ inner.resources }} </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

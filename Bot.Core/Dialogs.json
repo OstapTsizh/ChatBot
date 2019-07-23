@@ -6,7 +6,7 @@
         "keywords": [ "courses", "learn", "study" ],
         "questions": [
           {
-            "Text": "What technology do you interested in?",
+            "Text": "Шо там по технологіях?",
             "keywords": [".net", "java", "python"],
             "IsAnswered": "false"
           },

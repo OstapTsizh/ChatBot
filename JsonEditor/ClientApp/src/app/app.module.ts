@@ -16,10 +16,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+
+
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { QuestionsAnswersComponent } from './questions-answers/questions-answers.component';
 import { LocationsComponent } from './locations/locations.component';
 import { CoursesComponent } from './courses/courses.component';
+import { AddNewMenuComponent } from './add-new-menu/add-new-menu.component';
 
 
 @NgModule({
@@ -32,7 +38,8 @@ import { CoursesComponent } from './courses/courses.component';
     MainMenuComponent,
     QuestionsAnswersComponent,
     LocationsComponent,
-    CoursesComponent
+    CoursesComponent,
+    AddNewMenuComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -47,6 +54,9 @@ import { CoursesComponent } from './courses/courses.component';
     MatSelectModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatTableModule,
+    MatTreeModule,
+    MatIconModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -56,6 +66,7 @@ import { CoursesComponent } from './courses/courses.component';
       { path: 'courses', component: CoursesComponent },
       { path: 'fill-json', component: FillJsonComponent },
       { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'add-new-menu', component: AddNewMenuComponent },
     ]),
     BrowserAnimationsModule
   ],
