@@ -66,6 +66,12 @@ namespace StuddyBot.Dialogs
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
+
+                    case "sub":
+                    case "subscription":
+                        await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
+                            cancellationToken: cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
 

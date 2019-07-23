@@ -6,6 +6,8 @@ using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 using System.Configuration;
 using System.Text;
+using StuddyBot.Core.BLL.Repositories;
+using StuddyBot.Core.DAL.Data;
 
 namespace DecisionMakers
 {
@@ -23,6 +25,8 @@ namespace DecisionMakers
         public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
         public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
         public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
+
+        private StuddyBotContext studdyBotContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
@@ -262,6 +266,12 @@ namespace DecisionMakers
 
                     courses = items.ToObject<List<Course>>();
                 }
+            }
+            studdyBotContext = new StuddyBotContext();
+            if (!studdyBotContext.Courses.Any())
+            {
+                studdyBotContext.PushCoursesToDB(courses);
+                studdyBotContext.SaveChanges();
             }
 
             return courses;

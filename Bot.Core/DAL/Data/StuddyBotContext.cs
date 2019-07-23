@@ -65,6 +65,22 @@ namespace StuddyBot.Core.DAL.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+
+
+        public void PushCoursesToDB(List<Models.Course> courses)
+        {
+            foreach (var course in courses)
+            {
+                var Course = new Course()
+                {
+                    Name = course.Name,
+                    RegistrationStartDate = DateTime.Now,
+                    StartDate = DateTime.Now
+                };
+                Courses.Add(Course);
+            }
+        }
     }
 }
 

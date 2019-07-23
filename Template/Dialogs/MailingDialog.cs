@@ -1,14 +1,18 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualBasic;
+using StuddyBot.Core.DAL.Data;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -21,24 +25,28 @@ namespace StuddyBot.Dialogs
     public class MailingDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
+        private readonly IEmailSender EmailSender;
         private readonly ThreadedLogger _myLogger;
+        private StuddyBotContext _db;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        
 
 
 
-        public MailingDialog(IDecisionMaker decisionMaker, 
+
+        public MailingDialog(IDecisionMaker decisionMaker, IEmailSender emailSender,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(MailingDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
+            EmailSender = emailSender;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             
@@ -128,10 +136,25 @@ namespace StuddyBot.Dialogs
         {
             var userEmail = stepContext.Result.ToString();
 
-            // ToDo the method that sends dialog
-            
+            var dialogId = _DialogInfo.DialogId;
+            var message = GetUserConversation(dialogId);
+
+            await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
+
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);
+        }
+
+        private string GetUserConversation(int dialogId)
+        {
+            var text = "Hi, your conversation with StuddyBot";
+            var conversation = _db.Dialog.Where(d => d.DialogsId == dialogId).ToList();          
+            foreach (var message in conversation)
+            {
+                text += $"<br/>From: {message.Sender} <br/> &nbsp; {message.Message} &emsp; {message.Time.DateTime}<br/><hr/>";
+            }
+
+            return text;
         }
     }
 }
