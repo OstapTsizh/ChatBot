@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -28,7 +29,7 @@ namespace StuddyBot.Dialogs
         public LocationDialog(IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(LocationDialog))
         {
             
@@ -38,7 +39,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new MainMenuDialog(DecisionMaker, _myLogger, _DialogInfo, _conversationReferences));
+            AddDialog(new MainMenuDialog(DecisionMaker, _myLogger, _DialogInfo, _conversationReferences, db));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {

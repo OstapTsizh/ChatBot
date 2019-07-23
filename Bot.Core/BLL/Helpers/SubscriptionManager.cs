@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 
@@ -10,70 +11,40 @@ namespace StuddyBot.Core.BLL.Helpers
 {
     public class SubscriptionManager : ISubscriptionManager
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        private List<UserCourse> testResult = new List<UserCourse>()
+        private readonly StuddyBotContext _db;
+        
+        public SubscriptionManager(StuddyBotContext db)
         {
-            new UserCourse()
-            {
-                CourseId = 1,
-                Course = new Course()
-                    {Id = 1, StartDate = DateTime.Today, RegistrationStartDate = DateTime.Today.AddDays(5)}
-            },
-            new UserCourse()
-            {
-                CourseId = 2,
-                Course = new Course()
-                    {Id = 2, StartDate = DateTime.Today.AddDays(-5), RegistrationStartDate = DateTime.Today.AddDays(10)}
-            },
-        };
-
-        public SubscriptionManager(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
+            _db = db;
         }
 
         public ICollection<UserCourse> GetUserSubscriptions(string userId)
         {
-            var user = _unitOfWork.Users.Get(userId);
-
-            var result = user?.UserCourses;
-
-            //only for test
-            /*testResult = new List<UserCourse>()
+            var userCourses = _db.UserCourses.Where(item => item.UserId == userId);
+            if (userCourses.Count() != 0)
             {
-                new UserCourse()
-                {
-                    CourseId = 1,
-                    Course = new Course()
-                        {Id = 1, StartDate = DateTime.Today, RegistrationStartDate = DateTime.Today.AddDays(5)}
-                },
-                new UserCourse()
-                {
-                    CourseId = 2,
-                    Course = new Course()
-                        {Id = 2, StartDate = DateTime.Today.AddDays(-5), RegistrationStartDate = DateTime.Today.AddDays(10)}
-                },
-            };*/
-
-            //test
-            result = testResult;
-
-            return result;
+                return userCourses.ToList();
+            }
+            return null;
         }
 
         public void CancelSubscription(string userId, string courseId)
         {
-            /*var user = _unitOfWork.Users.Get(userId);
-            var cancelCourse = user.UserCourses.FirstOrDefault(item => item.CourseId.ToString() == courseId);
-            if (cancelCourse != null)
+            var userCourses = _db.UserCourses.Where(item => item.UserId == userId);
+            if (!userCourses.Any()) return;
             {
-                user.UserCourses.Remove(cancelCourse);
-            }*/
+                var cancelCourse = userCourses.First(item => item.CourseId.ToString() == courseId);
+                if (cancelCourse != null)
+                {
+                    _db.UserCourses.Remove(cancelCourse);
+                    _db.SaveChanges();
+                }
+            }
+        }
 
-            //test
-            var courseToDelete = testResult.First(s => s.CourseId.ToString() == courseId);
-            testResult.Remove(courseToDelete);
+        public Course GetCourseInfo(string courseId)
+        {
+            return _db.Courses.First(course => course.Id.ToString() == courseId);
         }
     }
 }

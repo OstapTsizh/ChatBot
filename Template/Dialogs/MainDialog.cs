@@ -65,10 +65,10 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
-            AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
-            AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
+            AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
             AddDialog(new MailingDialog(DecisionMaker, emailSender, _Logger, _DialogInfo, _conversationReferences, db));
-            AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
             AddDialog(new SubscriptionDialog(decisionMaker, subscriptionManager, Logger, dialogInfo,
                 conversationReferences));
 

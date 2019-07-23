@@ -13,6 +13,7 @@ using Microsoft.VisualBasic;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
+using Course = StuddyBot.Core.DAL.Entities.Course;
 
 namespace StuddyBot.Dialogs
 {
@@ -28,11 +29,7 @@ namespace StuddyBot.Dialogs
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
         private ICollection<UserCourse> userSubscription;
-
-        //delete
-        private readonly List<UserCourse> _userCourses = new List<UserCourse>();
-
-
+        
         public SubscriptionDialog(IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
@@ -57,16 +54,10 @@ namespace StuddyBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-        private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext,
+            CancellationToken cancellationToken)
         {
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Subscription dialog was started"), cancellationToken);
-
-            var Course = new Core.DAL.Entities.Course() { Id = 1, RegistrationStartDate = DateTime.Now, StartDate = DateTime.Now.AddDays(5) };
-            var User = new User() { Id = "1" };
-
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
-
-            // _userCourses.Add(new UserCourse(){Course = Course,CourseId = 1,User = User,UserId = "1"});
 
             userSubscription = _subscriptionManager.GetUserSubscriptions(conversationReference.User.Id);
 
@@ -74,21 +65,29 @@ namespace StuddyBot.Dialogs
             {
                 var subs = userSubscription.ToList();
 
-                var message = "Your subscriptions:";
-                subs.ForEach(sub =>
-                    message += $"\nCourse Id: {sub.Course.Id}, Registration starts: {sub.Course.RegistrationStartDate.ToShortDateString()}," +
-                               $" Course starts: {sub.Course.StartDate.Date.ToShortDateString()};");
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your subscriptions:"));
+
+                var message = "";
+
+                foreach (var sub in subs)
+                {
+                    var courseInfo = _subscriptionManager.GetCourseInfo(sub.CourseId.ToString());
+                    message +=
+                        $"\n\nCourse Id: {courseInfo.Id}, Name: {courseInfo.Name}, Registration starts: {courseInfo.RegistrationStartDate.ToShortDateString()}," +
+                        $" Course starts: {courseInfo.StartDate.Date.ToShortDateString()};";
+                }
+
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
 
                 var unsubQuestion = "Would you like to unsubscribe from some?";
 
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                       new PromptOptions()
-                       {
-                           Prompt = MessageFactory.Text(unsubQuestion),
-                           Choices = new List<Choice> { new Choice("yes"), new Choice("no") }
-                       },
-                       cancellationToken);
+                    new PromptOptions()
+                    {
+                        Prompt = MessageFactory.Text(unsubQuestion),
+                        Choices = new List<Choice> {new Choice("yes"), new Choice("no")}
+                    },
+                    cancellationToken);
             }
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text("No subscriptions yet"), cancellationToken);
@@ -99,17 +98,19 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
 
-            if (foundChoice == "yes")
+            if (foundChoice == "yes" && userSubscription.Count != 0)
             {
                 var subs = userSubscription.ToList();
 
                 var variants = new List<Choice>();
-                subs.ForEach(sub => variants.Add(new Choice($"{sub.CourseId}")));
+                subs.ForEach(sub => variants.Add(new Choice($"{sub.Course.Id}")));
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text("Choose id of course from which you want to unsubscribe"),
-                        Choices = variants
+                        Prompt = MessageFactory.Text("Choose course id from which you want to unsubscribe"),
+                        RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                        Choices = variants,
+                        Style = ListStyle.HeroCard
                     },
                     cancellationToken);
             }
@@ -117,7 +118,8 @@ namespace StuddyBot.Dialogs
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
         }
 
-        private async Task<DialogTurnResult> DeleteSubscriptionStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> DeleteSubscriptionStepAsync(WaterfallStepContext stepContext,
+            CancellationToken cancellationToken)
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
 
@@ -125,19 +127,8 @@ namespace StuddyBot.Dialogs
 
             _subscriptionManager.CancelSubscription(conversationReference.User.Id, foundChoice);
 
-            var subs = _subscriptionManager.GetUserSubscriptions(conversationReference.User.Id);
-
-            var answer = "After Remove";
-            subs.ToList().ForEach(sub => answer += $"\nId: {sub.CourseId}, course starts: {sub.Course.StartDate.ToShortDateString()}");
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(answer), cancellationToken);
-
-            return await stepContext.ReplaceDialogAsync(nameof(SubscriptionDialog), cancellationToken: cancellationToken);
-        }
-
-        private List<UserCourse> GetUserSubscription(Activity activity)
-        {
-            return _userCourses;
-            //return userCourses.Where(el => el.UserId == activity.GetConversationReference().User.Id).ToList();
+            return await stepContext.ReplaceDialogAsync(nameof(SubscriptionDialog),
+                cancellationToken: cancellationToken);
         }
     }
 }

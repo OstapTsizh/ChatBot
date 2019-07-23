@@ -32,7 +32,8 @@ namespace StuddyBot.Dialogs
         public MainMenuDialog(IDecisionMaker decisionMaker,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                             StuddyBotContext db)
             : base(nameof(MainMenuDialog))
         {
             
@@ -43,7 +44,7 @@ namespace StuddyBot.Dialogs
 
 
             AddDialog(new CoursesDialog(DecisionMaker, _myLogger, dialogInfo,
-                conversationReferences));
+                conversationReferences, db));
             AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new QAsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
