@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualBasic;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -27,7 +29,7 @@ namespace StuddyBot.Dialogs
 
 
 
-        public MainMenuDialog(IDecisionMaker decisionMaker, 
+        public MainMenuDialog(IDecisionMaker decisionMaker,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences)
@@ -45,7 +47,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new QAsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new MailingDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            //AddDialog(new MailingDialog(DecisionMaker, emailSender, _myLogger, dialogInfo, conversationReferences, db));
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));

@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -26,6 +27,7 @@ namespace StuddyBot.Dialogs
     {
         protected readonly IConfiguration Configuration;
         protected readonly IDecisionMaker DecisionMaker;
+        protected readonly IEmailSender EmailSender;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _Logger;
@@ -40,13 +42,14 @@ namespace StuddyBot.Dialogs
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;        
         
 
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker,
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
             ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, StuddyBotContext db)
             : base(nameof(MainDialog))         
         {
             Configuration = configuration;
             this._Logger = Logger;    
             DecisionMaker = decisionMaker;
+            EmailSender = emailSender;
             _conversationReferences = conversationReferences;
 
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
@@ -64,12 +67,12 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
             AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
-            AddDialog(new MailingDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new MailingDialog(DecisionMaker, emailSender, _Logger, _DialogInfo, _conversationReferences, db));
             AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new SubscriptionDialog(decisionMaker, subscriptionManager, Logger, dialogInfo,
+                conversationReferences));
 
-
-
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences));
+            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, db));
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
