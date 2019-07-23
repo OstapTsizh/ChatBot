@@ -266,8 +266,12 @@ namespace DecisionMakers
                 }
             }
             studdyBotContext = new StuddyBotContext();
-            //studdyBotContext.PushCoursesToDB(courses);
-            //studdyBotContext.SaveChanges();
+            if (!studdyBotContext.Courses.Any())
+            {
+                studdyBotContext.PushCoursesToDB(courses);
+                studdyBotContext.SaveChanges();
+            }
+
             return courses;
         }
 
