@@ -40,6 +40,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddQuestionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,
