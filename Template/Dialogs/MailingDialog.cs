@@ -66,9 +66,11 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSendToEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var msg = "Хочете отримати діалог на email?";// "Do you want to receive the dialog to email?";
+            
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Do you want to receive the dialog to email?"),
+                Prompt = MessageFactory.Text(msg),
                 Style = ListStyle.HeroCard
             };
 
@@ -92,10 +94,13 @@ namespace StuddyBot.Dialogs
         {
             if ((bool)stepContext.Result)
             {
+                var msg = "Будь ласка, введіть свій email:";// "Enter Your email, please:";
+                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("Enter Your email, please:"),
-                    RetryPrompt = MessageFactory.Text("Try one more time, please:"),
+                    Prompt = MessageFactory.Text(msg),
+                    RetryPrompt = MessageFactory.Text(retryMsg),
                     Style = ListStyle.HeroCard
                 };
 

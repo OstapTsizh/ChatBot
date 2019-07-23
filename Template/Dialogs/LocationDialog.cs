@@ -79,10 +79,13 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(country.CountryName));
                 }
 
+                var msg = "Будь ласка, оберіть необхідну країну:";// "Choose needed country, please.";
+                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("Choose needed country, please."),
-                    RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                    Prompt = MessageFactory.Text(msg),
+                    RetryPrompt = MessageFactory.Text(retryMsg),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };
@@ -111,10 +114,13 @@ namespace StuddyBot.Dialogs
             {
                 choices.Add(new Choice(city));
             }
+            var msg = "Будь ласка, оберіть необхідне місто:";// "Choose needed city, please.";
+            var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Choose needed city, please."),
-                RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                Prompt = MessageFactory.Text(msg),
+                RetryPrompt = MessageFactory.Text(retryMsg),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };

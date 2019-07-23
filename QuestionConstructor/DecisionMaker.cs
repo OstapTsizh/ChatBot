@@ -21,6 +21,8 @@ namespace DecisionMakers
         public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
         public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
         public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+        public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
+        public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
@@ -217,7 +219,7 @@ namespace DecisionMakers
             {
                 if (item["lang"].ToObject<string[]>().Contains(lang))
                 {
-                    var items = item["model"]["items"];
+                    var items = item["items"];
                     
                     model.Items = items.ToObject<List<MainMenuItem>>();
                 }
@@ -306,11 +308,65 @@ namespace DecisionMakers
         /// Gets planned events from the json.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> GetPlannedEvents()
+        public Dictionary<string, List<string>> GetPlannedEvents(string lang)
         {
-            var events = new Dictionary<string, string>();
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathPlannedEvents)));
+            var rss = JArray.Parse(json);
+            var model = new List<PlannedEvent>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var items = item["events"];
+
+                    model = items.ToObject<List<PlannedEvent>>();
+                }
+            }
+
+            var events = new Dictionary<string, List<string>>();
+            foreach (var plannedEvent in model)
+            {
+                events.Add(plannedEvent.Name, plannedEvent.Resources);
+            }
 
             return events;
+        }
+
+        /// <summary>
+        /// Gets  a ChooseOption list from the json.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetChooseOptions(string lang)
+        {
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathChooseOptionList)));
+            var rss = JArray.Parse(json);
+            var options = new Dictionary<string, string>();
+            var tmpOptions = new List<ChooseOptionList>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var items = item["items"];
+
+                    tmpOptions = items.ToObject<List<ChooseOptionList>>();
+                }
+            }
+            foreach (var tmpOption in tmpOptions)
+            {
+                options.Add(tmpOption.Name, tmpOption.Id);
+            }
+
+            return options;
         }
     }
 }

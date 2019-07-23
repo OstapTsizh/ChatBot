@@ -39,6 +39,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new AddQuestionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,

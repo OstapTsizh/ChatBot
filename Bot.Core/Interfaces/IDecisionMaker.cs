@@ -74,6 +74,12 @@ namespace StuddyBot.Core.Interfaces
         /// Gets planned events from the dbContext.
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, string> GetPlannedEvents();
+        Dictionary<string, List<string>> GetPlannedEvents(string lang);
+
+        /// <summary>
+        /// Gets a ChooseOption list from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetChooseOptions(string lang);
     }
 }

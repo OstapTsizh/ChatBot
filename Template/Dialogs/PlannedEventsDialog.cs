@@ -14,7 +14,7 @@ using StuddyBot.Core.Models;
 namespace StuddyBot.Dialogs
 {
     /// <summary>
-    /// This dialog is responsible for the communication about questions/answers.
+    /// This dialog is responsible for the communication about planned events.
     /// information to the user's email.
     /// </summary>
     public class PlannedEventsDialog : ComponentDialog// CancelAndRestartDialog
@@ -24,7 +24,7 @@ namespace StuddyBot.Dialogs
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
-        private Dictionary<string, string> _events;
+        private Dictionary<string, List<string>> _events;
 
 
         public PlannedEventsDialog(IDecisionMaker decisionMaker, 
@@ -58,7 +58,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectEventStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _events = DecisionMaker.GetPlannedEvents();
+            _events = DecisionMaker.GetPlannedEvents(_DialogInfo.Language);
 
             var choices = new List<Choice>();
 
@@ -95,7 +95,7 @@ namespace StuddyBot.Dialogs
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
-            var msg = MessageFactory.Text(_events[choiceValue]);
+            var msg = MessageFactory.Text(string.Join("\n", _events[choiceValue]));
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
@@ -103,7 +103,7 @@ namespace StuddyBot.Dialogs
 
             await stepContext.Context.SendActivityAsync(msg, cancellationToken);
             
-            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), 
+            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                 cancellationToken: cancellationToken);
         }
     }

@@ -68,10 +68,13 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(course.Name));
                 }
 
+                var msg = "ўо ¬ас ц≥кавить?";// "What you are interested in?";
+                var retryMsg = "Ѕудь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("What you are interested in?"),
-                    RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                    Prompt = MessageFactory.Text(msg),
+                    RetryPrompt = MessageFactory.Text(retryMsg),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };

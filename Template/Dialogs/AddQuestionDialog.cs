@@ -40,6 +40,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskForQuestionStepAsync,
@@ -86,7 +87,7 @@ namespace StuddyBot.Dialogs
         {
             if (string.IsNullOrEmpty(stepContext.Result.ToString()))
             {
-                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
 
