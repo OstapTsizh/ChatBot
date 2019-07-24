@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -26,10 +27,10 @@ namespace StuddyBot.Dialogs
         private readonly bool _onlyInUkraine = true;
         
 
-        public LocationDialog(IDecisionMaker decisionMaker, 
+        public LocationDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender)
             : base(nameof(LocationDialog))
         {
             
@@ -39,7 +40,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new MainMenuDialog(DecisionMaker, _myLogger, _DialogInfo, _conversationReferences, db));
+            AddDialog(new MainMenuDialog(DecisionMaker, SubscriptionManager, _myLogger, _DialogInfo, _conversationReferences, db, emailSender));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {

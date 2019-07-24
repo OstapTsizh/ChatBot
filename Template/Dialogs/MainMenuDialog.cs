@@ -29,11 +29,11 @@ namespace StuddyBot.Dialogs
 
 
 
-        public MainMenuDialog(IDecisionMaker decisionMaker,
+        public MainMenuDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences,
-                             StuddyBotContext db)
+                             StuddyBotContext db, IEmailSender emailSender)
             : base(nameof(MainMenuDialog))
         {
             
@@ -45,10 +45,10 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new CoursesDialog(DecisionMaker, _myLogger, dialogInfo,
                 conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new QAsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            //AddDialog(new MailingDialog(DecisionMaker, emailSender, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new QAsDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
 
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
 

@@ -24,7 +24,7 @@ namespace StuddyBot.Dialogs
         private Dictionary<string, string> _chooseOptionList;
 
 
-        public ChooseOptionDialog(IDecisionMaker decisionMaker,
+        public ChooseOptionDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences)
@@ -38,6 +38,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            //AddDialog(new SubscriptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -129,6 +130,9 @@ namespace StuddyBot.Dialogs
                         cancellationToken: cancellationToken);
                 case "Add a question to the database":
                     return await stepContext.ReplaceDialogAsync(nameof(AddQuestionDialog),
+                        cancellationToken: cancellationToken);
+                case "My subscriptions":
+                    return await stepContext.ReplaceDialogAsync(nameof(SubscriptionDialog),
                         cancellationToken: cancellationToken);
                 default: // "End dialog"
                     return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),

@@ -34,7 +34,7 @@ namespace StuddyBot.Dialogs
 
 
 
-        public MailingDialog(IDecisionMaker decisionMaker, IEmailSender emailSender,
+        public MailingDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -54,7 +54,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt("email"));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSendToEmailStepAsync,

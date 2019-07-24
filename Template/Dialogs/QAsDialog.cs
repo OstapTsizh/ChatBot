@@ -26,7 +26,7 @@ namespace StuddyBot.Dialogs
         private Dictionary<string, List<string>> _QAs;
 
 
-        public QAsDialog(IDecisionMaker decisionMaker, 
+        public QAsDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences)
@@ -40,7 +40,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new AddQuestionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,
