@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -25,10 +27,10 @@ namespace StuddyBot.Dialogs
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
         
-        public FinishDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
+        public FinishDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(FinishDialog))
         {
             
@@ -38,7 +40,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DidWeFinishStepAsync,

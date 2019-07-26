@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualBasic;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
@@ -30,10 +32,10 @@ namespace StuddyBot.Dialogs
 
         private ICollection<UserCourse> userSubscription;
         
-        public SubscriptionDialog(IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager,
+        public SubscriptionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager subscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(SubscriptionDialog))
         {
             this._myLogger = _myLogger;
@@ -42,7 +44,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, subscriptionManager,  _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager,  _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

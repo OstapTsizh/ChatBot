@@ -45,11 +45,11 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new CoursesDialog(DecisionMaker, _myLogger, dialogInfo,
                 conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new QAsDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new QAsDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -117,7 +117,7 @@ namespace StuddyBot.Dialogs
                 {
                     var msgText = string.Join("\n", _menuItems.FirstOrDefault(it => it.Dialog == "About").Resources);
                     await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken:cancellationToken);
-                    return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                    return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                         cancellationToken: cancellationToken);
                 }
                 case "Courses":

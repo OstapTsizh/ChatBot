@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualBasic;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -24,10 +26,10 @@ namespace StuddyBot.Dialogs
         private Dictionary<string, string> _chooseOptionList;
 
 
-        public ChooseOptionDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
+        public ChooseOptionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(ChooseOptionDialog))
         {
             
@@ -38,6 +40,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            //AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             //AddDialog(new SubscriptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -128,7 +131,7 @@ namespace StuddyBot.Dialogs
                 case "Questions/Answers":
                     return await stepContext.ReplaceDialogAsync(nameof(QAsDialog),
                         cancellationToken: cancellationToken);
-                case "Add a question to the database":
+                case "Propose a new question":
                     return await stepContext.ReplaceDialogAsync(nameof(AddQuestionDialog),
                         cancellationToken: cancellationToken);
                 case "My subscriptions":

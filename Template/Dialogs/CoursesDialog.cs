@@ -134,12 +134,14 @@ namespace StuddyBot.Dialogs
                     UserId =  subscriber.Id,
                     CourseId = onCourse.Id
                 });
-                
                 _db.SaveChanges();
+
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                    cancellationToken: cancellationToken);
             }
 
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
-                    cancellationToken: cancellationToken);
+                cancellationToken: cancellationToken);
         }
     }
 }
