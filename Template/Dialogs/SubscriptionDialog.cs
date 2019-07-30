@@ -65,7 +65,7 @@ namespace StuddyBot.Dialogs
             {
                 var subs = userSubscription.ToList();
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Your subscriptions:"));
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Ваші підписки:"));
 
                 var message = "";
 
@@ -73,24 +73,24 @@ namespace StuddyBot.Dialogs
                 {
                     var courseInfo = _subscriptionManager.GetCourseInfo(sub.CourseId.ToString());
                     message +=
-                        $"\n\nCourse Id: {courseInfo.Id}, Name: {courseInfo.Name}, Registration starts: {courseInfo.RegistrationStartDate.ToShortDateString()}," +
-                        $" Course starts: {courseInfo.StartDate.Date.ToShortDateString()};";
+                        $"\n\nId курсу: {courseInfo.Id}, Назва: {courseInfo.Name}, Реєстрація починається: {courseInfo.RegistrationStartDate.ToShortDateString()}," +
+                        $" Курс починається: {courseInfo.StartDate.Date.ToShortDateString()};";
                 }
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
 
-                var unsubQuestion = "Would you like to unsubscribe from some?";
+                var unsubQuestion = "Хочете відписатись від сповіщення на курс?";
 
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
                         Prompt = MessageFactory.Text(unsubQuestion),
-                        Choices = new List<Choice> {new Choice("yes"), new Choice("no")}
+                        Choices = new List<Choice> {new Choice("так"), new Choice("ні")}
                     },
                     cancellationToken);
             }
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("No subscriptions yet"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Підписок немає"), cancellationToken);
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
         }
 
@@ -98,7 +98,7 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
 
-            if (foundChoice == "yes" && userSubscription.Count != 0)
+            if (foundChoice == "так" && userSubscription.Count != 0)
             {
                 var subs = userSubscription.ToList();
 
@@ -107,8 +107,8 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text("Choose course id from which you want to unsubscribe"),
-                        RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                        Prompt = MessageFactory.Text("Id курсу від якого Ви хочете відписатись"),
+                        RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
                         Choices = variants,
                         Style = ListStyle.HeroCard
                     },

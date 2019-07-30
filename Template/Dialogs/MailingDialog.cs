@@ -30,6 +30,7 @@ namespace StuddyBot.Dialogs
         private StuddyBotContext _db;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private string userEmail;
 
 
 
@@ -51,13 +52,14 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             
             // ToDo Email validator to check email
-            AddDialog(new TextPrompt("email"));
+            AddDialog(new TextPrompt("email", EmailFormValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new FinishDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSendToEmailStepAsync,
+                CheckForEmailStepAsync,
                 AskEmailStepAsync,
                 SendDialogStepAsync
             }));
@@ -65,7 +67,7 @@ namespace StuddyBot.Dialogs
             // The initial child Dialog to run.
             InitialDialogId = nameof(WaterfallDialog);
         }
-
+        
         /// <summary>
         /// Asks the user does he want to receive the dialog to email.
         /// </summary>
@@ -74,21 +76,55 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSendToEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var msg = "Хочете отримати діалог на email?";// "Do you want to receive the dialog to email?";
+            var promptMessage = "Хочете отримати діалог на email?";// "Do you want to receive the dialog to email?";
             
-            var options = new PromptOptions()
-            {
-                Prompt = MessageFactory.Text(msg),
-                Style = ListStyle.HeroCard
-            };
-
-            var message = options.Prompt.Text;
+            var message = promptMessage;
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
-            return await stepContext.PromptAsync(nameof(ConfirmPrompt), options, cancellationToken);
+            return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                new PromptOptions()
+                {
+                    Prompt = MessageFactory.Text(promptMessage),
+                    Choices = new List<Choice> { new Choice("так"), new Choice("ні") }
+                },
+                cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+        {
+            var foundChoice = stepContext.Context.Activity.Text; //(stepContext.Result as FoundChoice).Value;
+
+            if (foundChoice=="так")
+            {
+                userEmail = _db.GetUserEmail(_DialogInfo);
+
+                if (!string.IsNullOrEmpty(userEmail))
+                {
+                    var promptMessage = $"Відправити на цей email?\n**{userEmail}**";
+
+                    var message = promptMessage;
+                    var sender = "bot";
+                    var time = stepContext.Context.Activity.Timestamp.Value;
+
+                    _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+                    return await stepContext.PromptAsync(nameof(ChoicePrompt),
+                        new PromptOptions()
+                        {
+                            Prompt = MessageFactory.Text(promptMessage),
+                            Choices = new List<Choice> {new Choice("так"), new Choice("ні")}
+                        },
+                        cancellationToken);
+                }
+
+                return await stepContext.NextAsync("ні", cancellationToken);
+            }
+
+            return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
+                cancellationToken: cancellationToken);
         }
 
         /// <summary>
@@ -100,7 +136,9 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskEmailStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if ((bool)stepContext.Result)
+            var foundChoice = stepContext.Context.Activity.Text;//(stepContext.Result as FoundChoice).Value;
+
+            if (foundChoice=="ні")
             {
                 var msg = "Будь ласка, введіть свій email:";// "Enter Your email, please:";
                 var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
@@ -120,6 +158,11 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync("email", options, cancellationToken);
             }
 
+            if (foundChoice == "так")
+            {
+                return await stepContext.NextAsync(userEmail, cancellationToken);
+            }
+
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);
         }
@@ -134,10 +177,10 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> SendDialogStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            var userEmail = stepContext.Result.ToString();
+            userEmail = stepContext.Result.ToString();
 
             var dialogId = _DialogInfo.DialogId;
-            var message = GetUserConversation(dialogId);
+            var message = _db.GetUserConversation(dialogId);
 
             await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
 
@@ -145,16 +188,18 @@ namespace StuddyBot.Dialogs
                 cancellationToken: cancellationToken);
         }
 
-        private string GetUserConversation(int dialogId)
+        private Task<bool> EmailFormValidator(PromptValidatorContext<string> promptcontext, CancellationToken cancellationtoken)
         {
-            var text = "Hi, your conversation with StuddyBot";
-            var conversation = _db.Dialog.Where(d => d.DialogsId == dialogId).ToList();          
-            foreach (var message in conversation)
+            try
             {
-                text += $"<br/>From: {message.Sender} <br/> &nbsp; {message.Message} &emsp; {message.Time.DateTime}<br/><hr/>";
+                var mail = new System.Net.Mail.MailAddress(promptcontext.Context.Activity.Text);
+                return Task.FromResult(true);
             }
-
-            return text;
+            catch
+            {
+                promptcontext.Context.SendActivityAsync(MessageFactory.Text("Хибний формат адреси"), cancellationtoken);
+                return Task.FromResult(false);
+            }
         }
     }
 }

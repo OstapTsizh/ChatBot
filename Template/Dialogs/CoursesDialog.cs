@@ -110,9 +110,9 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Do you want to receive a notification about the start?"),
-                RetryPrompt = MessageFactory.Text("Try one more time, please."),
-                Choices = new List<Choice> { new Choice("yes"), new Choice("no") },
+                Prompt = MessageFactory.Text("Хочете отримати сповіщення про початок реєстрації?"),
+                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
+                Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
             };
 
             return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
@@ -123,7 +123,7 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
             var userId = stepContext.Context.Activity.From.Id;
-            if (foundChoice == "yes")
+            if (foundChoice == "так")
             {
                 var subscriber = _db.User.First(user => user.Id == userId);
                 var onCourse = _db.Courses.First(course => course.Name == selectedCourse);
@@ -138,7 +138,7 @@ namespace StuddyBot.Dialogs
                 _db.SaveChanges();
             }
 
-            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
+            return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
                     cancellationToken: cancellationToken);
         }
     }

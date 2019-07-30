@@ -72,6 +72,11 @@ namespace StuddyBot.Dialogs
                         await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
                             cancellationToken: cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
+
+                    case "email":
+                        await innerDc.ReplaceDialogAsync(nameof(EmailDialog),
+                            cancellationToken: cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
 

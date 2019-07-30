@@ -267,6 +267,8 @@ namespace DecisionMakers
                     courses = items.ToObject<List<Course>>();
                 }
             }
+
+            // Insert into db
             studdyBotContext = new StuddyBotContext();
             if (!studdyBotContext.Courses.Any())
             {

@@ -86,8 +86,8 @@ namespace StuddyBot.Dialogs
                 }
 
                 var msg = "ўо ¬ас ц≥кавить?";// "What you are interested in?";
-                var retryMsg = "Ѕудь ласка, спробуйте ще раз:";// "Try one more time, please:";
-
+                var retryMsg = "Ѕудь ласка, спробуйте ще раз";// "Try one more time, please:";
+                
                 var options = new PromptOptions()
                 {
                     Prompt = MessageFactory.Text(msg),
