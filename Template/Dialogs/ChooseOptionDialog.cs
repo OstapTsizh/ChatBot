@@ -83,7 +83,7 @@ namespace StuddyBot.Dialogs
                 choices.Add(new Choice(ch4));
                 choices.Add(new Choice(ch5));
             }
-            else
+            
             {
                 var ch6 = "Завершити діалог"; // "End dialog";
                 choices.Add(new Choice(ch6));
