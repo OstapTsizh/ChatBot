@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -27,10 +29,10 @@ namespace StuddyBot.Dialogs
         private Dictionary<string, string> _newQuestion;
 
 
-        public AddQuestionDialog(IDecisionMaker decisionMaker, 
+        public AddQuestionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(AddQuestionDialog))
         {
             
@@ -94,6 +96,14 @@ namespace StuddyBot.Dialogs
             // ToDo add new question to a Database
             // 
             // 
+
+            var message = "ƒ€куЇмо за допомогу!"; // "Thank you for your help!";
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
+
+            _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(message),cancellationToken);
 
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);

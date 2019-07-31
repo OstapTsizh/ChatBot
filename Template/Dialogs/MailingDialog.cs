@@ -53,10 +53,9 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt("validation", CodeValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                AskSendToEmailStepAsync,
                 CheckForEmailStepAsync,
                 AskEmailStepAsync,
                 SendDialogStepAsync,
@@ -67,8 +66,13 @@ namespace StuddyBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
         
+        
         /// <summary>
-        /// Asks the user does he want to receive the dialog to email.
+
+
+
+//Check this
+		 /// Asks the user does he want to receive the dialog to email.
         /// </summary>
         /// <param name="stepContext"></param>
         /// <param name="cancellationToken"></param>
@@ -126,7 +130,7 @@ namespace StuddyBot.Dialogs
                 cancellationToken: cancellationToken);
         }
 
-        /// <summary>
+
         /// Asks an email address from the user.
         /// </summary>
         /// <param name="stepContext"></param>
@@ -135,9 +139,12 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskEmailStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            var foundChoice = stepContext.Context.Activity.Text;
+
+////Check this
+var foundChoice = stepContext.Context.Activity.Text;
 
             if (foundChoice=="н≥" || stepContext.Result.ToString()=="н≥")
+
             {
                 validationCode = string.Empty;
                 var msg = "Ѕудь ласка, введ≥ть св≥й email:";// "Enter Your email, please:";
@@ -158,6 +165,10 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync("email", options, cancellationToken);
             }
 
+
+
+
+//Check this
             if (foundChoice == "так")
             {
                 var dialogId = _DialogInfo.DialogId;

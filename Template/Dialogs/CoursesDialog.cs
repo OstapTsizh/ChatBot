@@ -110,8 +110,8 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Хочете отримати сповіщення про початок реєстрації?"),
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
+                Prompt = MessageFactory.Text("Хочете отримати сповіщення про початок реєстрації?"), //Do you want to receive a notification about the start?
+                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"), //Try one more time, please.
                 Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
             };
 
@@ -140,11 +140,13 @@ namespace StuddyBot.Dialogs
                     UserId =  subscriber.Id,
                     CourseId = onCourse.Id
                 });
-                
                 _db.SaveChanges();
+
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                    cancellationToken: cancellationToken);
             }
 
-            return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
         }
     }
