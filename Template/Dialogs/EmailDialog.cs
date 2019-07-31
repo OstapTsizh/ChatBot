@@ -175,6 +175,7 @@ namespace StuddyBot.Dialogs
 
                 case "так":
                     _db.DeleteUserEmail(_DialogInfo);
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Видалено"));
                     return await stepContext.ReplaceDialogAsync(nameof(EmailDialog),
                         cancellationToken: cancellationToken);
 
@@ -193,14 +194,6 @@ namespace StuddyBot.Dialogs
 
 
                     return await stepContext.PromptAsync("validation", options, cancellationToken);
-
-                    return await stepContext.ReplaceDialogAsync(nameof(EmailDialog),
-                    cancellationToken: cancellationToken);
-
-                    /*_db.EditUserEmail(_DialogInfo, stepContext.Context.Activity.Text);
-                    return await stepContext.ReplaceDialogAsync(nameof(EmailDialog),
-                        cancellationToken: cancellationToken);*/
-
             }
         }
 
@@ -232,7 +225,7 @@ namespace StuddyBot.Dialogs
 
         private Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {
-            if (promptContext.Context.Activity.Text == validationCode || promptContext.Context.Activity.Text == "Назад")
+            if (promptContext.Context.Activity.Text == validationCode || promptContext.Context.Activity.Text == "Назад" || promptContext.Context.Activity.Text == "odmen")
             {
                 return Task.FromResult(true);
             }
