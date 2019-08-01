@@ -3,7 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using StuddyBot.Core.DAL.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using StuddyBot.Core.Models;
+using Course = StuddyBot.Core.DAL.Entities.Course;
 
 namespace StuddyBot.Core.DAL.Data
 {
@@ -80,6 +83,33 @@ namespace StuddyBot.Core.DAL.Data
                 };
                 Courses.Add(Course);
             }
+        }
+
+        public string GetUserEmail(DialogInfo dialogInfo)
+        {
+            return User.First(user => user.Id == dialogInfo.UserId).Email;
+        }
+
+        public void DeleteUserEmail(DialogInfo dialogInfo)
+        {
+            User.First(user => user.Id == dialogInfo.UserId).Email = string.Empty;
+        }
+
+        public void EditUserEmail(DialogInfo dialogInfo, string newEmail)
+        {
+            User.First(user => user.Id == dialogInfo.UserId).Email = newEmail;
+        }
+
+        public string GetUserConversation(int dialogId)
+        {
+            var text = "Hi, your conversation with StuddyBot";
+            var conversation = Dialog.Where(d => d.DialogsId == dialogId).ToList();
+            foreach (var message in conversation)
+            {
+                text += $"<br/>From: {message.Sender} <br/> &nbsp; {message.Message} &emsp; {message.Time.DateTime}<br/><hr/>";
+            }
+
+            return text;
         }
     }
 }

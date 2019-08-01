@@ -76,10 +76,20 @@ namespace StuddyBot.Dialogs
 
             ////AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
             ////AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
-            ////AddDialog(new MailingDialog(DecisionMaker, emailSender, _Logger, _DialogInfo, _conversationReferences, db));
+
+
+            AddDialog(new MailingDialog(DecisionMaker, emailSender, subscriptionManager, _Logger, _DialogInfo, _conversationReferences, db));
+
+
             ////AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
+
+
             //AddDialog(new SubscriptionDialog(decisionMaker, subscriptionManager, Logger, dialogInfo,
             //    conversationReferences));
+
+
+            AddDialog(new EmailDialog(decisionMaker, subscriptionManager, emailSender, Logger, dialogInfo,
+                conversationReferences, db));
 
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
