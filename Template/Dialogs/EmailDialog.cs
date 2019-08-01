@@ -51,7 +51,8 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new TextPrompt("email", EmailFormValidator));
             AddDialog(new ChoicePrompt("validation", CodeValidator));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, subscriptionManager, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

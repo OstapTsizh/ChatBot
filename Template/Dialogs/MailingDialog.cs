@@ -77,7 +77,7 @@ namespace StuddyBot.Dialogs
         /// <param name="stepContext"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        private async Task<DialogTurnResult> AskSendToEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
+       /* private async Task<DialogTurnResult> AskSendToEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var promptMessage = "Хочете отримати діалог на email?";// "Do you want to receive the dialog to email?";
             
@@ -94,14 +94,10 @@ namespace StuddyBot.Dialogs
                     Choices = new List<Choice> { new Choice("так"), new Choice("ні") }
                 },
                 cancellationToken);
-        }
+        }*/
 
         private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            var foundChoice = stepContext.Context.Activity.Text; //(stepContext.Result as FoundChoice).Value;
-
-            if (foundChoice=="так")
-            {
                 userEmail = _db.GetUserEmail(_DialogInfo);
 
                 if (!string.IsNullOrEmpty(userEmail))
@@ -124,10 +120,6 @@ namespace StuddyBot.Dialogs
                 }
 
                 return await stepContext.NextAsync("ні", cancellationToken);
-            }
-
-            return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
-                cancellationToken: cancellationToken);
         }
 
 
