@@ -72,9 +72,9 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Choose a question:"),
+                Prompt = MessageFactory.Text("Виберіть питання:"), // Choose a question:
                 Choices = choices,
-                RetryPrompt = MessageFactory.Text("Try one more time, please:"),
+                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз:"), // Try one more time, please:
                 Style = ListStyle.HeroCard
             };
 
