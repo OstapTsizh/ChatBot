@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StuddyBot.Core.DAL.Data;
 
 namespace StuddyBot.Core.Migrations
 {
     [DbContext(typeof(StuddyBotContext))]
-    partial class StuddyBotContextModelSnapshot : ModelSnapshot
+    [Migration("20190717104514_courses")]
+    partial class courses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,8 +26,6 @@ namespace StuddyBot.Core.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
 
                     b.Property<DateTime>("RegistrationStartDate");
 
@@ -76,8 +76,6 @@ namespace StuddyBot.Core.Migrations
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ConversationReference");
 
                     b.HasKey("Id");
 

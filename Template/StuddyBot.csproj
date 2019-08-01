@@ -6,15 +6,17 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.4.3" />
-    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.4.3" />
-    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.4.3" />
-    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.1.5" />
+    <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Dialogs" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Bot.Builder.Integration.AspNet.Core" Version="4.5.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Recognizers.Text.DataTypes.TimexExpression" Version="1.2.3" />
     <PackageReference Include="System.ServiceProcess.ServiceController" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Bot.Core\StuddyBot.Core.csproj" />
+    <ProjectReference Include="..\EmailSender\EmailSender.csproj" />
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
     <ProjectReference Include="..\QuestionConstructor\DecisionMakers.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
