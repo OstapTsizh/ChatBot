@@ -1,0 +1,26 @@
+mat-form-field, .controlBtn {
+  display: block;
+}
+
+form {
+  width: 100%;
+}
+
+button {
+  margin: 10px 0px 20px 0px;
+}
+
+.mySubmit {
+  float: right;
+  background-color: rgb(0, 145, 102);
+  color: white;
+}
+
+.addResBtn {
+  background-color: cadetblue;
+  color: whitesmoke;
+}
+
+.jumbotron {
+  padding: 15px;  
+}

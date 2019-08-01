@@ -16,10 +16,22 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { QuestionsAnswersComponent } from './questions-answers/questions-answers.component';
 import { LocationsComponent } from './locations/locations.component';
 import { CoursesComponent } from './courses/courses.component';
+
+import { AddNewMenuDialog } from './add-new-menu/add-new-menu.component';
+import { NewQADialog } from './new-qadialog/new-qadialog.component';
+import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component';
+
 
 
 @NgModule({
@@ -32,7 +44,12 @@ import { CoursesComponent } from './courses/courses.component';
     MainMenuComponent,
     QuestionsAnswersComponent,
     LocationsComponent,
-    CoursesComponent
+    CoursesComponent,
+
+    AddNewMenuDialog,
+    NewQADialog,
+    NewCourseDialog,
+    
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -47,6 +64,12 @@ import { CoursesComponent } from './courses/courses.component';
     MatSelectModule,
     MatCheckboxModule,
     MatChipsModule,
+    MatTableModule,
+    MatTreeModule,
+    MatIconModule,
+    MatDialogModule,
+
+    //FontAwesomeModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -60,6 +83,7 @@ import { CoursesComponent } from './courses/courses.component';
     BrowserAnimationsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [AddNewMenuDialog, NewQADialog, NewCourseDialog],
 })
 export class AppModule { }

@@ -1,3 +1,64 @@
-<p>
-  questions-answers works!
-</p>
+<button mat-raised-button color="primary" (click)="openNewQADialog()" >Add QA</button>
+
+<hr>
+
+<div>
+
+  <div *ngFor="let item of QAs; let lang = index">
+
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th colspan="2"> {{ item.lang }} </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table class="table table-editable">
+              <thead>
+                <tr>
+                  <th> Question </th>
+                  <th> Answers </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inner of item.qAs; let qaInner = index">
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateList(lang, qaInner, 'question', $event)">
+                      {{ inner.question }}
+                    </span>
+                  </td>
+                  <td>
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr *ngFor="let answer of inner.answer; let k = index">
+                          <td>
+                            <span contenteditable="true" (keyup)="changeValue($event)"
+                              (blur)="updateAnswer(lang, qaInner, k, $event)">
+                              {{ answer }}
+                            </span>
+                          </td>
+                          <td align="center">
+                            <button mat-raised-button color="warn" (click)="deleteAnswer(lang, qaInner, k)">Delete answer</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td align="center">
+                      <button mat-raised-button color="warn" (click)="delete(lang, qaInner)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

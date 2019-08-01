@@ -3,26 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace JsonEditor.Controllers
 {
-    [Route("api/[controller]")]
-    public class SampleDataController : Controller
-    {
-        private static string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+    [Route ("api/[controller]")]
+    public class SampleDataController : Controller {
+
+
+        private static string[] Summaries = new [] {
+            "Freezing",
+            "Bracing",
+            "Chilly",
+            "Cool",
+            "Mild",
+            "Warm",
+            "Balmy",
+            "Hot",
+            "Sweltering",
+            "Scorching"
         };
 
-        [HttpGet("[action]")]
+        [HttpGet ("[action]")]
         public IEnumerable<WeatherForecast> WeatherForecasts()
         {
-            var rng = new Random();
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                DateFormatted = DateTime.Now.AddDays(index).ToString("d"),
-                TemperatureC = rng.Next(-20, 55),
-                Summary = Summaries[rng.Next(Summaries.Length)]
+            var rng = new Random ();
+            return Enumerable.Range (1, 5).Select (index => new WeatherForecast {
+                DateFormatted = DateTime.Now.AddDays (index).ToString ("d"),
+                    TemperatureC = rng.Next (-20, 55),
+                    Summary = Summaries[rng.Next (Summaries.Length)]
             });
         }
 
@@ -32,11 +42,9 @@ namespace JsonEditor.Controllers
             public int TemperatureC { get; set; }
             public string Summary { get; set; }
 
-            public int TemperatureF
-            {
-                get
-                {
-                    return 32 + (int)(TemperatureC / 0.5556);
+            public int TemperatureF {
+                get {
+                    return 32 + (int) (TemperatureC / 0.5556);
                 }
             }
         }
