@@ -262,7 +262,7 @@ namespace DecisionMakers
             {
                 if (item["lang"].ToObject<string[]>().Contains(lang))
                 {
-                    var items = item["model"]["courses"];
+                    var items = item["courses"];
 
                     courses = items.ToObject<List<Course>>();
                 }
@@ -301,7 +301,7 @@ namespace DecisionMakers
             {
                 if (item["lang"].ToObject<string[]>().Contains(lang))
                 {
-                    var items = item["model"]["QAs"];
+                    var items = item["QAs"];
 
                     tmpQAs = items.ToObject<List<QA>>();
                 }
