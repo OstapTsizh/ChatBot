@@ -104,7 +104,8 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
-            var msgText = string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
+            var msgText = courses.FirstOrDefault(it => it.Name == selectedCourse).Resources;
+            //string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken: cancellationToken);
 
