@@ -175,7 +175,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                if (item["lang"].ToObject<string>() == lang)
                 {
                     var country = item["model"]["country"];
                     var cities = item["model"]["cities"];
@@ -221,7 +221,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                if (item["lang"].ToObject<string>() == lang)
                 {
                     var items = item["items"];
                     
@@ -260,13 +260,15 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                if (item["lang"].ToObject<string>()==lang)
                 {
                     var items = item["courses"];
 
                     courses = items.ToObject<List<Course>>();
                 }
             }
+
+            // ToDo check this !!!!!
 
             // Insert into db
             studdyBotContext = new StuddyBotContext();
@@ -301,7 +303,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                if (item["lang"].ToObject<string>() == lang)
                 {
                     var items = item["QAs"];
 
