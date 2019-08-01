@@ -19,13 +19,19 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 
+// import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { MainMenuComponent } from './main-menu/main-menu.component';
 import { QuestionsAnswersComponent } from './questions-answers/questions-answers.component';
 import { LocationsComponent } from './locations/locations.component';
 import { CoursesComponent } from './courses/courses.component';
-import { AddNewMenuComponent } from './add-new-menu/add-new-menu.component';
+
+import { AddNewMenuDialog } from './add-new-menu/add-new-menu.component';
+import { NewQADialog } from './new-qadialog/new-qadialog.component';
+import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component';
+
 
 
 @NgModule({
@@ -39,7 +45,11 @@ import { AddNewMenuComponent } from './add-new-menu/add-new-menu.component';
     QuestionsAnswersComponent,
     LocationsComponent,
     CoursesComponent,
-    AddNewMenuComponent
+
+    AddNewMenuDialog,
+    NewQADialog,
+    NewCourseDialog,
+    
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -57,6 +67,9 @@ import { AddNewMenuComponent } from './add-new-menu/add-new-menu.component';
     MatTableModule,
     MatTreeModule,
     MatIconModule,
+    MatDialogModule,
+
+    //FontAwesomeModule,
 
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
@@ -66,11 +79,11 @@ import { AddNewMenuComponent } from './add-new-menu/add-new-menu.component';
       { path: 'courses', component: CoursesComponent },
       { path: 'fill-json', component: FillJsonComponent },
       { path: 'fetch-data', component: FetchDataComponent },
-      { path: 'add-new-menu', component: AddNewMenuComponent },
     ]),
     BrowserAnimationsModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [AddNewMenuDialog, NewQADialog, NewCourseDialog],
 })
 export class AppModule { }

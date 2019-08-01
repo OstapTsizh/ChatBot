@@ -3,7 +3,7 @@ mat-form-field, .controlBtn {
 }
 
 form {
-  width: 60%;
+  width: 100%;
 }
 
 button {
@@ -22,6 +22,5 @@ button {
 }
 
 .jumbotron {
-  padding: 15px;
-  
+  padding: 15px;  
 }

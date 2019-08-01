@@ -1,0 +1,51 @@
+<h4 mat-dialog-title>Add Question and Answer option</h4>
+<div mat-dialog-content>
+
+  <hr>
+  Value: {{ qaForm.value | json }}
+  <hr>
+
+  <form [formGroup]="qaForm">
+
+    <mat-form-field class="full">
+      <mat-select placeholder="Language" formControlName="lang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.value">
+          {{ lang.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="addQA()">New option</button>
+
+    <div formArrayName="qAs">
+
+      <div *ngFor="let item of qaArray.controls; let i = index" [formGroupName]="i" class="jumbotron">
+
+        <button mat-raised-button color="warn" (click)="deleteQA(i)">Delete option</button>
+
+        <mat-form-field>
+          <input matInput formControlName="question" placeholder="Question">
+        </mat-form-field>
+
+        <div>
+
+          <mat-form-field class="full">
+            <input matInput placeholder="Answer" #inputQaAnswer>
+          </mat-form-field>
+
+          <button mat-raised-button class="addResBtn" (click)="addQaAnswer(inputQaAnswer, i)">Add answer</button>
+
+        </div>
+
+
+
+      </div>
+
+      <div class="controlBtn">
+        <button mat-raised-button class="mySubmit" (click)="Submit()">Update Data</button>
+      </div>
+
+    </div>
+
+  </form>
+</div>

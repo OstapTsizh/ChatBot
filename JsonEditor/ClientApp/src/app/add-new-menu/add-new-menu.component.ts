@@ -1,6 +1,7 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { MatDialogRef } from '@angular/material';
 
 
 export interface ILang {
@@ -13,16 +14,21 @@ export interface ILang {
   templateUrl: './add-new-menu.component.html',
   styleUrls: ['./add-new-menu.component.css']
 })
-export class AddNewMenuComponent implements OnInit {
+export class AddNewMenuDialog implements OnInit {
 
   languages: ILang[] = [
-    {value: 'uk-ua', viewValue: 'uk-ua'},
-    {value: 'en-us', viewValue: 'en-us'}
+    { value: 'uk-ua', viewValue: 'uk-ua' },
+    { value: 'en-us', viewValue: 'en-us' }
   ];
 
-  constructor(private fb: FormBuilder, private http: HttpClient, @Inject('BASE_URL') baseUrl: string) {
-    this.baseUrl = baseUrl;
-   }
+  constructor(private fb: FormBuilder,
+              private http: HttpClient,
+              @Inject('BASE_URL') baseUrl: string,
+              public dialogRef: MatDialogRef<AddNewMenuDialog> ) 
+              {
+                this.baseUrl = baseUrl + 'api/MainMenu';
+              }
+
 
   baseUrl: string;
   MainMenuForm: FormGroup;
@@ -33,7 +39,7 @@ export class AddNewMenuComponent implements OnInit {
       lang: "",
       items: this.fb.array([])
     })
-    
+
   }
 
 
@@ -55,18 +61,16 @@ export class AddNewMenuComponent implements OnInit {
   }
 
 
-  
 
-  addItemResource(inputItemResource, index: number)
-  {     
+
+  addItemResource(inputItemResource, index: number) {
     let itemsResourcesArray = this.itemsArray.at(index).get('resources') as FormArray;
 
     itemsResourcesArray.push(this.fb.control(inputItemResource.value));
     inputItemResource.value = '';
   }
 
-  deleteItemResource(itemInArray: number, resourceIndex: number)
-  {    
+  deleteItemResource(itemInArray: number, resourceIndex: number) {
     (this.itemsArray.at(itemInArray).get('resources') as FormArray).removeAt(resourceIndex);
   }
 
@@ -76,19 +80,25 @@ export class AddNewMenuComponent implements OnInit {
     let body = JSON.stringify(this.MainMenuForm.value);
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
-    
+
 
     this.MainMenuForm.get('items').reset();
     this.MainMenuForm.reset();
+    this.onNoClick();
 
-    return this.http.post(this.baseUrl + 'api/SampleData/MainMenu', body, httpOptions)
-      .subscribe( result => console.log(result));
+    return this.http.post(this.baseUrl, body, httpOptions)
+      .subscribe();
+
+      
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
 
 
-//export interface
 
 }

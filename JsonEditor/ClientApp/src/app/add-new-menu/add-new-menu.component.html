@@ -1,53 +1,56 @@
-<h4>Main menu dialog</h4>
+<h4 mat-dialog-title>Add main menu option</h4>
+<div mat-dialog-content>
+  <hr>
+  Value: {{ MainMenuForm.value | json }}
+  <hr>
 
-<hr>
-Value: {{ MainMenuForm.value | json }}
-<hr>
+  <form [formGroup]="MainMenuForm">
 
-<form [formGroup]="MainMenuForm">
+    <mat-form-field class="full">
+      <mat-select placeholder="Language" formControlName="lang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.value">
+          {{ lang.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
 
-  <mat-form-field class="full">
-    <mat-select placeholder="Language" formControlName="lang">
-      <mat-option *ngFor="let lang of languages" [value]="lang.value">
-        {{ lang.viewValue }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+    <button mat-raised-button color="primary" (click)="addItem()">New option</button>
 
-  <button mat-raised-button color="primary" (click)="addItem()">New Item</button>
+    <div formArrayName="items">
+      <div *ngFor="let item of itemsArray.controls; let i=index" [formGroupName]="i" class="jumbotron">
 
-  <div formArrayName="items">
-    <div *ngFor="let item of itemsArray.controls; let i=index" [formGroupName]="i" class="jumbotron">
-
-      <button mat-raised-button color="warn" (click)="deleteItem(i)">Delete item</button>
-      <mat-form-field>
-        <input matInput formControlName="name" placeholder="Name">
-      </mat-form-field>
-
-      <mat-form-field class="full">
-        <input matInput formControlName="dialog" placeholder="Dialog">
-      </mat-form-field>
-
-      <div>
-          <label *ngFor="let word of item.resources; let res=index" style="margin: 10px 7px;">
-              {{ word.value }} 
-             <button (click)="deleteItemResource(i, res)" class="btn btn-danger btn-sm deleteKeywordButton">
-                 x
-                 </button>
-           </label>
-
-        <mat-form-field class="full">
-          <input matInput placeholder="Resources" #inputItemResource>
+        <button mat-raised-button color="warn" (click)="deleteItem(i)">Delete option</button>
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Name">
         </mat-form-field>
 
-        <button mat-raised-button class="addResBtn" (click)="addItemResource(inputItemResource, i)">Add resource</button>
+        <mat-form-field class="full">
+          <input matInput formControlName="dialog" placeholder="Dialog">
+        </mat-form-field>
+
+        <div>
+          <div *ngFor="let word of item.resources; let res=index" style="margin: 10px 7px;">
+            {{ word.value }}
+            <button (click)="deleteItemResource(i, res)" class="btn btn-danger btn-sm deleteKeywordButton">
+              x
+            </button>
+          </div>
+
+          <mat-form-field class="full">
+            <input matInput placeholder="Resources" #inputItemResource>
+          </mat-form-field>
+
+          <button mat-raised-button class="addResBtn" (click)="addItemResource(inputItemResource, i)">
+            Add resource
+          </button>
+        </div>
+
+      </div>
+
+      <div class="controlBtn">
+        <button mat-raised-button class="mySubmit" (click)="Submit()">Update Data</button>
       </div>
 
     </div>
-
-    <div class="controlBtn">      
-      <button mat-raised-button class="mySubmit" (click)="Submit()">Update Data</button>
-    </div>
-
-  </div>
-</form>
+  </form>
+</div>
