@@ -1,1 +1,52 @@
-[{"lang":"uk-ua","courses":[{"name":"Interface Design","resources":"Детальніша інфа за посиланням: www.training.epam.ua/#/Training/2216"},{"name":"Java","resources":"Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2205"},{"name":"DevOps","resources":"Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2208"},{"name":".NET Development","resources":"Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2189"}]},{"lang":"en-us","courses":[{"name":"Software Testing","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2198"},{"name":"Quality Assurance (Automation)","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2209"},{"name":"Interface Design","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2216"},{"name":"Java","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2276"},{"name":"DevOps","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2208"},{"name":".NET Development","resources":"All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2189"}]}]
+[  
+  {
+    "lang": "uk-ua",
+    "courses": [
+      {
+        "name": "Interface Design",
+        "resources": "Детальніша інфа за посиланням: www.training.epam.ua/#/Training/2216"
+      },
+      {
+        "name": "Java",
+        "resources": "Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2205"
+      },
+      {
+        "name": "DevOps",
+        "resources": "Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2208"
+      },
+      {
+        "name": ".NET Development",
+        "resources": "Детальніша інфа за посиланням:: www.training.epam.ua/#/Training/2189"
+      }
+    ]
+  },
+  {
+    "lang": "en-us",
+    "courses": [
+      {
+        "name": "Software Testing",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2198"
+      },
+      {
+        "name": "Quality Assurance (Automation)",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2209"
+      },
+      {
+        "name": "Interface Design",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2216"
+      },
+      {
+        "name": "Java",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2276"
+      },
+      {
+        "name": "DevOps",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2208"
+      },
+      {
+        "name": ".NET Development",
+        "resources": "All the necessary information you can get by the following link: www.training.epam.ua/#/Training/2189"
+      }
+    ]
+  }
+]
