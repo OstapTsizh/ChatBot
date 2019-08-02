@@ -25,6 +25,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
         
         public FinishDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
@@ -38,6 +39,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
@@ -127,8 +129,8 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(feedback))
             {
-
-                // ToDo write a feedback into a Database
+                _db.AddFeedback(feedback);
+                _db.SaveChanges();
             }
 
             return await stepContext.CancelAllDialogsAsync(cancellationToken);

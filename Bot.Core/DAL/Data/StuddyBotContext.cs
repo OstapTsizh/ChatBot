@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Internal;
 using StuddyBot.Core.Models;
 using Course = StuddyBot.Core.DAL.Entities.Course;
+using Question = StuddyBot.Core.DAL.Entities.Question;
 
 namespace StuddyBot.Core.DAL.Data
 {
@@ -43,6 +45,17 @@ namespace StuddyBot.Core.DAL.Data
         /// subscribed to.
         /// </summary>
         public DbSet<UserCourse> UserCourses { get; set; }
+
+        /// <summary>
+        /// A model to save users Questions.
+        /// </summary>
+        public DbSet<Question> Questions { get; set; }
+
+        /// <summary>
+        /// A model to save users Feedback.
+        /// </summary>
+        public DbSet<Feedback> Feedback { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -110,6 +123,37 @@ namespace StuddyBot.Core.DAL.Data
             }
 
             return text;
+        }
+
+        public void AddSubscriptionToCourse(string userId, string courseName)
+        {
+            var onCourse = Courses.First(course => course.Name == courseName);
+
+            var userSubscriptions = UserCourses.Any(item => item.UserId == userId && item.CourseId == onCourse.Id);
+            if (!userSubscriptions)
+            { 
+                UserCourses.Add(new UserCourse()
+                {
+                    UserId = userId,
+                    CourseId = onCourse.Id
+                });
+            }
+        }
+
+        public void AddQuestion(string question)
+        {
+            Questions.Add(new Question()
+            {
+                Message = question
+            });
+        }
+
+        public void AddFeedback(string feedback)
+        {
+            Feedback.Add(new Feedback()
+            {
+                Message = feedback
+            });
         }
     }
 }
