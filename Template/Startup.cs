@@ -82,6 +82,9 @@ namespace StuddyBot
             // Get settings for EmailSender.
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
+            // Get settings for paths in Decision Maker
+            services.Configure<PathSettings>(Configuration.GetSection("PathSettings"));
+
             // Create the Email Sender for sending emails for users.
             services.AddSingleton<IEmailSender, EmailSender.EmailSender>();
 

@@ -65,7 +65,7 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Type Your question, please:"),
+                Prompt = MessageFactory.Text("Будь ласка, введіть Ваше питання:"), // Type Your question, please:
                 Style = ListStyle.HeroCard
             };
 

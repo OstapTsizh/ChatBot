@@ -43,7 +43,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
 
-            AddDialog(new CoursesDialog(DecisionMaker, _myLogger, dialogInfo,
+            AddDialog(new CoursesDialog(DecisionMaker,emailSender,SubscriptionManager, _myLogger, dialogInfo,
                 conversationReferences, db));
             AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
