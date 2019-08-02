@@ -20,7 +20,7 @@ export class NewQADialog implements OnInit {
 
   languages: ILang[] = [
     { value: 'uk-ua', viewValue: 'uk-ua' },
-    { value: 'en-gb', viewValue: 'en-gb' }
+    { value: 'en-us', viewValue: 'en-us' }
   ];
 
   constructor(private fb: FormBuilder,
