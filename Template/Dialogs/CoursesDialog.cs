@@ -131,18 +131,10 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
-            var userId = stepContext.Context.Activity.From.Id;
+
             if (foundChoice == "так")
             {
-                var subscriber = _db.User.First(user => user.Id == userId);
-                var onCourse = _db.Courses.First(course => course.Name == selectedCourse);
-                
-                _db.UserCourses.Add(
-                    new UserCourse()
-                {
-                    UserId =  subscriber.Id,
-                    CourseId = onCourse.Id
-                });
+                _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
                 _db.SaveChanges();
 
                 return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
