@@ -1,0 +1,45 @@
+<h4 mat-dialog-title>Add new course data</h4>
+<div mat-dialog-content>
+
+  <hr>
+  Value: {{ courseForm.value | json }}
+  <hr>
+
+  <form [formGroup]="courseForm">
+
+    <mat-form-field class="full">
+      <mat-select placeholder="Language" formControlName="lang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.value">
+          {{ lang.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="addCourseData()">New course</button>
+
+    <div formArrayName="courses">
+
+      <div *ngFor="let item of coursesInnerArray.controls; let i = index" [formGroupName]="i" class="jumbotron">
+
+        <button mat-raised-button color="warn" (click)="deleteCourseData(i)">Delete Course</button>
+
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Name">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput formControlName="resources" placeholder="Resource">
+        </mat-form-field>
+
+      </div>
+
+      <div class="controlBtn">
+        <button mat-raised-button class="mySubmit" (click)="Submit()">Update Data</button>
+      </div>
+
+    </div>
+
+
+  </form>
+
+</div>

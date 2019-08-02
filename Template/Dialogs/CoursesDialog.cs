@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
@@ -28,7 +29,7 @@ namespace StuddyBot.Dialogs
 
         private string selectedCourse;
 
-        public CoursesDialog(IDecisionMaker decisionMaker, 
+        public CoursesDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -44,6 +45,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskCourseStepAsync,
@@ -104,7 +106,8 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
-            var msgText = string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
+            var msgText = courses.FirstOrDefault(it => it.Name == selectedCourse).Resources;
+            //string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken: cancellationToken);
 
