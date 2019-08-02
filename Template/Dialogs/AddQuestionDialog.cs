@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using StuddyBot.Core.DAL.Data;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -25,6 +26,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
         private Dictionary<string, string> _newQuestion;
 
@@ -40,6 +42,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
@@ -93,9 +96,8 @@ namespace StuddyBot.Dialogs
                     cancellationToken: cancellationToken);
             }
 
-            // ToDo add new question to a Database
-            // 
-            // 
+            _db.AddQuestion(stepContext.Context.Activity.Text);
+            _db.SaveChanges();
 
             var message = "ƒ€куЇмо за допомогу!"; // "Thank you for your help!";
             var sender = "bot";
