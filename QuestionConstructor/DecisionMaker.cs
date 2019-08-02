@@ -19,13 +19,13 @@ namespace DecisionMakers
     public class DecisionMaker : IDecisionMaker
     {
         private readonly PathSettings _pathSettings;
-        public readonly string _path =  @"..\Bot.Core\Dialogs.json";
-        public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
-        public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
-        public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
-        public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
-        public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
-        public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
+        //public readonly string _path =  @"..\Bot.Core\Dialogs.json";
+        //public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
+        //public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
+        //public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
+        //public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+        //public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
+        //public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
 
         private StuddyBotContext studdyBotContext;
 
