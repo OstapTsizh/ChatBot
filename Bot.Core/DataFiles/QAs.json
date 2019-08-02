@@ -1,13 +1,1 @@
-[{
-    "lang": "uk-ua",
-    "qAs": [{
-        "question": "q2",
-        "answer": ["q2a1", "q2a2"]
-    }]
-}, {
-    "lang": "en-gb",
-    "qAs": [{
-        "question": "q1",
-        "answer": ["q1a1", "q1a2", "q1a3"]
-    }]
-}]
+[{"lang":"uk-ua","qAs":[]},{"lang":"en-gb","qAs":[{"question":"q1","answer":["q1a1","q1a2","q1a3"]}]}]
