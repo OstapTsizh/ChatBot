@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using StuddyBot.Core.DAL.Data;
 
 namespace JsonEditor.Controllers
 {
@@ -14,6 +15,15 @@ namespace JsonEditor.Controllers
     {
 
         private readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+
+        private StuddyBotContext _db;
+
+        public CoursesController(StuddyBotContext db)
+        {
+            _db = db;
+        }
+
+
 
         // GET: api/Courses
         [HttpGet]
@@ -42,6 +52,16 @@ namespace JsonEditor.Controllers
 
             System.IO.File.WriteAllText(_pathCourses, newJson);
 
+            //Write to db
+            var course = new StuddyBot.Core.DAL.Entities.Course
+            {
+                Name = model.courses[0].name,
+                StartDate = model.courses[0].StartDate,
+                RegistrationStartDate = model.courses[0].RegistrationStartDate
+            };
+
+            _db.Add(course);
+            _db.SaveChanges();
         }
 
         // PUT: api/Courses
@@ -57,6 +77,7 @@ namespace JsonEditor.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            //TODO: delete item from database
         }
     }
 
@@ -73,6 +94,9 @@ namespace JsonEditor.Controllers
     {
         public string name { get; set; }
         public string resources { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime RegistrationStartDate { get; set; }
+
     }
 
 
