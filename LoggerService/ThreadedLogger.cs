@@ -69,12 +69,12 @@ namespace LoggerService
             _unitOfWork.Save();
         }
 
-        public async Task<string> LogUser(string user_id)
+        public async Task<string> LogUser(string user_id, string userLanguage)
         {
             var user = _unitOfWork.Users.Get(user_id);
             if (user == null)
             { 
-                _unitOfWork.Users.Create(new User { Id = user_id});
+                _unitOfWork.Users.Create(new User { Id = user_id, Language = userLanguage});
                 _unitOfWork.Save();
             }
 
