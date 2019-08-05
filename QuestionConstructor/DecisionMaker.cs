@@ -278,7 +278,17 @@ namespace DecisionMakers
             studdyBotContext = new StuddyBotContext();
             if (!studdyBotContext.Courses.Any())
             {
-                studdyBotContext.PushCoursesToDB(courses);
+                var coursesDB = new List<Course>();
+                foreach (var item in tokens)
+                {
+                    if (item["lang"].ToObject<string>().ToLower() == "en-us")
+                    {
+                        var items = item["courses"];
+
+                        coursesDB = items.ToObject<List<Course>>();
+                    }
+                }
+                studdyBotContext.PushCoursesToDB(coursesDB);
                 studdyBotContext.SaveChanges();
             }
 
