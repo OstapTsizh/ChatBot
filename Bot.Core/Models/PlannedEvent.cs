@@ -5,18 +5,18 @@ using System.Text;
 namespace StuddyBot.Core.Models
 {
     /// <summary>
-    /// Represents all the course info.
+    /// Represents a planned event in EPAM.
     /// </summary>
-    public class Course
+    public class PlannedEvent
     {
         /// <summary>
-        /// A name of a course.
+        /// Name of a planned event.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Resources of the course.
+        /// A list of resources (some information).
         /// </summary>
-        public string Resources { get; set; }
+        public List<string> Resources { get; set; }
     }
 }

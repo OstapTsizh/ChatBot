@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -16,20 +18,20 @@ namespace StuddyBot.Dialogs
     /// <summary>
     /// This dialog is responsible for the communication about questions/answers.
     /// </summary>
-    public class QAsDialog : CancelAndRestartDialog
+    public class QAsDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
-        private Dictionary<string, string> _QAs;
+        private Dictionary<string, List<string>> _QAs;
 
 
-        public QAsDialog(IDecisionMaker decisionMaker, 
+        public QAsDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(QAsDialog))
         {
             
@@ -39,6 +41,8 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new AddQuestionDialog(DecisionMaker,emailSender, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,
@@ -57,7 +61,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectQAStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _QAs = DecisionMaker.GetQAs();
+            _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
 
             var choices = new List<Choice>();
 
@@ -68,9 +72,9 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Choose a question:"),
+                Prompt = MessageFactory.Text("Виберіть питання:"), // Choose a question:
                 Choices = choices,
-                RetryPrompt = MessageFactory.Text("Try one more time, please:"),
+                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз:"), // Try one more time, please:
                 Style = ListStyle.HeroCard
             };
 
@@ -94,7 +98,7 @@ namespace StuddyBot.Dialogs
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
-            var msg = MessageFactory.Text(_QAs[choiceValue]);
+            var msg = MessageFactory.Text(string.Join("\n" ,_QAs[choiceValue]));
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 

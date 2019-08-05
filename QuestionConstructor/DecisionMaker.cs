@@ -5,6 +5,10 @@ using System.Linq;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 using System.Configuration;
+using System.Text;
+using Microsoft.Extensions.Options;
+using StuddyBot.Core.BLL.Repositories;
+using StuddyBot.Core.DAL.Data;
 
 namespace DecisionMakers
 {
@@ -14,17 +18,24 @@ namespace DecisionMakers
     /// </summary>
     public class DecisionMaker : IDecisionMaker
     {
+        private readonly PathSettings _pathSettings;
+        //public readonly string _path =  @"..\Bot.Core\Dialogs.json";
+        //public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
+        //public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
+        //public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
+        //public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+        //public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
+        //public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
 
-        public readonly string _path = @"..\Bot.Core\Dialogs.json";
-        public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
-        public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
-        public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
-        public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+        private StuddyBotContext studdyBotContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
         /// </summary>
-        public DecisionMaker() { }
+        public DecisionMaker(IOptions<PathSettings> pathSettings)
+        {
+            _pathSettings = pathSettings.Value;
+        }
 
         /// <summary>
         /// Method which get all topics from json file.
@@ -32,7 +43,7 @@ namespace DecisionMakers
         /// <returns> List of all topics. </returns>
         public List<string> GetStartTopics()
         {
-            var json = File.ReadAllText(_path);
+            var json = File.ReadAllText(_pathSettings.PathDialogs);
 
             var jArray = JArray.Parse(json);
 
@@ -77,7 +88,7 @@ namespace DecisionMakers
         /// <returns> QuestionModel object of <see cref="QuestionModel"/> class. </returns>
         public QuestionModel GetQuestionOrResult(string topic)
         {
-            var json = File.ReadAllText(_path);
+            var json = File.ReadAllText(_pathSettings.PathDialogs);
 
             var jObject = JArray.Parse(json);
 
@@ -148,26 +159,53 @@ namespace DecisionMakers
 
         // ToDo return correct data from jsons
 
+
+
+        /// <summary>
+        /// Method that takes and store all info about locations. 
+        /// </summary>
+        /// <param name="rss"> Array of tokens in json file. </param>
+        /// <param name="lang"> Topic from which info will be taken. </param>
+        /// <returns> New instance of <see cref="QuestionModel"/> class. </returns>
+        private Country GetLocationsModel(string lang)
+        {
+            string json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathLocations)));
+            var rss = JArray.Parse(json);
+            var model = new Country();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string>() == lang)
+                {
+                    var country = item["model"]["country"];
+                    var cities = item["model"]["cities"];
+                    
+                    model.CountryName = country.ToString();
+                    model.Cities = cities.ToObject<List<string>>();
+                }
+            }
+
+            return model;
+        }
+
         /// <summary>
         /// Gets all available countries from json file.
         /// </summary>
         /// <returns></returns>
-        public List<string> GetCountries()
+        public List<Country> GetCountries(string lang)
         {
-            List<string> countries=new List<string>();
+            // ToDo if needed more countries change GetLocationsModel and json
+
+            List<Country> countries = new List<Country>
+            {
+                GetLocationsModel(lang)
+            };
 
             return countries;
-        }
-
-        /// <summary>
-        /// Gets all available cities in country from the json file.
-        /// </summary>
-        /// <returns></returns>
-        public List<string> GetCities(string country)
-        {
-            var cities = new List<string>();
-
-            return cities;
         }
         
         /// <summary>
@@ -175,11 +213,27 @@ namespace DecisionMakers
         /// from the json file.
         /// </summary>
         /// <returns></returns>
-        public List<MainMenuItem> GetMainMenuItems()
+        public List<MainMenuItem> GetMainMenuItems(string lang)
         {
-            var mainMenuItems = new List<MainMenuItem>();
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathMainMenu)));
+            var rss = JArray.Parse(json);
+            var model = new MainMenu();
 
-            return mainMenuItems;
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string>() == lang)
+                {
+                    var items = item["items"];
+                    
+                    model.Items = items.ToObject<List<MainMenuItem>>();
+                }
+            }
+
+            return model.Items;
         }
 
         /// <summary>
@@ -198,9 +252,35 @@ namespace DecisionMakers
         /// Gets courses in selected city from the json file.
         /// </summary>
         /// <returns></returns>
-        public List<Course> GetCourses()
+        public List<Course> GetCourses(string lang)
         {
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathCourses)));
+            var rss = JArray.Parse(json);
             var courses = new List<Course>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string>()==lang)
+                {
+                    var items = item["courses"];
+
+                    courses = items.ToObject<List<Course>>();
+                }
+            }
+
+            // ToDo check this !!!!!
+
+            // Insert into db
+            studdyBotContext = new StuddyBotContext();
+            if (!studdyBotContext.Courses.Any())
+            {
+                studdyBotContext.PushCoursesToDB(courses);
+                studdyBotContext.SaveChanges();
+            }
 
             return courses;
         }
@@ -214,9 +294,30 @@ namespace DecisionMakers
         /// Gets questions/answers from the json.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> GetQAs()
+        public Dictionary<string, List<string>> GetQAs(string lang)
         {
-            var qAs = new Dictionary<string, string>();
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathQAs)));
+            var rss = JArray.Parse(json);
+            var qAs = new Dictionary<string, List<string>>();
+            var tmpQAs = new List<QA>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string>() == lang)
+                {
+                    var items = item["QAs"];
+
+                    tmpQAs = items.ToObject<List<QA>>();
+                }
+            }
+            foreach (var tmpQA in tmpQAs)
+            {
+                qAs.Add(tmpQA.Question,tmpQA.Answer);
+            }
 
             return qAs;
         }
@@ -225,11 +326,65 @@ namespace DecisionMakers
         /// Gets planned events from the json.
         /// </summary>
         /// <returns></returns>
-        public Dictionary<string, string> GetPlannedEvents()
+        public Dictionary<string, List<string>> GetPlannedEvents(string lang)
         {
-            var events = new Dictionary<string, string>();
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathPlannedEvents)));
+            var rss = JArray.Parse(json);
+            var model = new List<PlannedEvent>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var items = item["events"];
+
+                    model = items.ToObject<List<PlannedEvent>>();
+                }
+            }
+
+            var events = new Dictionary<string, List<string>>();
+            foreach (var plannedEvent in model)
+            {
+                events.Add(plannedEvent.Name, plannedEvent.Resources);
+            }
 
             return events;
+        }
+
+        /// <summary>
+        /// Gets  a ChooseOption list from the json.
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<string, string> GetChooseOptions(string lang)
+        {
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathChooseOptionList)));
+            var rss = JArray.Parse(json);
+            var options = new Dictionary<string, string>();
+            var tmpOptions = new List<ChooseOptionList>();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var items = item["items"];
+
+                    tmpOptions = items.ToObject<List<ChooseOptionList>>();
+                }
+            }
+            foreach (var tmpOption in tmpOptions)
+            {
+                options.Add(tmpOption.Name, tmpOption.Id);
+            }
+
+            return options;
         }
     }
 }

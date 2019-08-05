@@ -3,32 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
 using Microsoft.VisualBasic;
+using StuddyBot.Core.DAL.Data;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
+using Course = StuddyBot.Core.Models.Course;
 
 namespace StuddyBot.Dialogs
 {
-    public class CoursesDialog : CancelAndRestartDialog
+    public class CoursesDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-
+        private StuddyBotContext _db;
         private List<Course> courses;
 
+        private string selectedCourse;
 
-
-        public CoursesDialog(IDecisionMaker decisionMaker, 
+        public CoursesDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(CoursesDialog))
         {
             
@@ -36,14 +40,17 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskCourseStepAsync,
-                SendInfoAboutCourseStepAsync
+                SendInfoAboutCourseStepAsync,
+                AskForNotifyStepAsync
             }));
 
             // The initial child Dialog to run.
@@ -58,7 +65,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskCourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            courses = DecisionMaker.GetCourses();
+            courses = DecisionMaker.GetCourses(_DialogInfo.Language);
 
             {
                 var choices = new List<Choice>();
@@ -68,10 +75,13 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(course.Name));
                 }
 
+                var msg = "Що Вас цікавить?";// "What you are interested in?";
+                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("What you are interested in?"),
-                    RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                    Prompt = MessageFactory.Text(msg),
+                    RetryPrompt = MessageFactory.Text(retryMsg),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };
@@ -95,12 +105,44 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> SendInfoAboutCourseStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            var selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
-            var msgText = string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
+            selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
+            var msgText = courses.FirstOrDefault(it => it.Name == selectedCourse).Resources;
+            //string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken: cancellationToken);
-            return await stepContext.ReplaceDialogAsync(nameof(SubscriptionDialog),
-                cancellationToken: cancellationToken);
+
+            var options = new PromptOptions()
+            {
+                Prompt = MessageFactory.Text("Хочете отримати сповіщення про початок реєстрації?"), //Do you want to receive a notification about the start?
+                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"), //Try one more time, please.
+                Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
+            };
+
+            var message = options.Prompt.Text;
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
+
+            _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            return await stepContext.PromptAsync(nameof(ChoicePrompt), options, cancellationToken);
+        }
+
+        private async Task<DialogTurnResult> AskForNotifyStepAsync(WaterfallStepContext stepContext,
+            CancellationToken cancellationToken)
+        {
+            var foundChoice = (stepContext.Result as FoundChoice).Value;
+
+            if (foundChoice == "так")
+            {
+                _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
+                _db.SaveChanges();
+
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                    cancellationToken: cancellationToken);
+            }
+
+            return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
+                    cancellationToken: cancellationToken);
         }
     }
 }

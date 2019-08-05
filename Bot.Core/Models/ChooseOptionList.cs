@@ -5,18 +5,18 @@ using System.Text;
 namespace StuddyBot.Core.Models
 {
     /// <summary>
-    /// Represents all the course info.
+    /// Represents ChooseOptionDialog.
     /// </summary>
-    public class Course
+    public class ChooseOptionList
     {
         /// <summary>
-        /// A name of a course.
+        /// An id of option.
         /// </summary>
-        public string Name { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// Resources of the course.
+        /// A localized name of option.
         /// </summary>
-        public string Resources { get; set; }
+        public string Name { get; set; }
     }
 }

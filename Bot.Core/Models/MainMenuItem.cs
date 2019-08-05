@@ -12,7 +12,7 @@ namespace StuddyBot.Core.Models
         /// <summary>
         /// Name of main menu item.
         /// </summary>
-        public string ItemName { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Path to the related json file where are
