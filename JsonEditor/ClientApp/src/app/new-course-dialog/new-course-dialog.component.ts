@@ -40,7 +40,9 @@ export class NewCourseDialog implements OnInit {
   addCourseData() {
     const course = this.fb.group({
       name: "",
-      resources: ""
+      resources: "",
+      startDate: Date,
+      registrationStartDate: Date
     })
 
     this.coursesInnerArray.push(course);

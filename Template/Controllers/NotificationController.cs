@@ -52,10 +52,10 @@ namespace StuddyBot.Controllers
         public async Task Get()
         {           
 
-            foreach (var conversationReference in _conversationReferences.Values)
-            {
-                await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
-            }
+            //foreach (var conversationReference in _conversationReferences.Values)
+            //{
+            //    await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+            //}
 
             var courses = _db.Courses.Where(s => s.RegistrationStartDate == DateTime.Today);
 
@@ -72,12 +72,14 @@ namespace StuddyBot.Controllers
 
                     //var notificationReferences = _db.UserCourses.Where(c => c.Course == course).Select(s => s.User.ConversationReference) as IEnumerable<ConversationReference>;
 
+
+                    // This is for notification into the chat.
                     foreach (var conversationReference in _conversationReferences.Values)
                     {
                         await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
                     }
 
-
+                    // This is for notification on email.
 
 
                 }
