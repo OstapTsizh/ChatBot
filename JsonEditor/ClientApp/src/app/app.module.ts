@@ -20,6 +20,8 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/';
 
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -68,6 +70,8 @@ import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component
     MatTreeModule,
     MatIconModule,
     MatDialogModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
 
     //FontAwesomeModule,
 

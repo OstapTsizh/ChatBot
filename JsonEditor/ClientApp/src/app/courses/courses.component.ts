@@ -8,6 +8,8 @@ import { NewCourseDialog } from '../new-course-dialog/new-course-dialog.componen
 export interface Course {
   name: string;
   resources: string;
+  startDate: Date;
+  registrationStartDate: Date;
 }
 
 export interface ICourseModel {
