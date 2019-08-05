@@ -17,6 +17,7 @@ using Microsoft.Bot.Schema;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
 using Microsoft.Bot.Connector.Authentication;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using StuddyBot.Dialogs;
 
@@ -27,11 +28,12 @@ namespace StuddyBot.Tests
     {
         private DecisionMaker _decisionMaker;
         private QuestionAndAnswerModel qaModel;
+        private IOptions<PathSettings> pathSettings;
 
         [SetUp]
         public void Setup()
         {
-            _decisionMaker = new DecisionMaker
+            _decisionMaker = new DecisionMaker(pathSettings)
             {
                 //Path = "../../../Dialogs.json"
             };

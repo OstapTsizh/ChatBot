@@ -226,7 +226,9 @@ namespace StuddyBot.Dialogs
 
         private Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {
-            if (promptContext.Context.Activity.Text == validationCode || promptContext.Context.Activity.Text == "Назад" || promptContext.Context.Activity.Text == "odmen")
+            if (promptContext.Context.Activity.Text == validationCode 
+                || promptContext.Context.Activity.Text == "Назад" 
+                || promptContext.Context.Activity.Text == "passcode")
             {
                 return Task.FromResult(true);
             }

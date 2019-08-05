@@ -6,6 +6,7 @@ using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 using System.Configuration;
 using System.Text;
+using Microsoft.Extensions.Options;
 using StuddyBot.Core.BLL.Repositories;
 using StuddyBot.Core.DAL.Data;
 
@@ -17,21 +18,24 @@ namespace DecisionMakers
     /// </summary>
     public class DecisionMaker : IDecisionMaker
     {
-
-        public readonly string _path = @"..\Bot.Core\Dialogs.json";
-        public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
-        public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
-        public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
-        public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
-        public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
-        public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
+        private readonly PathSettings _pathSettings;
+        //public readonly string _path =  @"..\Bot.Core\Dialogs.json";
+        //public readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
+        //public readonly string _pathMainMenu = @"..\Bot.Core\DataFiles\MainMenu.json";
+        //public readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
+        //public readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
+        //public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
+        //public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
 
         private StuddyBotContext studdyBotContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
         /// </summary>
-        public DecisionMaker() { }
+        public DecisionMaker(IOptions<PathSettings> pathSettings)
+        {
+            _pathSettings = pathSettings.Value;
+        }
 
         /// <summary>
         /// Method which get all topics from json file.
@@ -39,7 +43,7 @@ namespace DecisionMakers
         /// <returns> List of all topics. </returns>
         public List<string> GetStartTopics()
         {
-            var json = File.ReadAllText(_path);
+            var json = File.ReadAllText(_pathSettings.PathDialogs);
 
             var jArray = JArray.Parse(json);
 
@@ -84,7 +88,7 @@ namespace DecisionMakers
         /// <returns> QuestionModel object of <see cref="QuestionModel"/> class. </returns>
         public QuestionModel GetQuestionOrResult(string topic)
         {
-            var json = File.ReadAllText(_path);
+            var json = File.ReadAllText(_pathSettings.PathDialogs);
 
             var jObject = JArray.Parse(json);
 
@@ -165,7 +169,7 @@ namespace DecisionMakers
         /// <returns> New instance of <see cref="QuestionModel"/> class. </returns>
         private Country GetLocationsModel(string lang)
         {
-            string json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathLocations)));
+            string json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathLocations)));
             var rss = JArray.Parse(json);
             var model = new Country();
 
@@ -211,7 +215,7 @@ namespace DecisionMakers
         /// <returns></returns>
         public List<MainMenuItem> GetMainMenuItems(string lang)
         {
-            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathMainMenu)));
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathMainMenu)));
             var rss = JArray.Parse(json);
             var model = new MainMenu();
 
@@ -250,7 +254,7 @@ namespace DecisionMakers
         /// <returns></returns>
         public List<Course> GetCourses(string lang)
         {
-            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathCourses)));
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathCourses)));
             var rss = JArray.Parse(json);
             var courses = new List<Course>();
 
@@ -274,7 +278,17 @@ namespace DecisionMakers
             studdyBotContext = new StuddyBotContext();
             if (!studdyBotContext.Courses.Any())
             {
-                studdyBotContext.PushCoursesToDB(courses);
+                var coursesDB = new List<Course>();
+                foreach (var item in tokens)
+                {
+                    if (item["lang"].ToObject<string>().ToLower() == "en-us")
+                    {
+                        var items = item["courses"];
+
+                        coursesDB = items.ToObject<List<Course>>();
+                    }
+                }
+                studdyBotContext.PushCoursesToDB(coursesDB);
                 studdyBotContext.SaveChanges();
             }
 
@@ -292,7 +306,7 @@ namespace DecisionMakers
         /// <returns></returns>
         public Dictionary<string, List<string>> GetQAs(string lang)
         {
-            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathQAs)));
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathQAs)));
             var rss = JArray.Parse(json);
             var qAs = new Dictionary<string, List<string>>();
             var tmpQAs = new List<QA>();
@@ -324,7 +338,7 @@ namespace DecisionMakers
         /// <returns></returns>
         public Dictionary<string, List<string>> GetPlannedEvents(string lang)
         {
-            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathPlannedEvents)));
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathPlannedEvents)));
             var rss = JArray.Parse(json);
             var model = new List<PlannedEvent>();
 
@@ -357,7 +371,7 @@ namespace DecisionMakers
         /// <returns></returns>
         public Dictionary<string, string> GetChooseOptions(string lang)
         {
-            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathChooseOptionList)));
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathChooseOptionList)));
             var rss = JArray.Parse(json);
             var options = new Dictionary<string, string>();
             var tmpOptions = new List<ChooseOptionList>();

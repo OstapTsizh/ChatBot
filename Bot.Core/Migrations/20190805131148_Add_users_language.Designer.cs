@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StuddyBot.Core.DAL.Data;
 
 namespace StuddyBot.Core.Migrations
 {
     [DbContext(typeof(StuddyBotContext))]
-    partial class StuddyBotContextModelSnapshot : ModelSnapshot
+    [Migration("20190805131148_Add_users_language")]
+    partial class Add_users_language
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

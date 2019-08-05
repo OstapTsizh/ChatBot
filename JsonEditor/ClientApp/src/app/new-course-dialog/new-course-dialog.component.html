@@ -31,6 +31,19 @@
           <input matInput formControlName="resources" placeholder="Resource">
         </mat-form-field>
 
+        <mat-form-field>
+          <input matInput formControlName="startDate" [matDatepicker]="startDatePicker" placeholder="Start date">
+          <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #startDatePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput formControlName="registrationStartDate" [matDatepicker]="registrationStartDatePicker" placeholder="Registration start date">
+          <mat-datepicker-toggle matSuffix [for]="registrationStartDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #registrationStartDatePicker></mat-datepicker>
+        </mat-form-field>
+
+
       </div>
 
       <div class="controlBtn">
