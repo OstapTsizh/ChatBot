@@ -126,7 +126,7 @@ namespace StuddyBot.Dialogs
                     return await stepContext.ReplaceDialogAsync(nameof(MainMenuDialog),
                         cancellationToken: cancellationToken);
                 case "Send conversation to email":
-                    return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                    return await stepContext.ReplaceDialogAsync(nameof(MailingDialog), "send",
                         cancellationToken: cancellationToken);
                 case "Questions/Answers":
                     return await stepContext.ReplaceDialogAsync(nameof(QAsDialog),
