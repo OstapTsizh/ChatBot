@@ -5,7 +5,7 @@
       {
         "name": "Про EPAM University Programs",
         "dialog": "About",
-        "resources": [ "Всю необхідну інформацію можеш отримати за наступним посиланням: htps://www.training.epam.ua/#/About, Some testing    " ]
+        "resources": [ "Всю необхідну інформацію можеш отримати за наступним посиланням: https://www.training.epam.ua/#/About, Some testing    " ]
       },
       {
         "name": "Навчальні програми та рекомендована література",
@@ -31,12 +31,27 @@
   },
   {
     "lang": "en-us",
-    "items": [
-      {
-        "name": "About EPAM University Program",
-        "dialog": "About",
-        "resources": [ "SOME testing resource" ]
-      }
-    ]
+		"items": [
+			{
+				"name": "About EPAM University Program",
+				"dialog": "About",
+				"resources": [ "All the necessary information is available at the following link: https://www.training.epam.ua/#/About" ]
+			},
+			{
+				"name": "Educational programms and recommended literature",
+				"dialog": "Courses",
+				"resources": [ "All the necessary information is available at the following link: https://www.training.epam.ua/#/Courses", "References: Book 1, Book 2" ]
+			},
+			{
+				"name": "Planned Events",
+				"dialog": "PlannedEvents",
+				"resources": [ "All the necessary information is available at the following link: https://www.training.epam.ua/#/PlannedEvents" ]
+			},
+			{
+				"name": "Questions/Answers",
+				"dialog": "QAs",
+				"resources": [ "You can ask questions here: https://www.epam.com/support" ]
+			}
+		]
   }
 ]
