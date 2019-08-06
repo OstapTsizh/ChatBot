@@ -7,7 +7,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FillJsonComponent } from './fill-json/fill-json.component';
 
@@ -22,6 +21,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
 
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -33,6 +36,7 @@ import { CoursesComponent } from './courses/courses.component';
 import { AddNewMenuDialog } from './add-new-menu/add-new-menu.component';
 import { NewQADialog } from './new-qadialog/new-qadialog.component';
 import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component';
+import { FeedbackComponent } from './feedback/feedback.component';
 
 
 
@@ -42,7 +46,6 @@ import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component
     NavMenuComponent,
     HomeComponent,
     FillJsonComponent,
-    FetchDataComponent,
     MainMenuComponent,
     QuestionsAnswersComponent,
     LocationsComponent,
@@ -51,6 +54,7 @@ import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component
     AddNewMenuDialog,
     NewQADialog,
     NewCourseDialog,
+    FeedbackComponent,
     
   ],
   imports: [
@@ -72,6 +76,10 @@ import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component
     MatDialogModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
 
     //FontAwesomeModule,
 
@@ -81,8 +89,8 @@ import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component
       { path: 'questions-answers', component: QuestionsAnswersComponent },
       { path: 'locations', component: LocationsComponent },
       { path: 'courses', component: CoursesComponent },
-      { path: 'fill-json', component: FillJsonComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'feedbacks', component: FeedbackComponent },
+      { path: 'fill-json', component: FillJsonComponent },      
     ]),
     BrowserAnimationsModule
   ],
