@@ -63,6 +63,12 @@ namespace StuddyBot.Dialogs
         {
             _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
 
+            var prompt = _QAs["prompt"][0];
+            _QAs.Remove("prompt");
+            var reprompt = _QAs["reprompt"][0];
+            _QAs.Remove("reprompt");
+
+
             var choices = new List<Choice>();
 
             foreach (var q in _QAs.Keys)
@@ -72,9 +78,9 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Виберіть питання:"), // Choose a question:
+                Prompt = MessageFactory.Text(prompt), // Choose a question:
                 Choices = choices,
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз:"), // Try one more time, please:
+                RetryPrompt = MessageFactory.Text(reprompt), // Try one more time, please:
                 Style = ListStyle.HeroCard
             };
 
