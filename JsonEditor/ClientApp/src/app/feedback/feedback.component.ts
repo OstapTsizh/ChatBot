@@ -3,7 +3,7 @@ import { MatTableDataSource, MatPaginator, MatSort } from '@angular/material';
 import { FeedbackMessageService } from '../feedback-message.service';
 
 export interface IFeedback {
-  id: number,
+  id: number;
   message: string;
   date: Date;
 }
@@ -33,6 +33,7 @@ export class FeedbackComponent implements OnInit {
       this.dataSource = new MatTableDataSource(result);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
+      
       this.isLoading = false;
     })
 
