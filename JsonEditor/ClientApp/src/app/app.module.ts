@@ -37,6 +37,7 @@ import { AddNewMenuDialog } from './add-new-menu/add-new-menu.component';
 import { NewQADialog } from './new-qadialog/new-qadialog.component';
 import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component';
 import { FeedbackComponent } from './feedback/feedback.component';
+import { UserQuestionsComponent } from './user-questions/user-questions.component';
 
 
 
@@ -55,6 +56,7 @@ import { FeedbackComponent } from './feedback/feedback.component';
     NewQADialog,
     NewCourseDialog,
     FeedbackComponent,
+    UserQuestionsComponent,
     
   ],
   imports: [
@@ -90,7 +92,7 @@ import { FeedbackComponent } from './feedback/feedback.component';
       { path: 'locations', component: LocationsComponent },
       { path: 'courses', component: CoursesComponent },
       { path: 'feedbacks', component: FeedbackComponent },
-      { path: 'fill-json', component: FillJsonComponent },      
+      { path: 'user-questions', component: UserQuestionsComponent },      
     ]),
     BrowserAnimationsModule
   ],
