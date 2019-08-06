@@ -21,7 +21,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-
+        private DialogsMUI _dialogsMui;
         private List<Country> _countries;
         private Country _country;
         private readonly bool _onlyInUkraine = true;
@@ -30,7 +30,8 @@ namespace StuddyBot.Dialogs
         public LocationDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender,
+                             DialogsMUI dialogsMui)
             : base(nameof(LocationDialog))
         {
             
@@ -38,9 +39,10 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _dialogsMui = dialogsMui;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new MainMenuDialog(DecisionMaker, SubscriptionManager, _myLogger, _DialogInfo, _conversationReferences, db, emailSender));
+            AddDialog(new MainMenuDialog(DecisionMaker, SubscriptionManager, _myLogger, _DialogInfo, _conversationReferences, db, emailSender, dialogsMui));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -63,7 +65,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetCountryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             //_DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
-
+            _dialogsMui = _dialogsMui;
             _country =new Country();
 
             //if (_onlyInUkraine)

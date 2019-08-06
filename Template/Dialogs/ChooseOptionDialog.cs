@@ -29,7 +29,8 @@ namespace StuddyBot.Dialogs
         public ChooseOptionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
+                             DialogsMUI dialogsMui)
             : base(nameof(ChooseOptionDialog))
         {
             

@@ -32,7 +32,8 @@ namespace StuddyBot.Dialogs
         public CoursesDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
+                              DialogsMUI dialogsMui)
             : base(nameof(CoursesDialog))
         {
             
@@ -45,7 +46,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new FinishDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskCourseStepAsync,

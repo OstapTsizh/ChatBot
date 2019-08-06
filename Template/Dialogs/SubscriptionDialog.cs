@@ -32,7 +32,8 @@ namespace StuddyBot.Dialogs
         public SubscriptionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager subscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
+                             DialogsMUI dialogsMui)
             : base(nameof(SubscriptionDialog))
         {
             this._myLogger = _myLogger;
@@ -41,7 +42,7 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager,  _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager,  _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

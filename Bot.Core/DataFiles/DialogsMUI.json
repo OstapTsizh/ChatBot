@@ -1,0 +1,135 @@
+﻿[
+	{
+		"lang": [ "uk-ua" ],
+		"Dialogs": {
+			"AddQuestionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"QAsDictionary": {
+				"prompt": "Виберіть питання:",
+				"reprompt": "Будь ласка, cпробуйте ще раз:"
+			},
+
+			"CancelAndRestartDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"ChooseOptionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"CoursesDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"EmailDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"FinishDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"LocationDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"MailingDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"MainDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"MainMenuDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"PlannedEventsDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"SubscriptionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			}
+		}
+	},
+
+	{
+		"lang": [ "en-us", "en-gb" ],
+		"Dialogs": {
+			"AddQuestionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"QAsDictionary": {
+				"prompt": "Choose a question:",
+				"reprompt": "Try one more time, please:"
+			},
+
+			"CancelAndRestartDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"ChooseOptionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"CoursesDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"EmailDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"FinishDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"LocationDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"MailingDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+
+			"MainDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"MainMenuDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"PlannedEventsDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			},
+			"SubscriptionDictionary": {
+				"1": "Головне Меню",
+				"id": "Main Menu"
+			}
+		}
+	}
+]

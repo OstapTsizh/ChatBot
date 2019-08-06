@@ -34,7 +34,8 @@ namespace StuddyBot.Dialogs
         public AddQuestionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
+                             DialogsMUI dialogsMui)
             : base(nameof(AddQuestionDialog))
         {
             

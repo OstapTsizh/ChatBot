@@ -37,7 +37,8 @@ namespace StuddyBot.Dialogs
         public EmailDialog(IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
                              ThreadedLogger _myLogger,
                              DialogInfo dialogInfo,
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
+                             DialogsMUI dialogsMui)
             : base(nameof(EmailDialog))
         {
             this._myLogger = _myLogger;
@@ -51,8 +52,8 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new TextPrompt("email", EmailFormValidator));
             AddDialog(new ChoicePrompt("validation", CodeValidator));
-            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

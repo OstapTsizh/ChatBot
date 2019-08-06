@@ -320,16 +320,7 @@ namespace DecisionMakers
                 if (item["lang"].ToObject<string>() == lang)
                 {
                     var items = item["QAs"];
-                    var jPrompt = item["prompt"];
-                    var jReprompt = item["reprompt"];
-
                     tmpQAs = items.ToObject<List<QA>>();
-
-                    var prompt = jPrompt.ToObject<string>();
-                    tmpQAs.Add(new QA{Question="prompt", Answer = new List<string>(){prompt}});
-
-                    var reprompt = jReprompt.ToObject<string>();
-                    tmpQAs.Add(new QA { Question = "reprompt", Answer = new List<string>() { reprompt } });
                 }
             }
             foreach (var tmpQA in tmpQAs)
@@ -403,6 +394,29 @@ namespace DecisionMakers
             }
 
             return options;
+        }
+
+        public DialogsMUI GetDialogsMui(string lang)
+        {
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathDialogsMUI)));
+            var rss = JArray.Parse(json);
+            var tmpOptions = new DialogsMUI();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var dialogs = item["Dialogs"];
+
+                    tmpOptions = dialogs.ToObject<DialogsMUI>();
+                }
+            }
+
+            return tmpOptions;
         }
     }
 }

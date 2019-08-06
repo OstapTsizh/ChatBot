@@ -30,7 +30,8 @@ namespace StuddyBot.Dialogs
         public PlannedEventsDialog(IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                             DialogsMUI dialogsMui)
             : base(nameof(PlannedEventsDialog))
         {
             
