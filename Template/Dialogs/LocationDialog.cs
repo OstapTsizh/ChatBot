@@ -62,7 +62,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> GetCountryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
+            //_DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
 
             _country =new Country();
 
