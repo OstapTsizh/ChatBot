@@ -135,7 +135,8 @@ namespace StuddyBot.Core.DAL.Data
                 UserCourses.Add(new UserCourse()
                 {
                     UserId = userId,
-                    CourseId = onCourse.Id
+                    CourseId = onCourse.Id,
+                    Notified = false
                 });
             }
         }
@@ -144,7 +145,8 @@ namespace StuddyBot.Core.DAL.Data
         {
             Questions.Add(new Question()
             {
-                Message = question
+                Message = question,
+                Date = DateTime.Now
             });
         }
 
@@ -152,7 +154,8 @@ namespace StuddyBot.Core.DAL.Data
         {
             Feedback.Add(new Feedback()
             {
-                Message = feedback
+                Message = feedback,
+                Date = DateTime.Now
             });
         }
     }

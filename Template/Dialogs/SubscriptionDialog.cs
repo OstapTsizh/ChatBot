@@ -111,7 +111,7 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text("Введіть номер курсу від якого Ви хочете відписатись"),
+                        Prompt = MessageFactory.Text("Виберіть номер курсу від якого Ви хочете відписатись"),
                         RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
                         Choices = variants,
                         Style = ListStyle.HeroCard
