@@ -66,9 +66,6 @@ namespace StuddyBot.Controllers
             //}
 
 
-            var test = _decisionMaker.GetCourses("uk-ua");
-
-
             var courses = _db.Courses.Where(s => s.RegistrationStartDate.ToShortDateString() == DateTime.Today.ToShortDateString());
 
             if (courses.Any())
@@ -92,26 +89,39 @@ namespace StuddyBot.Controllers
                     //}
 
                     // This is for notification on email.
+
+
                     var matchedCourses = _db.UserCourses.Where(item => item.CourseId == course.Id);
-                    foreach (var matchedCourse in matchedCourses)
+
+
+                    if (matchedCourses.Any())
                     {
-                        var courseByName = _decisionMaker.GetCourses(matchedCourse.User.Language)
-                            .First(item => item.Name == matchedCourse.Course.Name);
+                        foreach (var matchedCourse in matchedCourses)
+                        {
+                            if (!string.IsNullOrEmpty(_db.User.First(user => user.Id == matchedCourse.UserId).Email) &&
+                                !matchedCourse.Notified)
+                            {
+                                var courseByName = _decisionMaker.GetCourses("uk-ua")
+                                    .First(item => item.Name == matchedCourse.Course.Name);
 
-                        var message = "<h1>Курс на який Ви підписані скоро починається</h1>\n" +
-                                      $"Інформація про курс: {matchedCourse.Course.Name}," +
-                                      $" початок реєстрації: {matchedCourse.Course.RegistrationStartDate}" +
-                                      $" початок занять {matchedCourse.Course.StartDate}.\n" +
-                                      $"{courseByName.Resources}";
+                                var message = "<h3>Курс на який Ви підписані скоро починається</h3> <br>" +
+                                              $"<h5>Інформація про курс: {matchedCourse.Course.Name}," +
+                                              $" початок реєстрації: {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
+                                              $" початок занять {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
+                                              $"{courseByName.Resources}";
 
-                        await _emailSender.SendEmailAsync(matchedCourse.User.Email, "Сповіщення про початок курсу", message);
+                                await _emailSender.SendEmailAsync(matchedCourse.User.Email,
+                                    "Сповіщення про початок курсу",
+                                    message);
 
-                        //Delete subscription
-                        _subscriptionManager.CancelSubscription(matchedCourse.UserId, matchedCourse.CourseId.ToString());
+                                matchedCourse.Notified = true;
+                                _db.SaveChanges();
 
-                        Console.WriteLine("-----------------\n" +
-                                          "Notification sent!!!\n" +
-                                          "-----------------");
+                                Console.WriteLine("-----------------\n" +
+                                                  "Notification sent!!!\n" +
+                                                  "-----------------");
+                            }
+                        }
                     }
 
                 }

@@ -135,7 +135,8 @@ namespace StuddyBot.Core.DAL.Data
                 UserCourses.Add(new UserCourse()
                 {
                     UserId = userId,
-                    CourseId = onCourse.Id
+                    CourseId = onCourse.Id,
+                    Notified = false
                 });
             }
         }

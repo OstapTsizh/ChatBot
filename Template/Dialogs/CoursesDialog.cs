@@ -137,7 +137,7 @@ namespace StuddyBot.Dialogs
                 _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
                 _db.SaveChanges();
 
-                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog), "notification",
                     cancellationToken: cancellationToken);
             }
 
