@@ -320,8 +320,16 @@ namespace DecisionMakers
                 if (item["lang"].ToObject<string>() == lang)
                 {
                     var items = item["QAs"];
+                    var jPrompt = item["prompt"];
+                    var jReprompt = item["reprompt"];
 
                     tmpQAs = items.ToObject<List<QA>>();
+
+                    var prompt = jPrompt.ToObject<string>();
+                    tmpQAs.Add(new QA{Question="prompt", Answer = new List<string>(){prompt}});
+
+                    var reprompt = jReprompt.ToObject<string>();
+                    tmpQAs.Add(new QA { Question = "reprompt", Answer = new List<string>() { reprompt } });
                 }
             }
             foreach (var tmpQA in tmpQAs)
