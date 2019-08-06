@@ -16,10 +16,11 @@ export interface IFeedback {
 export class FeedbackComponent implements OnInit {
 
   baseUrl: string;
+  isLoading = true;
 
   constructor(private feedbackService: FeedbackMessageService) { }
 
-  displayedColumns: string[] = ['message', 'date'];
+  displayedColumns: string[] = ['message', 'date', ' '];
   dataSource;
 
 
@@ -32,10 +33,13 @@ export class FeedbackComponent implements OnInit {
       this.dataSource = new MatTableDataSource(result);
       this.dataSource.sort = this.sort;
       this.dataSource.paginator = this.paginator;
+      this.isLoading = false;
     })
 
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
+
+    
 
   }
 

@@ -23,6 +23,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDividerModule } from '@angular/material/divider';
 
 // import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
@@ -76,6 +78,8 @@ import { FeedbackComponent } from './feedback/feedback.component';
     MatNativeDateModule,
     MatPaginatorModule,
     MatSortModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
 
     //FontAwesomeModule,
 

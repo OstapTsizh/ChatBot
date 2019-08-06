@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +26,7 @@ namespace JsonEditor.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Feedback>>> GetFeedback()
         {
+            Thread.Sleep(2_000);
             return await _context.Feedback.ToListAsync();
         }
 

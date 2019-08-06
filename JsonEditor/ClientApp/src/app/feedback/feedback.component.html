@@ -1,8 +1,16 @@
+<div *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+    <br>
+    <h3>Loading data...</h3>
+    <mat-divider></mat-divider>
+    <br>
+</div>
+
+
 <div class="mat-elevation-z8">
+    
+  <table mat-table [dataSource]="dataSource" matSort>    
 
-  <table mat-table [dataSource]="dataSource" matSort>
-
-   
     <!-- Message Column -->
     <ng-container matColumnDef="message">
       <th mat-header-cell *matHeaderCellDef> Message </th>
@@ -15,6 +23,11 @@
       <td mat-cell *matCellDef="let element"> {{ element.date | date:'mediumDate' }} </td>
     </ng-container>
 
+    <!-- Delete button Column -->
+    <ng-container matColumnDef=" ">
+        <th mat-header-cell *matHeaderCellDef>  </th>
+        <td mat-cell *matCellDef="let element"> <button mat-raised-button color="warn">Delete</button> </td>
+      </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
