@@ -73,9 +73,20 @@ namespace LoggerService
         {
             var user = _unitOfWork.Users.Get(user_id);
             if (user == null)
-            { 
-                _unitOfWork.Users.Create(new User { Id = user_id, Language = userLanguage});
-                _unitOfWork.Save();
+            {
+                try
+                {
+                    _unitOfWork.Users.Create(new User { Id = user_id, Language = userLanguage });
+                    
+                    _unitOfWork.Save();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.InnerException);
+                    throw;
+                }
+                //_unitOfWork.Users.Create(new User { Id = user_id, Language = userLanguage});
+                //_unitOfWork.Save();
             }
 
             return user_id;

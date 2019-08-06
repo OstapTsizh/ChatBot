@@ -42,7 +42,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             //AddDialog(new SubscriptionDialog(DecisionMaker, SubscriptionManager, _myLogger, dialogInfo, conversationReferences));
-            //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            //AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

@@ -50,7 +50,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new QAsDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
