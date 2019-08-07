@@ -37,8 +37,7 @@ namespace StuddyBot.Dialogs
         public MailingDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger,
                              DialogInfo dialogInfo,
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
-                             DialogsMUI dialogsMui)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(MailingDialog))
         {
 
@@ -55,7 +54,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt("validation", CodeValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 CheckForEmailStepAsync,
@@ -108,7 +107,7 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(userEmail))
             {
-                var promptMessage = $"Відправити на цей email?\n**{userEmail}**";
+                var promptMessage = $"{DialogsMUI.MailingDictionary["prompt"]}\n**{userEmail}**";
 
                 var message = promptMessage;
                 var sender = "bot";
@@ -120,7 +119,7 @@ namespace StuddyBot.Dialogs
                     new PromptOptions()
                     {
                         Prompt = MessageFactory.Text(promptMessage),
-                        Choices = new List<Choice> { new Choice("так"), new Choice("ні") }
+                        Choices = new List<Choice> { new Choice(DialogsMUI.MainDictionary["yes"]), new Choice(DialogsMUI.MainDictionary["no"]) }
                     },
                     cancellationToken);
             }
@@ -137,21 +136,20 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskEmailStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-
-            ////Check this
             var foundChoice = stepContext.Context.Activity.Text;
 
-            if (foundChoice == "ні" || stepContext.Result.ToString() == "ні")
+            var promptEmail = DialogsMUI.MailingDictionary["promptEmail"];// "Enter Your email, please:";
+            var reprompt = DialogsMUI.MainDictionary["reprompt"];
+            
+            if (foundChoice == DialogsMUI.MainDictionary["no"] || stepContext.Result.ToString() == "ні")
 
             {
                 validationCode = string.Empty;
-                var msg = "Будь ласка, введіть свій email:";// "Enter Your email, please:";
-                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
 
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text(msg),
-                    RetryPrompt = MessageFactory.Text(retryMsg),
+                    Prompt = MessageFactory.Text(promptEmail),
+                    RetryPrompt = MessageFactory.Text(reprompt),
                     Style = ListStyle.HeroCard
                 };
 
@@ -163,11 +161,7 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync("email", options, cancellationToken);
             }
 
-
-
-
-            //Check this
-            if (foundChoice == "так")
+            if (foundChoice == DialogsMUI.MainDictionary["yes"])
             {
                 var dialogId = _DialogInfo.DialogId;
                 var message = _db.GetUserConversation(dialogId);
@@ -195,14 +189,14 @@ namespace StuddyBot.Dialogs
             userEmail = stepContext.Result.ToString();
             var message = GenerateCode();
 
-            await EmailSender.SendEmailAsync(userEmail, "Validation Code", $"Your code: <b>{message}</b>.");
+            await EmailSender.SendEmailAsync(userEmail, DialogsMUI.EmailDictionary["subjectValidationCode"], $"{DialogsMUI.EmailDictionary["emailMessage"]} <b>{message}</b>.");
 
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Будь ласка, введіть код який я відправив Вам на пошту"),
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
-                Choices = new List<Choice> { new Choice("Назад") }
+                Prompt = MessageFactory.Text(DialogsMUI.EmailDictionary["promptCode"]),
+                RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
+                Choices = new List<Choice> { new Choice(DialogsMUI.EmailDictionary["back"]) }
             };
 
             var messageCode = options.Prompt.Text;
@@ -216,7 +210,7 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Context.Activity.Text == "Назад")
+            if (stepContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"])
             {
                 return await stepContext.ReplaceDialogAsync(nameof(FinishDialog), cancellationToken: cancellationToken);
             }
@@ -245,7 +239,7 @@ namespace StuddyBot.Dialogs
             }
             catch
             {
-                promptcontext.Context.SendActivityAsync(MessageFactory.Text("Хибний формат адреси"), cancellationtoken);
+                promptcontext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.EmailDictionary["wrongFormat"]), cancellationtoken);
                 return Task.FromResult(false);
             }
         }
@@ -253,7 +247,7 @@ namespace StuddyBot.Dialogs
         private Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {
             if (promptContext.Context.Activity.Text == validationCode
-                || promptContext.Context.Activity.Text == "Назад"
+                || promptContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"]
                 || promptContext.Context.Activity.Text == "passcode")
             {
                 return Task.FromResult(true);

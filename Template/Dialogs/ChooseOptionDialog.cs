@@ -29,8 +29,7 @@ namespace StuddyBot.Dialogs
         public ChooseOptionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
-                             DialogsMUI dialogsMui)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(ChooseOptionDialog))
         {
             
@@ -66,9 +65,13 @@ namespace StuddyBot.Dialogs
 
             var choices = new List<Choice>();
 
-            var ch1 = "Головне Меню"; // "Main Menu";
-            var ch2 = "Надіслати розмову на email"; // "Send conversation to email";
-            var ch3 = "Мої підписки"; // "My subscriptions";
+            var mainMenu = DialogsMUI.ChooseOptionDictionary["mainMenu"]; // "Main Menu";
+            var sendEmail = DialogsMUI.ChooseOptionDictionary["sendEmail"];// "Send conversation to email";
+            var subscriptions = DialogsMUI.ChooseOptionDictionary["subscriptions"];// "My subscriptions";
+
+            var ch1 = mainMenu;
+            var ch2 = sendEmail;
+            var ch3 = subscriptions;
             {
                 choices.Add(new Choice(ch1));
                 choices.Add(new Choice(ch2));
@@ -78,20 +81,20 @@ namespace StuddyBot.Dialogs
 
             if (stepOptions=="qa")
             {
-                var ch4 = "Питання/Відповіді"; // "Questions/Answers";
-                var ch5 = "Запропонувати питання"; // "Propose a new question";
+                var ch4 = DialogsMUI.ChooseOptionDictionary["questions/answers"]; // "Questions/Answers";
+                var ch5 = DialogsMUI.ChooseOptionDictionary["proposeQuestion"]; ; // "Propose a new question";
 
                 choices.Add(new Choice(ch4));
                 choices.Add(new Choice(ch5));
             }
-            
+
             {
-                var ch6 = "Завершити діалог"; // "End dialog";
+                var ch6 = DialogsMUI.ChooseOptionDictionary["endDialog"]; // "End dialog";
                 choices.Add(new Choice(ch6));
             }
 
-            var msg = "Що робити далі?";// "What to do next?";
-            var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+            var msg = DialogsMUI.ChooseOptionDictionary["next"];// "What to do next?";
+            var retryMsg = DialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
 
             var options = new PromptOptions()
             {

@@ -24,7 +24,6 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        private DialogsMUI _dialogsMui;
 
         private Dictionary<string, List<string>> _QAs;
 
@@ -32,8 +31,7 @@ namespace StuddyBot.Dialogs
         public QAsDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
-                             DialogsMUI dialogsMui)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(QAsDialog))
         {
             
@@ -41,11 +39,10 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
-            _dialogsMui = dialogsMui;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new AddQuestionDialog(DecisionMaker,emailSender, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
-            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db, dialogsMui));
+            AddDialog(new AddQuestionDialog(DecisionMaker,emailSender, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,
@@ -66,8 +63,8 @@ namespace StuddyBot.Dialogs
         {
             _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
 
-            var prompt = _dialogsMui.QAsDictionary["prompt"];
-            var reprompt = _dialogsMui.QAsDictionary["reprompt"];
+            var prompt = DialogsMUI.QAsDictionary["prompt"];
+            var reprompt = DialogsMUI.QAsDictionary["reprompt"];
 
             var choices = new List<Choice>();
 

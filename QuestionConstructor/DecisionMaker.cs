@@ -5,6 +5,7 @@ using System.Linq;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 using System.Configuration;
+using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Options;
 using StuddyBot.Core.BLL.Repositories;
@@ -396,11 +397,11 @@ namespace DecisionMakers
             return options;
         }
 
-        public DialogsMUI GetDialogsMui(string lang)
+        public void GetDialogsMui(string lang)
         {
             var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathDialogsMUI)));
             var rss = JArray.Parse(json);
-            var tmpOptions = new DialogsMUI();
+            var tmpOptions = new DialogsMUIObject();
 
             // Taking array of all tokens.
             var tokens = rss.Children();
@@ -412,11 +413,24 @@ namespace DecisionMakers
                 {
                     var dialogs = item["Dialogs"];
 
-                    tmpOptions = dialogs.ToObject<DialogsMUI>();
+                    tmpOptions = dialogs.ToObject<DialogsMUIObject>();
                 }
             }
 
-            return tmpOptions;
+            var sourceProperties = tmpOptions.GetType().GetProperties();
+
+            var destinationProperties = typeof(DialogsMUI)
+                .GetProperties(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (var prop in sourceProperties)
+            {
+                //Find matching property by name
+                var destinationProp = destinationProperties
+                    .Single(p => p.Name == prop.Name);
+
+                //Set the static property value
+                destinationProp.SetValue(null, prop.GetValue(tmpOptions));
+            }
         }
     }
 }

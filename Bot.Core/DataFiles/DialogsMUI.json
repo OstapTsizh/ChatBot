@@ -1,10 +1,11 @@
 ﻿[
 	{
-		"lang": [ "uk-ua" ],
+		"lang": ["uk-ua"],
 		"Dialogs": {
 			"AddQuestionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Будь ласка, введіть Ваше питання:",
+				"reprompt": "Будь ласка, cпробуйте ще раз:",
+				"message": "Дякуємо за допомогу!"
 			},
 
 			"QAsDictionary": {
@@ -18,50 +19,77 @@
 			},
 
 			"ChooseOptionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"mainMenu": "Головне Меню",
+				"sendEmail": "Надіслати розмову на email",
+				"subscriptions": "Мої підписки",
+				"questions/answers": "Питання/Відповіді",
+				"proposeQuestion": "Запропонувати питання",
+				"endDialog": "Завершити діалог",
+				"next": "Що робити далі?"
 			},
 
 			"CoursesDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Що Вас цікавить?",
+				"promptNotification": "Хочете отримати сповіщення про початок реєстрації?",
+				"reprompt": "Будь ласка, cпробуйте ще раз:"
 			},
 
 			"EmailDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"msg": "Ви ще не додали email",
+				"prompt": "Хочете додати email?",
+				"currentEmail": "Ваш email",
+				"promptNext": "Що Ви хочете зробити?",
+				"changeEmail": "Змінити адресу",
+				"deleteEmail": "Видалити пошту",
+				"back": "Назад",
+				"promptAddress": "Введіть адресу:",
+				"promptDelete": "Ви справді хочете видалити?",
+				"deleted": "Видалено",
+				"subjectValidationCode": "Код підтвердження",
+				"emailMessage": "Ваш код:",
+				"promptCode": "Будь ласка, введіть код який я відправив Вам на пошту",
+				"wrongFormat": "Хибний формат адреси"
 			},
 
 			"FinishDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"leave": "Так/Залишити відгук",
+				"answered": "Чи я відповів на усі запитання?",
+				"feedback": "Будь ласка, напишіть Ваш відгук:"
 			},
 
 			"LocationDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"promptCountry": "Виберіть країну:",
+				"promptCity": "Будь ласка, оберіть необхідне місто:",
+				"reprompt": "Будь ласка, cпробуйте ще раз:",
 			},
 
 			"MailingDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Відправити на цей email?",
+				"promptEmail": "Будь ласка, введіть свій email:"
 			},
 
 			"MainDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"yes": "так",
+				"no": "ні",
+				"reprompt": "Будь ласка, cпробуйте ще раз:"
 			},
 			"MainMenuDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Що Вас цікавить?"
 			},
 			"PlannedEventsDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Виберіть питання:"
 			},
 			"SubscriptionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"subscriptions": "Ваші підписки:",
+				"unsubQuestion": "Хочете відписатись від сповіщення на курс?",
+				"noSubs": "Підписок немає",
+				"chooseNumber": "Виберіть номер курсу від якого Ви хочете відписатись",
+				"name": "Назва:",
+				"registrationStarts": "Реєстрація починається:",
+				"courseStarts": "Курс починається:",
+				"title": "Курс, на який Ви підписані, скоро розпочнеться",
+				"info": "Інформація про курс:",
+				"subject": "Сповіщення про початок курсу"
 			}
 		}
 	},
@@ -70,13 +98,14 @@
 		"lang": [ "en-us", "en-gb" ],
 		"Dialogs": {
 			"AddQuestionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Type Your question, please:",
+				"reprompt": "Try again, please:",
+				"message": "Thanks for helping!"
 			},
 
 			"QAsDictionary": {
 				"prompt": "Choose a question:",
-				"reprompt": "Try one more time, please:"
+				"reprompt": "Try again, please:"
 			},
 
 			"CancelAndRestartDictionary": {
@@ -85,50 +114,77 @@
 			},
 
 			"ChooseOptionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"mainMenu": "Main Menu",
+				"sendEmail": "Send conversation to email",
+				"subscriptions": "My subscriptions",
+				"questions/answers": "Questions/Answers",
+				"proposeQuestion": "Propose a new question",
+				"endDialog": "End dialog",
+				"next": "What to do next?"
 			},
 
 			"CoursesDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "What you are interested in?",
+				"promptNotification": "Do you want to receive a notification about the start?",
+				"reprompt": "Try again, please:"
 			},
 
 			"EmailDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"msg": "You haven't added an email yet",
+				"prompt": "Want to add an email?",
+				"currentEmail": "Your email",
+				"promptNext": "What do you want to do?",
+				"changeEmail": "Change address",
+				"deleteEmail": "Delete mail",
+				"back": "Back",
+				"promptAddress": "Enter address:",
+				"promptDelete": "Are you sure you want to delete?",
+				"deleted": "Deleted",
+				"subjectValidationCode": "Confirmation code",
+				"emailMessage": "Your code:",
+				"promptCode": "Please enter the code I sent you in the mail",
+				"wrongFormat": "Invalid address format"
 			},
 
 			"FinishDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"leave": "Yes/Leave Feedback",
+				"answered": "Did I answer all your questions?",
+				"feedback": "Write feedback, please:"
 			},
 
 			"LocationDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"promptCountry": "Choose a country:",
+				"promptCity": "Choose a city",
+				"repromptCountry": "Try again, please:"
 			},
 
 			"MailingDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Send to this email?",
+				"promptEmail": "Please enter your email:",
 			},
 
 			"MainDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"yes": "yes",
+				"no": "no",
+				"reprompt": "Try again, please:"
 			},
 			"MainMenuDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "What interests you?"
 			},
 			"PlannedEventsDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"prompt": "Choose a question:"
 			},
 			"SubscriptionDictionary": {
-				"1": "Головне Меню",
-				"id": "Main Menu"
+				"subscriptions": "Your subscriptions: ",
+				"unsubQuestion": "Want to unsubscribe from course alerts?",
+				"noSubs": "No subscriptions",
+				"chooseNumber": "Select the course number you want to unsubscribe from",
+				"name": "Title:",
+				"registrationStarts": "Registration begins:",
+				"courseStarts": "The course begins:",
+				"title": "The course you are subscribed to will start soon",
+				"info": "Information about the course:",
+				"subject": "Notification about the course start"
 			}
 		}
 	}

@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using EmailSender.Interfaces;
 using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
 namespace StuddyBot.Controllers
 {
@@ -101,17 +102,18 @@ namespace StuddyBot.Controllers
                             if (!string.IsNullOrEmpty(_db.User.First(user => user.Id == matchedCourse.UserId).Email) &&
                                 !matchedCourse.Notified)
                             {
-                                var courseByName = _decisionMaker.GetCourses("uk-ua")
+                                var language = _db.User.First(user => user.Id == matchedCourse.UserId).Language;
+                                var courseByName = _decisionMaker.GetCourses(language)
                                     .First(item => item.Name == matchedCourse.Course.Name);
 
-                                var message = "<h3>Курс на який Ви підписані скоро починається</h3> <br>" +
-                                              $"<h5>Інформація про курс: {matchedCourse.Course.Name}," +
-                                              $" початок реєстрації: {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
-                                              $" початок занять {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
+                                var message = $"<h3>{DialogsMUI.SubscriptionDictionary["title"]}</h3> <br>" +
+                                              $"<h5>{DialogsMUI.SubscriptionDictionary["info"]} {matchedCourse.Course.Name}," +
+                                              $" {DialogsMUI.SubscriptionDictionary["registrationStarts"]} {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
+                                              $" {DialogsMUI.SubscriptionDictionary["courseStarts"]} {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
                                               $"{courseByName.Resources}";
 
                                 await _emailSender.SendEmailAsync(matchedCourse.User.Email,
-                                    "Сповіщення про початок курсу",
+                                DialogsMUI.SubscriptionDictionary["subject"],
                                     message);
 
                                 matchedCourse.Notified = true;

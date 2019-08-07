@@ -4,20 +4,20 @@ using System.Text;
 
 namespace StuddyBot.Core.Models
 {
-    public class DialogsMUI
+    public static class DialogsMUI
     {
-        public Dictionary<string, string> AddQuestionDictionary;
-        public Dictionary<string, string> CancelAndRestartDictionary;
-        public Dictionary<string, string> ChooseOptionDictionary;
-        public Dictionary<string, string> CoursesDictionary;
-        public Dictionary<string, string> EmailDictionary;
-        public Dictionary<string, string> FinishDictionary;
-        public Dictionary<string, string> LocationDictionary;
-        public Dictionary<string, string> MailingDictionary;
-        public Dictionary<string, string> MainDictionary;
-        public Dictionary<string, string> MainMenuDictionary;
-        public Dictionary<string, string> PlannedEventsDictionary;
-        public Dictionary<string, string> SubscriptionDictionary;
-        public Dictionary<string, string> QAsDictionary;
+        public static Dictionary<string, string> AddQuestionDictionary { get; set; }
+        public static Dictionary<string, string> CancelAndRestartDictionary { get; set; }
+        public static Dictionary<string, string> ChooseOptionDictionary { get; set; }
+        public static Dictionary<string, string> CoursesDictionary { get; set; }
+        public static Dictionary<string, string> EmailDictionary { get; set; }
+        public static Dictionary<string, string> FinishDictionary { get; set; }
+        public static Dictionary<string, string> LocationDictionary { get; set; }
+        public static Dictionary<string, string> MailingDictionary { get; set; }
+        public static Dictionary<string, string> MainDictionary { get; set; }
+        public static Dictionary<string, string> MainMenuDictionary { get; set; }
+        public static Dictionary<string, string> PlannedEventsDictionary { get; set; }
+        public static Dictionary<string, string> SubscriptionDictionary { get; set; }
+        public static Dictionary<string, string> QAsDictionary { get; set; }
     }
 }

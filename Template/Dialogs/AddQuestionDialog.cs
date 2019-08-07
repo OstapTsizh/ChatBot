@@ -34,8 +34,7 @@ namespace StuddyBot.Dialogs
         public AddQuestionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db,
-                             DialogsMUI dialogsMui)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(AddQuestionDialog))
         {
             
@@ -65,11 +64,13 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskForQuestionStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            
+            var prompt = DialogsMUI.AddQuestionDictionary["prompt"]; // Type Your question, please:
+            var reprompt = DialogsMUI.AddQuestionDictionary["reprompt"];
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Будь ласка, введіть Ваше питання:"), // Type Your question, please:
+                Prompt = MessageFactory.Text(prompt),
+                RetryPrompt = MessageFactory.Text(reprompt),
                 Style = ListStyle.HeroCard
             };
 
@@ -100,7 +101,7 @@ namespace StuddyBot.Dialogs
             _db.AddQuestion(stepContext.Context.Activity.Text);
             _db.SaveChanges();
 
-            var message = "Дякуємо за допомогу!"; // "Thank you for your help!";
+            var message = DialogsMUI.AddQuestionDictionary["message"]; // "Thank you for your help!";
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 
