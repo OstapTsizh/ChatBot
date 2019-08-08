@@ -38,6 +38,9 @@ import { NewQADialog } from './new-qadialog/new-qadialog.component';
 import { NewCourseDialog } from './new-course-dialog/new-course-dialog.component';
 import { FeedbackComponent } from './feedback/feedback.component';
 import { UserQuestionsComponent } from './user-questions/user-questions.component';
+import { PlannedEventsComponent } from './planned-events/planned-events.component';
+import { NewEventDialog } from './new-event/new-event.component';
+
 
 
 
@@ -55,8 +58,10 @@ import { UserQuestionsComponent } from './user-questions/user-questions.componen
     AddNewMenuDialog,
     NewQADialog,
     NewCourseDialog,
+    NewEventDialog,
     FeedbackComponent,
     UserQuestionsComponent,
+    PlannedEventsComponent,
     
   ],
   imports: [
@@ -92,12 +97,13 @@ import { UserQuestionsComponent } from './user-questions/user-questions.componen
       { path: 'locations', component: LocationsComponent },
       { path: 'courses', component: CoursesComponent },
       { path: 'feedbacks', component: FeedbackComponent },
-      { path: 'user-questions', component: UserQuestionsComponent },      
+      { path: 'user-questions', component: UserQuestionsComponent },  
+      { path: 'planned-events', component: PlannedEventsComponent },          
     ]),
     BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [AddNewMenuDialog, NewQADialog, NewCourseDialog],
+  entryComponents: [AddNewMenuDialog, NewQADialog, NewCourseDialog, NewEventDialog],
 })
 export class AppModule { }
