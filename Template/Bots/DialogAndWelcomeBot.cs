@@ -14,13 +14,14 @@ namespace StuddyBot.Bots
     {
         // protected MyDialog _myDialog;
         protected ThreadedLogger _Logger;
+        protected IDecisionMaker _decisionMaker;
 
         public DialogAndWelcomeBot(ConversationState conversationState, UserState userState, T dialog, 
-            ILogger<DialogBot<T>> logger, IDecisionMaker questionCtor, ThreadedLogger Logger)
-            : base(conversationState, userState, dialog, logger, questionCtor)
+            ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker, ThreadedLogger Logger)
+            : base(conversationState, userState, dialog, logger, decisionMaker)
         {
             _Logger = Logger;
-
+            _decisionMaker = decisionMaker;
         }
 
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
@@ -29,11 +30,14 @@ namespace StuddyBot.Bots
             {                
                 if (member.Id != turnContext.Activity.Recipient.Id)
                 {
-                    var msg = "Привіт, друже! Мене звати RDBot, Ваш персональний помічник!";
-                    // "Hello Friend! My name is RDBot, your personal assistant!";
-                    // "Hello! Say something to start dialog";
+                    //_decisionMaker
+                    var msg = //"Привіт, друже! Мене звати RDBot, Ваш персональний помічник!";
+                        "Hello Friend! My name is RDBot, your personal assistant!";
+                    
                     await turnContext.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
-                  
+
+                    msg = "Send me something to start conversation.";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
                 }
             }
         }

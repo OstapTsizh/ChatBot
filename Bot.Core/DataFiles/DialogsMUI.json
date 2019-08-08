@@ -169,7 +169,7 @@
 				"reprompt": "Try again, please:"
 			},
 			"MainMenuDictionary": {
-				"prompt": "What interests you?"
+				"prompt": "What you are interested in?"
 			},
 			"PlannedEventsDictionary": {
 				"prompt": "Choose a question:"
