@@ -21,7 +21,6 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-
         private List<Country> _countries;
         private Country _country;
         private readonly bool _onlyInUkraine = true;
@@ -62,8 +61,6 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> GetCountryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
-
             _country =new Country();
 
             //if (_onlyInUkraine)
@@ -81,13 +78,13 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(country.CountryName));
                 }
 
-                var msg = "Будь ласка, оберіть необхідну країну:";// "Choose needed country, please.";
-                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
-
+                var prompt = DialogsMUI.LocationDictionary["promptCountry"]; // "Choose needed country, please.";
+                var reprompt = DialogsMUI.MainDictionary["reprompt"]; // "Try one more time, please:";
+                
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text(msg),
-                    RetryPrompt = MessageFactory.Text(retryMsg),
+                    Prompt = MessageFactory.Text(prompt),
+                    RetryPrompt = MessageFactory.Text(reprompt),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };
@@ -116,13 +113,14 @@ namespace StuddyBot.Dialogs
             {
                 choices.Add(new Choice(city));
             }
-            var msg = "Будь ласка, оберіть необхідне місто:";// "Choose needed city, please.";
-            var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
+            var prompt = DialogsMUI.LocationDictionary["promptCity"];// "Choose needed city, please.";
+            var reprompt = DialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text(msg),
-                RetryPrompt = MessageFactory.Text(retryMsg),
+                Prompt = MessageFactory.Text(prompt),
+                RetryPrompt = MessageFactory.Text(reprompt),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };

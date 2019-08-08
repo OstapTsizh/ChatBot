@@ -50,7 +50,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new QAsDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -85,13 +85,12 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(item.Name));
                 }
 
-                var msg = "ўо ¬ас ц≥кавить?";// "What you are interested in?";
-                var retryMsg = "Ѕудь ласка, спробуйте ще раз";// "Try one more time, please:";
-                
+                var prompt = DialogsMUI.MainMenuDictionary["prompt"];// "What you are interested in?";
+
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text(msg),
-                    RetryPrompt = MessageFactory.Text(retryMsg),
+                    Prompt = MessageFactory.Text(prompt),
+                    RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };

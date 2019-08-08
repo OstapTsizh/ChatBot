@@ -68,11 +68,13 @@ namespace StuddyBot.Dialogs
                 choices.Add(new Choice(q));
             }
 
+            var prompt = DialogsMUI.PlannedEventsDictionary["prompt"];// Choose a question:
+
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Виберіть питання:"), // Choose a question:
+                Prompt = MessageFactory.Text(prompt),
                 Choices = choices,
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз:"), // Try one more time, please
+                RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]), // Try one more time, please
                 Style = ListStyle.HeroCard
             };
 

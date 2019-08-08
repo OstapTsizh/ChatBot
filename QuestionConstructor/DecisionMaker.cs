@@ -5,6 +5,7 @@ using System.Linq;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 using System.Configuration;
+using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Options;
 using StuddyBot.Core.BLL.Repositories;
@@ -320,7 +321,6 @@ namespace DecisionMakers
                 if (item["lang"].ToObject<string>() == lang)
                 {
                     var items = item["QAs"];
-
                     tmpQAs = items.ToObject<List<QA>>();
                 }
             }
@@ -395,6 +395,42 @@ namespace DecisionMakers
             }
 
             return options;
+        }
+
+        public void GetDialogsMui(string lang)
+        {
+            var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathDialogsMUI)));
+            var rss = JArray.Parse(json);
+            var tmpOptions = new DialogsMUIObject();
+
+            // Taking array of all tokens.
+            var tokens = rss.Children();
+
+            // Searching in array token with given topic 
+            foreach (var item in tokens)
+            {
+                if (item["lang"].ToObject<string[]>().Contains(lang))
+                {
+                    var dialogs = item["Dialogs"];
+
+                    tmpOptions = dialogs.ToObject<DialogsMUIObject>();
+                }
+            }
+
+            var sourceProperties = tmpOptions.GetType().GetProperties();
+
+            var destinationProperties = typeof(DialogsMUI)
+                .GetProperties(BindingFlags.Public | BindingFlags.Static);
+
+            foreach (var prop in sourceProperties)
+            {
+                //Find matching property by name
+                var destinationProp = destinationProperties
+                    .Single(p => p.Name == prop.Name);
+
+                //Set the static property value
+                destinationProp.SetValue(null, prop.GetValue(tmpOptions));
+            }
         }
     }
 }

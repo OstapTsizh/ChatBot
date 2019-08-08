@@ -72,12 +72,17 @@ namespace StuddyBot.Dialogs
 
             if (string.IsNullOrEmpty(userEmail))
             {
-                var msg = "Ви ще не додали email";
+                var msg = DialogsMUI.EmailDictionary["msg"];
+                var prompt = DialogsMUI.EmailDictionary["prompt"];//Хочете додати email?
+                var reprompt = DialogsMUI.MainDictionary["reprompt"];
+                var yes = DialogsMUI.MainDictionary["yes"];
+                var no = DialogsMUI.MainDictionary["no"];
+
                 var optionsAddEmail = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("Хочете додати email?"),
-                    RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
-                    Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
+                    Prompt = MessageFactory.Text(prompt),
+                    RetryPrompt = MessageFactory.Text(reprompt),
+                    Choices = new List<Choice> { new Choice(yes), new Choice(no) },
                 };
 
                 var messageAdd = msg + "\n" + optionsAddEmail.Prompt.Text;
@@ -91,17 +96,23 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync(nameof(ChoicePrompt), optionsAddEmail, cancellationToken);
             }
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"Ваш email адрес **{userEmail}**"));
+            var currentEmail = DialogsMUI.EmailDictionary["currentEmail"];
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text($"{currentEmail} **{userEmail}**"));
+
+            var promptNext = DialogsMUI.EmailDictionary["promptNext"]; //Що Ви хочете зробити?
+            var changeEmail = DialogsMUI.EmailDictionary["changeEmail"]; //Змінити адресу
+            var deleteEmail = DialogsMUI.EmailDictionary["deleteEmail"]; //Видалити пошту
+            var back = DialogsMUI.EmailDictionary["back"]; //Назад
 
             var optionsManageEmail = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Що Ви хочете зробити?"),
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
+                Prompt = MessageFactory.Text(promptNext),
+                RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
                 Choices = new List<Choice>
                 {
-                    new Choice("Змінити адрес"),
-                    new Choice("Видалити пошту"),
-                    new Choice("Назад")
+                    new Choice(changeEmail),
+                    new Choice(deleteEmail),
+                    new Choice(back)
                 },
                 Style = ListStyle.HeroCard
             };
@@ -119,45 +130,50 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = stepContext.Context.Activity.Text;
 
-            switch (foundChoice)
+            var promptAddress = DialogsMUI.EmailDictionary["promptAddress"]; //Введіть адресу:
+            var promptDelete = DialogsMUI.EmailDictionary["promptDelete"]; //Ви справді хочете видалити?
+            var reprompt = DialogsMUI.MainDictionary["reprompt"];
+            var yes = DialogsMUI.MainDictionary["yes"];
+            var no = DialogsMUI.MainDictionary["no"];
+
+            if (foundChoice == DialogsMUI.MainDictionary["no"] || foundChoice == DialogsMUI.EmailDictionary["back"])
             {
-                case "ні":
-                case "Назад":
-                    return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
+                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
+            }
+            else if (foundChoice == DialogsMUI.EmailDictionary["changeEmail"] || foundChoice == DialogsMUI.MainDictionary["yes"])
+            {
+                validationCode = string.Empty;
+                var options = new PromptOptions()
+                {
+                    Prompt = MessageFactory.Text(promptAddress),
+                    RetryPrompt = MessageFactory.Text(reprompt),
+                    Style = ListStyle.HeroCard
+                };
 
-                case "Змінити адрес":
-                case "так":
-                    validationCode = string.Empty;
-                    var options = new PromptOptions()
-                    {
-                        Prompt = MessageFactory.Text("Введіть адресу:"),
-                        RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
-                        Style = ListStyle.HeroCard
-                    };
+                var message = options.Prompt.Text;
+                var sender = "bot";
+                var time = stepContext.Context.Activity.Timestamp.Value;
 
-                    var message = options.Prompt.Text;
-                    var sender = "bot";
-                    var time = stepContext.Context.Activity.Timestamp.Value;
+                _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
-                    _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+                return await stepContext.PromptAsync("email", options, cancellationToken);
+            }
+            else if (foundChoice == DialogsMUI.EmailDictionary["deleteEmail"])
+            {
+                var optionsDeleteEmail = new PromptOptions()
+                {
+                    Prompt = MessageFactory.Text(promptDelete),
+                    RetryPrompt = MessageFactory.Text(reprompt),
+                    Choices = new List<Choice> {new Choice(yes), new Choice(no)},
+                };
 
-                    return await stepContext.PromptAsync("email", options, cancellationToken);
+                var messageDelete = optionsDeleteEmail.Prompt.Text;
+                var senderDelete = "bot";
+                var timeDelete = stepContext.Context.Activity.Timestamp.Value;
 
-                case "Видалити пошту":
-                    var optionsDeleteEmail = new PromptOptions()
-                    {
-                        Prompt = MessageFactory.Text("Ви справді хочете видалити?"),
-                        RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
-                        Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
-                    };
+                _myLogger.LogMessage(messageDelete, senderDelete, timeDelete, _DialogInfo.DialogId);
 
-                    var messageDelete = optionsDeleteEmail.Prompt.Text;
-                    var senderDelete = "bot";
-                    var timeDelete = stepContext.Context.Activity.Timestamp.Value;
-
-                    _myLogger.LogMessage(messageDelete, senderDelete, timeDelete, _DialogInfo.DialogId);
-
-                    return await stepContext.PromptAsync(nameof(ChoicePrompt), optionsDeleteEmail, cancellationToken);
+                return await stepContext.PromptAsync(nameof(ChoicePrompt), optionsDeleteEmail, cancellationToken);
             }
 
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
@@ -168,6 +184,8 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = stepContext.Context.Activity.Text;
 
+            var promptCode = DialogsMUI.EmailDictionary["promptCode"];//Будь ласка, введіть код який я відправив Вам на пошту
+
             switch (foundChoice)
             {
                 case "ні":
@@ -176,21 +194,21 @@ namespace StuddyBot.Dialogs
 
                 case "так":
                     _db.DeleteUserEmail(_DialogInfo);
-                    await stepContext.Context.SendActivityAsync(MessageFactory.Text("Видалено"));
+                    await stepContext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.EmailDictionary["deleted"]));
                     return await stepContext.ReplaceDialogAsync(nameof(EmailDialog),
                         cancellationToken: cancellationToken);
 
                 default:
                     var message = GenerateCode();
                     userEmail = foundChoice;
-                    await EmailSender.SendEmailAsync(foundChoice, "Validation Code", $"Your code: <b>{message}</b>.");
+                    await EmailSender.SendEmailAsync(foundChoice, DialogsMUI.EmailDictionary["subjectValidationCode"], $"{DialogsMUI.EmailDictionary["emailMessage"]} <b>{message}</b>.");
 
 
                     var options = new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text("Будь ласка, введіть код який я відправив Вам на пошту"),
-                        RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
-                        Choices = new List<Choice> { new Choice("Назад") }
+                        Prompt = MessageFactory.Text(promptCode),
+                        RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
+                        Choices = new List<Choice> { new Choice(DialogsMUI.EmailDictionary["back"]) }
                     };
 
 
@@ -200,7 +218,7 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if(stepContext.Context.Activity.Text == "Назад")
+            if(stepContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"])
             {
                 return await stepContext.ReplaceDialogAsync(nameof(EmailDialog), cancellationToken: cancellationToken);
             }
@@ -219,7 +237,7 @@ namespace StuddyBot.Dialogs
             }
             catch
             {
-                promptcontext.Context.SendActivityAsync(MessageFactory.Text("Хибний формат адреси"), cancellationtoken);
+                promptcontext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.EmailDictionary["wrongFormat"]), cancellationtoken);
                 return Task.FromResult(false);
             }
         }
@@ -227,7 +245,7 @@ namespace StuddyBot.Dialogs
         private Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {
             if (promptContext.Context.Activity.Text == validationCode 
-                || promptContext.Context.Activity.Text == "Назад" 
+                || promptContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"]
                 || promptContext.Context.Activity.Text == "passcode")
             {
                 return Task.FromResult(true);

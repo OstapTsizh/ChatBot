@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +9,10 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
-using Microsoft.VisualBasic;
 using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
-using Course = StuddyBot.Core.DAL.Entities.Course;
 
 namespace StuddyBot.Dialogs
 {
@@ -67,32 +64,33 @@ namespace StuddyBot.Dialogs
             {
                 var subs = userSubscription.ToList();
 
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Ваші підписки:"));
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.SubscriptionDictionary["subscriptions"]));
 
                 var message = "";
-
-                foreach (var sub in subs)
+                
+                for (var i = 0; i < subs.Count; i++)
                 {
-                    var courseInfo = _subscriptionManager.GetCourseInfo(sub.CourseId.ToString());
+                    var courseInfo = _subscriptionManager.GetCourseInfo(subs[i].CourseId.ToString());
                     message +=
-                        $"\n\nId курсу: {courseInfo.Id}, Назва: {courseInfo.Name}, Реєстрація починається: {courseInfo.RegistrationStartDate.ToShortDateString()}," +
-                        $" Курс починається: {courseInfo.StartDate.Date.ToShortDateString()};";
+                        $"\n\n**{i+1}** {DialogsMUI.SubscriptionDictionary["name"]} {courseInfo.Name}," +
+                        $" {DialogsMUI.SubscriptionDictionary["registrationStarts"]} {courseInfo.RegistrationStartDate.ToShortDateString()}," +
+                        $" {DialogsMUI.SubscriptionDictionary["courseStarts"]} {courseInfo.StartDate.Date.ToShortDateString()};";
                 }
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
 
-                var unsubQuestion = "Хочете відписатись від сповіщення на курс?";
+                var unsubQuestion = DialogsMUI.SubscriptionDictionary["unsubQuestion"];
 
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
                         Prompt = MessageFactory.Text(unsubQuestion),
-                        Choices = new List<Choice> {new Choice("так"), new Choice("ні")}
+                        Choices = new List<Choice> {new Choice(DialogsMUI.MainDictionary["yes"]), new Choice(DialogsMUI.MainDictionary["no"])}
                     },
                     cancellationToken);
             }
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("Підписок немає"), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.SubscriptionDictionary["noSubs"]), cancellationToken);
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
         }
 
@@ -100,17 +98,22 @@ namespace StuddyBot.Dialogs
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
 
-            if (foundChoice == "так" && userSubscription.Count != 0)
+            if (foundChoice == DialogsMUI.MainDictionary["yes"] && userSubscription.Count != 0)
             {
                 var subs = userSubscription.ToList();
 
                 var variants = new List<Choice>();
-                subs.ForEach(sub => variants.Add(new Choice($"{sub.Course.Id}")));
+
+                for (var i = 0; i < subs.Count; i++)
+                {
+                    variants.Add(new Choice($"{i+1}"));
+                }
+                
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text("Id курсу від якого Ви хочете відписатись"),
-                        RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"),
+                        Prompt = MessageFactory.Text(DialogsMUI.SubscriptionDictionary["chooseNumber"]),
+                        RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
                         Choices = variants,
                         Style = ListStyle.HeroCard
                     },
@@ -123,11 +126,13 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> DeleteSubscriptionStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            var foundChoice = (stepContext.Result as FoundChoice).Value;
+            var foundChoice = int.Parse((stepContext.Result as FoundChoice).Value);
 
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
 
-            _subscriptionManager.CancelSubscription(conversationReference.User.Id, foundChoice);
+            var cancelCourse = userSubscription.ToList()[foundChoice - 1];
+
+            _subscriptionManager.CancelSubscription(conversationReference.User.Id, cancelCourse.CourseId.ToString());
 
             return await stepContext.ReplaceDialogAsync(nameof(SubscriptionDialog),
                 cancellationToken: cancellationToken);

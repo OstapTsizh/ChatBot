@@ -75,13 +75,13 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(course.Name));
                 }
 
-                var msg = "Що Вас цікавить?";// "What you are interested in?";
-                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+                var prompt = DialogsMUI.CoursesDictionary["prompt"];// "What you are interested in?";
+                var reprompt = DialogsMUI.CoursesDictionary["reprompt"];
 
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text(msg),
-                    RetryPrompt = MessageFactory.Text(retryMsg),
+                    Prompt = MessageFactory.Text(prompt),
+                    RetryPrompt = MessageFactory.Text(reprompt),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };
@@ -111,11 +111,18 @@ namespace StuddyBot.Dialogs
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken: cancellationToken);
 
-            var options = new PromptOptions()
+            var prompt = DialogsMUI.CoursesDictionary["promptNotification"];//Do you want to receive a notification about the start?
+            var reprompt = DialogsMUI.CoursesDictionary["reprompt"];
+
+            var yes = DialogsMUI.MainDictionary["yes"];
+            var no = DialogsMUI.MainDictionary["no"];
+
+
+        var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Хочете отримати сповіщення про початок реєстрації?"), //Do you want to receive a notification about the start?
-                RetryPrompt = MessageFactory.Text("Будь ласка, спробуйте ще раз"), //Try one more time, please.
-                Choices = new List<Choice> { new Choice("так"), new Choice("ні") },
+                Prompt = MessageFactory.Text(prompt), 
+                RetryPrompt = MessageFactory.Text(reprompt),
+                Choices = new List<Choice> { new Choice(yes), new Choice(no) },
             };
 
             var message = options.Prompt.Text;
@@ -131,13 +138,13 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var foundChoice = (stepContext.Result as FoundChoice).Value;
-
-            if (foundChoice == "так")
+            
+            if (foundChoice == DialogsMUI.MainDictionary["yes"])
             {
                 _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
                 _db.SaveChanges();
 
-                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog), "notification",
                     cancellationToken: cancellationToken);
             }
 

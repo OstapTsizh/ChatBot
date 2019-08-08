@@ -17,4 +17,11 @@ export class UserquestionsService {
   getUserQuestions() {
     return this.http.get(this.baseUrl);
   }
+
+  deleteUserQuestion(userQuestion){
+    let url = this.baseUrl + '/' + userQuestion.id;
+    return this.http.delete(url);
+  }
+
+
 }

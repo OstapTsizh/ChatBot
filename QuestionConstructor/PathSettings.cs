@@ -19,5 +19,7 @@ namespace DecisionMakers
         public string PathPlannedEvents { get; set; } //= @"..\Bot.Core\DataFiles\PlannedEvents.json";
 
         public string PathChooseOptionList { get; set; } //= @"..\Bot.Core\DataFiles\ChooseOptionList.json";
+
+        public string PathDialogsMUI { get; set; } //= @"..\Bot.Core\DataFiles\DialogsMUI.json";
     }
 }

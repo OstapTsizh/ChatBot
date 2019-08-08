@@ -64,14 +64,17 @@ namespace StuddyBot.Dialogs
         {
             var choices = new List<Choice>();
 
+            var leaveFeedback = DialogsMUI.FinishDictionary["leave"];// Yes/Leave feedback
+            var answered = DialogsMUI.FinishDictionary["answered"]; // Did I answer all your questions?
+
             {
-                choices.Add(new Choice("Так/Залишити відгук")); // Yes/Leave feedback
-                choices.Add(new Choice("Ні")); // No
+                choices.Add(new Choice(leaveFeedback)); 
+                choices.Add(new Choice(DialogsMUI.MainDictionary["no"]));
             }
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Чи я відповів на усі запитання?"), // Did I answer all your questions?
+                Prompt = MessageFactory.Text(answered),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
@@ -95,7 +98,9 @@ namespace StuddyBot.Dialogs
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
-            if (choiceValue=="Ні") // No
+            var feedback = DialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
+
+            if (choiceValue==DialogsMUI.MainDictionary["no"]) 
             {
                 return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
@@ -103,7 +108,7 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Будь ласка, напишіть Ваш відгук:"), // Type Your feedback, please:
+                Prompt = MessageFactory.Text(feedback), 
                 Style = ListStyle.HeroCard
             };
 
