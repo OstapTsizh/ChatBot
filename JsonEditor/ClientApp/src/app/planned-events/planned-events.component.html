@@ -1,0 +1,64 @@
+<button mat-raised-button color="primary" (click)="openNewEventDialog()" >Add Event</button>
+
+<hr>
+
+<div>
+
+  <div *ngFor="let item of plannedEvents; let lang = index">
+
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th colspan="2"> {{ item.lang }} </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table class="table table-editable">
+              <thead>
+                <tr>
+                  <th> Name </th>
+                  <th> Resources </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let event of item.events; let eventInner = index">
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateList(lang, eventInner, 'name', $event)">
+                      {{ event.name }}
+                    </span>
+                  </td>
+                  <td>
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr *ngFor="let res of event.resources; let k = index">
+                          <td>
+                            <span contenteditable="true" (keyup)="changeValue($event)"
+                              (blur)="updateResource(lang, eventInner, k, $event)">
+                              {{ res }}
+                            </span>
+                          </td>
+                          <td align="center">
+                            <button mat-raised-button color="warn" (click)="deleteResource(lang, eventInner, k)">Delete resource</button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                  <td align="center">
+                      <button mat-raised-button color="warn" (click)="delete(lang, eventInner)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

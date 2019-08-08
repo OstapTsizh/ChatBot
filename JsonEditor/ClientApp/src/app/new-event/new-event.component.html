@@ -1,0 +1,50 @@
+<h4 mat-dialog-title>Add new event data</h4>
+<div mat-dialog-content>
+
+  <hr>
+  Value: {{ eventForm.value | json }}
+  <hr>
+
+  <form [formGroup]="eventForm">
+
+    <mat-form-field class="full">
+      <mat-select placeholder="Language" formControlName="lang">
+        <mat-option *ngFor="let lang of languages" [value]="lang.value">
+          {{ lang.viewValue }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="addEventData()">New event</button>
+
+    <div formArrayName="events">
+
+      <div *ngFor="let item of eventsArray.controls; let i = index" [formGroupName]="i" class="jumbotron">
+
+        <button mat-raised-button color="warn" (click)="deleteEventData(i)">Delete Event</button>
+
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Name">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Resource"  #inputEventResource>
+        </mat-form-field>
+
+        <button mat-raised-button class="addResBtn" (click)="addEventResource(inputEventResource, i)">
+          Add resource
+        </button>
+
+
+      </div>
+
+      <div class="controlBtn">
+        <button mat-raised-button class="mySubmit" (click)="Submit()">Update Data</button>
+      </div>
+
+    </div>
+
+
+  </form>
+
+</div>
