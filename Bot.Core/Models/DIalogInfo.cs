@@ -18,5 +18,10 @@
         /// Specified city in country.
         /// </summary>
         public string City { get; set; }
+
+        /// <summary>
+        /// Language to display messages/info.
+        /// </summary>
+        public string Language { get; set; }
     }
 }

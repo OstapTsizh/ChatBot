@@ -16,7 +16,7 @@ export class NewCourseDialog implements OnInit {
 
   languages: ILang[] = [
     { value: 'uk-ua', viewValue: 'uk-ua' },
-    { value: 'en-gb', viewValue: 'en-gb' }
+    { value: 'en-us', viewValue: 'en-us' }
   ];
 
   constructor(private fb: FormBuilder,
@@ -40,7 +40,9 @@ export class NewCourseDialog implements OnInit {
   addCourseData() {
     const course = this.fb.group({
       name: "",
-      resources: ""
+      resources: "",
+      startDate: Date,
+      registrationStartDate: Date
     })
 
     this.coursesInnerArray.push(course);

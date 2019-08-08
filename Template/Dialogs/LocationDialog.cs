@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -20,14 +22,15 @@ namespace StuddyBot.Dialogs
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
 
+        private List<Country> _countries;
         private Country _country;
         private readonly bool _onlyInUkraine = true;
+        
 
-
-        public LocationDialog(IDecisionMaker decisionMaker, 
+        public LocationDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender)
             : base(nameof(LocationDialog))
         {
             
@@ -37,6 +40,7 @@ namespace StuddyBot.Dialogs
             _conversationReferences = conversationReferences;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            AddDialog(new MainMenuDialog(DecisionMaker, SubscriptionManager, _myLogger, _DialogInfo, _conversationReferences, db, emailSender));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -62,25 +66,28 @@ namespace StuddyBot.Dialogs
 
             _country =new Country();
 
-            if (_onlyInUkraine)
-            {
-                _country.CountryName = "Ukraine";
-                return await stepContext.NextAsync(cancellationToken:cancellationToken);
-            }
+            //if (_onlyInUkraine)
+            //{
+            //    _country.CountryName = "Ukraine";
+            //    return await stepContext.NextAsync(cancellationToken:cancellationToken);
+            //}
 
             {
-                var countries = DecisionMaker.GetCountries();
+                _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
                 var choices = new List<Choice>();
 
-                foreach (var country in countries)
+                foreach (var country in _countries)
                 {
-                    choices.Add(new Choice(country));
+                    choices.Add(new Choice(country.CountryName));
                 }
+
+                var msg = "Будь ласка, оберіть необхідну країну:";// "Choose needed country, please.";
+                var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
 
                 var options = new PromptOptions()
                 {
-                    Prompt = MessageFactory.Text("Choose needed country, please."),
-                    RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                    Prompt = MessageFactory.Text(msg),
+                    RetryPrompt = MessageFactory.Text(retryMsg),
                     Choices = choices,
                     Style = ListStyle.HeroCard
                 };
@@ -98,22 +105,24 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetCityStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            if (!_onlyInUkraine)
+            //if (!_onlyInUkraine)
             {
-                _country.CountryName = (string)(stepContext.Result as FoundChoice).Value;
+                _country = _countries.FirstOrDefault(c=>c.CountryName==(stepContext.Result as FoundChoice).Value);
             }
 
-            var cities = DecisionMaker.GetCities(_country.CountryName);
             var choices = new List<Choice>();
 
-            foreach (var city in cities)
+            foreach (var city in _country.Cities)
             {
                 choices.Add(new Choice(city));
             }
+            var msg = "Будь ласка, оберіть необхідне місто:";// "Choose needed city, please.";
+            var retryMsg = "Будь ласка, спробуйте ще раз:";// "Try one more time, please:";
+
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Choose needed city, please."),
-                RetryPrompt = MessageFactory.Text("Try one more time, please."),
+                Prompt = MessageFactory.Text(msg),
+                RetryPrompt = MessageFactory.Text(retryMsg),
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };

@@ -8,6 +8,8 @@ import { NewCourseDialog } from '../new-course-dialog/new-course-dialog.componen
 export interface Course {
   name: string;
   resources: string;
+  startDate: Date;
+  registrationStartDate: Date;
 }
 
 export interface ICourseModel {
@@ -50,27 +52,28 @@ export class CoursesComponent {
 
     this.courses[i].courses[j][property] = editField.trim();
 
-    this.sendPut();
+    this.sendPut(i, j);
 
   }
 
   delete(i: number, j: number) {
     this.courses[i].courses.splice(j, 1);
-    this.sendPut();
+    this.sendPut(i, j);
   }
 
 
 
 
-  sendPut() {
-    let body = JSON.stringify(this.courses);
+  sendPut(i: number, j: number) {
+    let url = this.baseUrl + '/' + i + '/' + j;
+    let body = JSON.stringify(this.courses[i].courses[j]);
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     };
 
-    return this.http.put(this.baseUrl, body, httpOptions)
+    return this.http.put(url, body, httpOptions)
       .subscribe();
   }
 

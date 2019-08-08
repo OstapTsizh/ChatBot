@@ -27,11 +27,11 @@ namespace StuddyBot.Dialogs
     {
         protected readonly IConfiguration Configuration;
         protected readonly IDecisionMaker DecisionMaker;
+        protected readonly IEmailSender EmailSender;
         protected QuestionAndAnswerModel _QuestionAndAnswerModel;
         protected DecisionModel _DecisionModel;
         protected ThreadedLogger _Logger;
         protected static DialogInfo _DialogInfo;
-        protected readonly ISubscriptionManager SubscriptionManager;
 
         private StuddyBotContext _db;
 
@@ -41,15 +41,16 @@ namespace StuddyBot.Dialogs
         /// </summary>
         private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;        
         
-        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, IEmailSender emailSender,
-            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, ISubscriptionManager subscriptionManager, StuddyBotContext db)
+
+        public MainDialog(IConfiguration configuration, IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
+            ThreadedLogger Logger, ConcurrentDictionary<string, ConversationReference> conversationReferences, DialogInfo dialogInfo, StuddyBotContext db)
             : base(nameof(MainDialog))         
         {
             Configuration = configuration;
             this._Logger = Logger;    
             DecisionMaker = decisionMaker;
+            EmailSender = emailSender;
             _conversationReferences = conversationReferences;
-            SubscriptionManager = subscriptionManager;
 
             _QuestionAndAnswerModel = new QuestionAndAnswerModel();
             _QuestionAndAnswerModel.QuestionModel = new QuestionModel();
@@ -64,13 +65,37 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
 
-            AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
-            AddDialog(new SubscriptionDialog(SubscriptionManager, decisionMaker, emailSender, _QuestionAndAnswerModel, Logger ,dialogInfo,conversationReferences));
+            AddDialog(new LocationDialog(DecisionMaker,subscriptionManager, _Logger, _DialogInfo, _conversationReferences, db, EmailSender));
+            //AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            //AddDialog(new MailingDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            //AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences));
+            // AddDialog(new AddQuestionDialog(DecisionMaker, _Logger, dialogInfo, conversationReferences));
+
+
+            //AddDialog(new LoopingDialog(DecisionMaker, _QuestionAndAnswerModel, _Logger, _DialogInfo, _conversationReferences, _db));
+
+            ////AddDialog(new LocationDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
+            ////AddDialog(new MainMenuDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
+
+
+            AddDialog(new MailingDialog(DecisionMaker, emailSender, subscriptionManager, _Logger, _DialogInfo, _conversationReferences, db));
+
+
+            ////AddDialog(new CoursesDialog(DecisionMaker, _Logger, _DialogInfo, _conversationReferences, db));
+
+
+            //AddDialog(new SubscriptionDialog(decisionMaker, subscriptionManager, Logger, dialogInfo,
+            //    conversationReferences));
+
+
+            AddDialog(new EmailDialog(decisionMaker, subscriptionManager, emailSender, Logger, dialogInfo,
+                conversationReferences, db));
+
 
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
-                //StartLocationDialogAsync,
-                StartLoopingDialogAsync
+                StartLocationDialogAsync,
+                //StartLoopingDialogAsync
             }));
 
 
@@ -112,6 +137,9 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> StartLocationDialogAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            // ToDo language selection
+            _DialogInfo.Language = "uk-ua";
+
             _DialogInfo.UserId = _Logger.LogUser(stepContext.Context.Activity.From.Id).Result;
 
             return await stepContext.BeginDialogAsync(nameof(LocationDialog), cancellationToken:cancellationToken);
@@ -133,8 +161,9 @@ namespace StuddyBot.Dialogs
             await _db.SaveChangesAsync();
 
             return await stepContext.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
-        }
+        }        
 
+        
         protected override Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (_DialogInfo.DialogId != 0) {

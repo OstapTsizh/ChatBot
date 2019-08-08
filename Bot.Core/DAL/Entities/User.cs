@@ -14,5 +14,7 @@ namespace StuddyBot.Core.DAL.Entities
         public ICollection<UserCourse> UserCourses { get; set; }
 
         public string ConversationReference { get; set; }
+
+        public string Email { get; set; }
     }
 }

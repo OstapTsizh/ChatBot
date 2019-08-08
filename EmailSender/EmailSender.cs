@@ -2,10 +2,10 @@
 using System.Net.Mail;
 using System.Threading.Tasks;
 using EmailSender.Interfaces;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.AspNetCore.Hosting;
 using MimeKit;
 using SmtpClient = MailKit.Net.Smtp.SmtpClient;
 
@@ -17,8 +17,8 @@ namespace EmailSender
         private readonly IHostingEnvironment _env;
 
         public EmailSender(
-            IOptions<EmailSettings> emailSettings,
-            IHostingEnvironment env)
+           IOptions<EmailSettings> emailSettings,
+           IHostingEnvironment env)
         {
             _emailSettings = emailSettings.Value;
             _env = env;
@@ -54,7 +54,7 @@ namespace EmailSender
                     {
                         await client.ConnectAsync(_emailSettings.MailServer);
                     }
-                    
+
                     await client.AuthenticateAsync(_emailSettings.Sender, _emailSettings.Password);
 
                     await client.SendAsync(mimeMessage);
@@ -62,7 +62,7 @@ namespace EmailSender
                     Console.WriteLine($"Email sent successfully!\nFrom: {mimeMessage.From}, To: {mimeMessage.To}");
 
                     await client.DisconnectAsync(true);
-                    
+
                 }
 
             }

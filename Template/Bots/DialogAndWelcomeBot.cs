@@ -28,8 +28,11 @@ namespace StuddyBot.Bots
             foreach (var member in membersAdded)
             {                
                 if (member.Id != turnContext.Activity.Recipient.Id)
-                {                    
-                    await turnContext.SendActivityAsync(MessageFactory.Text("Hello! Say something to start dialog"), cancellationToken);
+                {
+                    var msg = "Привіт, друже! Мене звати RDBot, Ваш персональний помічник!";
+                    // "Hello Friend! My name is RDBot, your personal assistant!";
+                    // "Hello! Say something to start dialog";
+                    await turnContext.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
                   
                 }
             }

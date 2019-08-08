@@ -51,6 +51,21 @@ namespace StuddyBot.Core.Migrations
                     b.ToTable("Dialogs");
                 });
 
+            modelBuilder.Entity("StuddyBot.Core.DAL.Entities.Feedback", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Message");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Feedback");
+                });
+
             modelBuilder.Entity("StuddyBot.Core.DAL.Entities.MyDialog", b =>
                 {
                     b.Property<int>("Id")
@@ -72,12 +87,29 @@ namespace StuddyBot.Core.Migrations
                     b.ToTable("Dialog");
                 });
 
+            modelBuilder.Entity("StuddyBot.Core.DAL.Entities.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Date");
+
+                    b.Property<string>("Message");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
+                });
+
             modelBuilder.Entity("StuddyBot.Core.DAL.Entities.User", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("ConversationReference");
+
+                    b.Property<string>("Email");
 
                     b.HasKey("Id");
 

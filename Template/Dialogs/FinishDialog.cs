@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -17,18 +19,19 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about
     /// adding new question to the QA database.
     /// </summary>
-    public class FinishDialog : CancelAndRestartDialog
+    public class FinishDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
         
-        public FinishDialog(IDecisionMaker decisionMaker, 
+        public FinishDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(FinishDialog))
         {
             
@@ -36,8 +39,10 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
+            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DidWeFinishStepAsync,
@@ -60,13 +65,13 @@ namespace StuddyBot.Dialogs
             var choices = new List<Choice>();
 
             {
-                choices.Add(new Choice("Yes/Leave feedback"));
-                choices.Add(new Choice("No"));
+                choices.Add(new Choice("Так/Залишити відгук")); // Yes/Leave feedback
+                choices.Add(new Choice("Ні")); // No
             }
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Did I answer all your questions?"),
+                Prompt = MessageFactory.Text("Чи я відповів на усі запитання?"), // Did I answer all your questions?
                 Choices = choices,
                 Style = ListStyle.HeroCard
             };
@@ -90,15 +95,15 @@ namespace StuddyBot.Dialogs
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
-            if (choiceValue=="No")
+            if (choiceValue=="Ні") // No
             {
-                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Type Your feedback, please:"),
+                Prompt = MessageFactory.Text("Будь ласка, напишіть Ваш відгук:"), // Type Your feedback, please:
                 Style = ListStyle.HeroCard
             };
 
@@ -124,8 +129,8 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(feedback))
             {
-
-                // ToDo write a feedback into a Database
+                _db.AddFeedback(feedback);
+                _db.SaveChanges();
             }
 
             return await stepContext.CancelAllDialogsAsync(cancellationToken);

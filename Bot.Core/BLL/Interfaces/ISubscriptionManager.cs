@@ -10,5 +10,7 @@ namespace StuddyBot.Core.Interfaces
         ICollection<UserCourse> GetUserSubscriptions(string userId);
 
         void CancelSubscription(string userId, string courseId);
+
+        Course GetCourseInfo(string dialogId);
     }
 }

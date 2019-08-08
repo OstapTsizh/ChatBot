@@ -36,20 +36,14 @@ namespace StuddyBot.Core.Interfaces
         /// Gets all available countries from the dbContext.
         /// </summary>
         /// <returns></returns>
-        List<string> GetCountries();
-
-        /// <summary>
-        /// Gets all available cities in country from the dbContext.
-        /// </summary>
-        /// <returns></returns>
-        List<string> GetCities(string country);
-
+        List<Country> GetCountries(string lang);
+        
         /// <summary>
         /// Gets all localized main menu items (e.g. navigation bar)
         /// from the dbContext.
         /// </summary>
         /// <returns></returns>
-        List<MainMenuItem> GetMainMenuItems();
+        List<MainMenuItem> GetMainMenuItems(string lang);
 
         /// <summary>
         /// Gets all main menu items (e.g. navigation bar) from the dbContext
@@ -62,7 +56,7 @@ namespace StuddyBot.Core.Interfaces
         /// Gets all courses in selected city from the dbContext.
         /// </summary>
         /// <returns></returns>
-        List<Course> GetCourses();
+        List<Course> GetCourses(string lang);
 
         ///// <summary>
         ///// Gets about info from the dbContext.
@@ -74,12 +68,18 @@ namespace StuddyBot.Core.Interfaces
         /// Gets questions/answers from the dbContext.
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, string> GetQAs();
+        Dictionary<string, List<string>> GetQAs(string lang);
 
         /// <summary>
         /// Gets planned events from the dbContext.
         /// </summary>
         /// <returns></returns>
-        Dictionary<string, string> GetPlannedEvents();
+        Dictionary<string, List<string>> GetPlannedEvents(string lang);
+
+        /// <summary>
+        /// Gets a ChooseOption list from the dbContext.
+        /// </summary>
+        /// <returns></returns>
+        Dictionary<string, string> GetChooseOptions(string lang);
     }
 }

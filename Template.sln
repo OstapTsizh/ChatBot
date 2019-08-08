@@ -19,7 +19,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBotTests", "StuddyBotTests\StuddyBotTests.csproj", "{58735BCD-A3E3-4EBF-A030-ACBCCB015334}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonEditor", "JsonEditor\JsonEditor.csproj", "{5243CD8F-EF38-47E1-BF08-FB6781685457}"
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender", "EmailSender\EmailSender.csproj", "{3760DFD7-6565-47BF-9978-E0DECEAAC710}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender", "EmailSender\EmailSender.csproj", "{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,10 +56,10 @@ Global
 		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3760DFD7-6565-47BF-9978-E0DECEAAC710}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3760DFD7-6565-47BF-9978-E0DECEAAC710}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3760DFD7-6565-47BF-9978-E0DECEAAC710}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3760DFD7-6565-47BF-9978-E0DECEAAC710}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

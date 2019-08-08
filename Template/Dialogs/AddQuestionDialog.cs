@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
+using StuddyBot.Core.DAL.Entities;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -17,20 +20,21 @@ namespace StuddyBot.Dialogs
     /// This dialog is responsible for the communication about
     /// adding new question to the QA database.
     /// </summary>
-    public class AddQuestionDialog : CancelAndRestartDialog
+    public class AddQuestionDialog : ComponentDialog// CancelAndRestartDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private StuddyBotContext _db;
 
         private Dictionary<string, string> _newQuestion;
 
 
-        public AddQuestionDialog(IDecisionMaker decisionMaker, 
+        public AddQuestionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(AddQuestionDialog))
         {
             
@@ -38,8 +42,10 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _db = db;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
+            //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskForQuestionStepAsync,
@@ -62,7 +68,7 @@ namespace StuddyBot.Dialogs
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text("Type Your question, please:"),
+                Prompt = MessageFactory.Text("Будь ласка, введіть Ваше питання:"), // Type Your question, please:
                 Style = ListStyle.HeroCard
             };
 
@@ -86,13 +92,20 @@ namespace StuddyBot.Dialogs
         {
             if (string.IsNullOrEmpty(stepContext.Result.ToString()))
             {
-                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog),
+                return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
 
-            // ToDo add new question to a Database
-            // 
-            // 
+            _db.AddQuestion(stepContext.Context.Activity.Text);
+            _db.SaveChanges();
+
+            var message = "Дякуємо за допомогу!"; // "Thank you for your help!";
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
+
+            _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(message),cancellationToken);
 
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);

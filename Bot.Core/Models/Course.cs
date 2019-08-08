@@ -17,6 +17,6 @@ namespace StuddyBot.Core.Models
         /// <summary>
         /// Resources of the course.
         /// </summary>
-        public string[] Resources { get; set; }
+        public string Resources { get; set; }
     }
 }
