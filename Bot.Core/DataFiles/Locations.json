@@ -1,0 +1,17 @@
+[
+ {
+    "lang": "uk-ua",
+    "model": {
+    	"country": "Україна",
+        "cities": ["Київ", "Львів", "Вінниця", "Дніпро", "Харків"]
+    }
+
+ },
+ {
+    "lang": "en-us",
+    "model": {
+     	"country": "Ukraine",
+     	"cities": [ "Kyiv", "Lviv", "Vinnytsia", "Dnipro", "Kharkiv" ]
+    }
+ }
+]

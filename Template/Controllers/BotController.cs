@@ -4,9 +4,12 @@
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Integration.AspNet.Core;
+using StuddyBot.Core.BLL.Interfaces;
+using StuddyBot.Core.DAL.Entities;
 
 namespace StuddyBot.Controllers
 {
@@ -19,11 +22,13 @@ namespace StuddyBot.Controllers
     {
         private readonly IBotFrameworkHttpAdapter Adapter;
         private readonly IBot Bot;
-
-        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot)
+        protected ThreadedLogger _myLogger;
+        
+        public BotController(IBotFrameworkHttpAdapter adapter, IBot bot, ThreadedLogger _myLogger)
         {
             Adapter = adapter;
             Bot = bot;
+            this._myLogger = _myLogger;
         }
 
         [HttpPost]

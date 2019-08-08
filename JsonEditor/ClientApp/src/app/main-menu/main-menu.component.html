@@ -1,0 +1,60 @@
+<button mat-raised-button color="primary" (click)="openNewMainMenuDialog()">Add main menu option</button>
+
+<hr>
+
+<div>
+
+  <div *ngFor="let item of data; let i = index">
+
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th colspan="2"> {{ item.lang }} </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Name </th>
+                  <th> Dialog </th>
+                  <th> Resources </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inner of item.items; let j = index">
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'name', $event)">
+                      {{ inner.name }}
+                    </span>
+                  </td>
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'dialog', $event)">
+                      {{ inner.dialog }}
+                    </span>
+                  </td>
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'resources', $event)">
+                      {{ inner.resources }}
+                    </span>
+                  </td>
+                  <td align="center">
+                      <button mat-raised-button color="warn" (click)="delete(i, j)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

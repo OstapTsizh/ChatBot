@@ -10,6 +10,9 @@ using Microsoft.Bot.Schema;
 
 namespace StuddyBot.Dialogs
 {
+    /// <summary>
+    /// A dialog to catch specified keywords on each user's activity.
+    /// </summary>
     public class CancelAndRestartDialog : ComponentDialog
     {
         public CancelAndRestartDialog(string id)
@@ -22,7 +25,7 @@ namespace StuddyBot.Dialogs
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
-                return result;
+                return result;  
             }
 
             return await base.OnBeginDialogAsync(innerDc, options, cancellationToken);
@@ -43,7 +46,7 @@ namespace StuddyBot.Dialogs
         {
             if (innerDc.Context.Activity.Type == ActivityTypes.Message)
             {
-                var text = innerDc.Context.Activity.Text.ToLowerInvariant();
+                var text = innerDc.Context.Activity.Text.ToLower();
 
                 switch (text)
                 {
@@ -51,7 +54,10 @@ namespace StuddyBot.Dialogs
                     case "again":
                     case "new":
                     case "reload":
-                        await innerDc.ReplaceDialogAsync(nameof(MainDialog), cancellationToken);
+                        innerDc.Context.Activity.Text = "begin";
+                        await innerDc.ReplaceDialogAsync(nameof(LocationDialog), "begin", cancellationToken);
+                        //await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
+                        //await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "cancel":
@@ -60,6 +66,17 @@ namespace StuddyBot.Dialogs
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
                         return await innerDc.CancelAllDialogsAsync();
+
+                    case "sub":
+                    case "subscription":
+                        await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
+                            cancellationToken: cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
+
+                    case "email":
+                        await innerDc.ReplaceDialogAsync(nameof(EmailDialog),
+                            cancellationToken: cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
             }
 

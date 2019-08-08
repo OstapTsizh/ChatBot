@@ -1,0 +1,72 @@
+<button mat-raised-button color="primary" (click)="openNewCourseDialog()">Add Course</button>
+
+<hr>
+
+<div>
+
+  <div *ngFor="let item of courses; let i = index">
+
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th colspan="2"> {{ item.lang }} </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th> Name </th>
+                  <th> Resource </th>
+                  <th> Start date </th>
+                  <th> Registration start date </th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let inner of item.courses; let j = index">
+
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'name', $event)">
+                      {{ inner.name }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'resources', $event)">
+                      {{ inner.resources }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'startDate', $event)">
+                      {{ inner.startDate | date:'mediumDate' }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateData(i, j, 'registrationStartDate', $event)">
+                      {{ inner.registrationStartDate | date:'mediumDate' }}
+                    </span>
+                  </td>
+
+                  <td align="center">
+                    <button mat-raised-button color="warn" (click)="delete(i, j)">Delete</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

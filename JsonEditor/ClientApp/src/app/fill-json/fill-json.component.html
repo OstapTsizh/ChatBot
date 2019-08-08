@@ -1,0 +1,83 @@
+<h4>Fill the form</h4>
+
+Value: {{ JsonForm.value | json }}
+
+<form [formGroup]="JsonForm" class="MyDiv">
+
+  <mat-form-field class="full">
+    <input matInput formControlName="topic" placeholder="Topic">
+  </mat-form-field>
+
+  <div formGroupName="model">
+    <h6>Model</h6>
+    <mat-form-field class="full">
+      <input matInput formControlName="name" placeholder="Name">
+    </mat-form-field>
+
+    <div>
+      <label *ngFor="let word of modelKeywords.controls; let i=index" style="margin-right: 7px;">
+         {{ word.value }} 
+        <button (click)="deleteModelKeyword(i)" class="btn btn-danger btn-sm deleteKeywordButton">
+            x
+            </button>
+      </label>
+
+      <mat-form-field class="full">
+        <input matInput placeholder="Keywords" #modelKeyword>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="addModelKeyword(modelKeyword.value)">Add keyword</button>
+    </div>
+
+    <div formArrayName="questions">
+      <h6>Questions</h6>
+
+      <div *ngFor="let question of questionsForms.controls; let i=index" [formGroupName]="i">
+
+        <mat-form-field>
+          <input matInput formControlName="text" placeholder="Text">
+        </mat-form-field>
+
+
+
+        <mat-form-field class="full">
+          <input matInput formControlName="keywords" placeholder="Keywords">
+        </mat-form-field>
+
+
+        <button mat-raised-button color="warn" (click)="deleteQuestion(i)">Delete</button>
+
+      </div>
+
+      <button mat-raised-button color="primary" (click)="addQuestion()" class="NewItem">New Question</button>
+    </div>
+
+
+    <div formArrayName="decisions">
+
+      <div *ngFor="let decision of decisionsForms.controls; let i=index" [formGroupName]="i">
+
+        <mat-form-field class="full">
+          <input matInput formControlName="meta" placeholder="Meta">
+        </mat-form-field>
+
+        <mat-form-field class="full">
+          <input matInput formControlName="answer" placeholder="Answer">
+        </mat-form-field>
+
+        <mat-form-field class="full">
+          <input matInput formControlName="resource" placeholder="Resource">
+        </mat-form-field>
+
+        <button mat-raised-button color="warn" (click)="deleteQuestion(i)">Delete</button>
+
+      </div>
+
+      <button mat-raised-button color="primary" (click)="addDecision()" class="NewItem">New Decision</button>
+
+    </div>
+
+
+  </div>
+
+</form>

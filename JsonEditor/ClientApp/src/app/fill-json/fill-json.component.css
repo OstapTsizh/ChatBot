@@ -1,0 +1,13 @@
+.MyDiv {
+    width: 60%;
+   align-content: center;
+}
+
+.mat-form-field {
+    display: inline;
+}
+
+h4, h6, .NewItem {
+    margin-top: 1.5em
+}
+

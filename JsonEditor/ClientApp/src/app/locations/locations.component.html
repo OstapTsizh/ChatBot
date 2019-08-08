@@ -1,0 +1,55 @@
+
+
+<div>
+
+  <div *ngFor="let item of locations; let i = index">
+
+    <table style="width: 100%" class="table table-bordered">
+      <thead>
+        <tr>
+          <th colspan="2"> {{ item.lang }} </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th> Country </th>
+                  <th> Cities </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span contenteditable="true" (keyup)="changeValue($event)"
+                      (blur)="updateList(i, 'country', $event)">
+                      {{ item.model.country }}
+                    </span>
+                  </td>
+                  <td>
+                    <table class="table table-striped">
+                      <tbody>
+                        <tr *ngFor="let city of item.model.cities; let j = index">
+                          <td>
+                            <span contenteditable="true" (keyup)="changeValue($event)"
+                              (blur)="updateCity(i, j, $event)">
+                              {{ city }}
+                            </span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</div>

@@ -6,7 +6,7 @@
         "keywords": [ "courses", "learn", "study" ],
         "questions": [
           {
-            "Text": "What technology do you interested in?",
+            "Text": "Шо там по технологіях?",
             "keywords": [".net", "java", "python"],
             "IsAnswered": "false"
           },
@@ -25,11 +25,16 @@
           {
             "meta": [ ".net", "1-2 hours", "novice" ],
             "answer": "We have super hero course for you",
-            "resourses": "epam.learn.com/super-hero/courses/web-api"
+            "resourses": "epam.learn.com/super-hero/courses/dotnet/novice"
+          },
+          {
+            "meta": [ ".net", "1-2 hours", "intermediate" ],
+            "answer": "We have super hero course for you",
+            "resourses": "epam.learn.com/super-hero/courses/dotnet/intermediate"
           },
           {
             "meta": [ "Azure", "1 hour per day", "expert" ],
-            "answer": "You are lucky! here is your course",
+            "answer": "You are lucky! Here is your course",
             "resourses": "epam.learn.com/death-match/azure"
           }
         ]

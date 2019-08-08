@@ -1,0 +1,20 @@
+.example-tree-invisible {
+    display: none;
+  }
+  
+  .example-tree ul,
+  .example-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+
+  .jumbotron {
+      padding: 5px;
+      margin: 10px;
+      /* background: rgba(117, 117, 117, 0.247); */
+  }
+
+  /* .mat-tree {
+      background: rgba(187, 187, 187, 0.164);
+  } */

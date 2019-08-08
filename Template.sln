@@ -1,13 +1,26 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28307.271
+VisualStudioVersion = 15.0.28307.645
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecisionMakers", "QuestionConstructor\DecisionMakers.csproj", "{C7DDF1CB-98F1-4AB1-B63E-42C747580063}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot.Core", "Bot.Core\StuddyBot.Core.csproj", "{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot", "Template\StuddyBot.csproj", "{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{72B87271-49D2-4058-A8AD-0F851EA4FD4B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Services", "Services\Services.csproj", "{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC} = {00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBotTests", "StuddyBotTests\StuddyBotTests.csproj", "{58735BCD-A3E3-4EBF-A030-ACBCCB015334}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JsonEditor", "JsonEditor\JsonEditor.csproj", "{5243CD8F-EF38-47E1-BF08-FB6781685457}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender", "EmailSender\EmailSender.csproj", "{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +40,26 @@ Global
 		{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72B87271-49D2-4058-A8AD-0F851EA4FD4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7809DA7A-3CBD-4ECE-8D7F-402744D99AE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58735BCD-A3E3-4EBF-A030-ACBCCB015334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5243CD8F-EF38-47E1-BF08-FB6781685457}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EA1A602-1D7F-45FC-8A94-1EADE67434E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

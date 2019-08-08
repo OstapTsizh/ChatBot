@@ -26,10 +26,10 @@ namespace StuddyBot.Bots
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
 
-
+            
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
             ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker)
-        {
+        { 
             ConversationState = conversationState;
             UserState = userState;
             Dialog = dialog;
@@ -48,11 +48,11 @@ namespace StuddyBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
-            Logger.LogInformation("Running dialog with Message Activity.");
-            // Run the Dialog with the new message Activity.
+            // Run the Dialog with the new message Activity.s
+          
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 
-        
+
     }
 }

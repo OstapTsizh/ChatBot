@@ -1,0 +1,140 @@
+[
+	{
+		"lang": "uk-ua",
+		"QAs": [
+			{
+				"question": "Коли стартує набір?",
+				"answer": [
+					"Набір на програму стартує двічі на рік у вересні та лютому. Більш детальна інформація за напрямками доступна у системі реєстрації кандидатів https://www.training.by"
+				]
+			},
+			{
+				"question": "Чи платна участь у програмі?",
+				"answer": [
+					"Участь безкоштовна. Зарахування в групи відбувається за результатами відбіркового тестування."
+				]
+			},
+			{
+				"question": "Я подав заявку, але зі мною ще \nніхто не зв'язувався?",
+				"answer": [
+					"Якщо Ви подали заявку в період проведення відбору, то ми зв'яжемося з Вами протягом двох тижнів після дати реєстрації. До закінчення цього терміну, велике прохання не зв'язуватися з нами, через велику кількість листів у цей період.",
+					"Все листування буде вестися з адреси studkyiv@epam.com. Будь ласка, слідкуйте за тим, щоб листи від цього адресата не потрапляли у спам.",
+					"Оскільки розсилка листів носить масовий характер, деякі поштові системи (зокрема mail.ru, list.ru, ua.fm, bigmir.net, ukr.net, i.ua, інші) можуть проводити фільтрацію листів, і вони не потраплять навіть у спам. У разі, якщо Вашу адресу зареєстровано у одній із таких систем, Ви можете уточнити інформацію, чи була вже проведена розсилка, починаючи з другого тижня після дати реєстрації"
+				]
+			},
+			{
+				"question": "Чи можна подивитися приклади \nтестових завдань у напрямку?",
+				"answer": [
+					"Ми не надаємо приклади завдань, що виносяться на тест."
+				]
+			},
+			{
+				"question": "Я проходив відбірне тестування \nале досі не отримав інформацію, \nде її можна дізнатися?",
+				"answer": [
+					"Так як перевірка відбіркових тестів вимагає часу, Ви отримаєте лист з результатами протягом двох тижнів після дати написання тесту. До закінчення цього терміну, велике прохання не зв'язуватися з нами, через велику кількість листів у цей період.",
+					"Все листування буде вестися з адреси studkyiv@epam.com. Будь ласка, слідкуйте за тим, щоб листи від цього адресата не потрапляли у спам.",
+					"Оскільки розсилка листів носить масовий характер, деякі поштові системи (зокрема mail.ru, list.ru, ua.fm, bigmir.net, ukr.net, i.ua, інші) можуть проводити фільтрацію листів, і вони не потраплять навіть у спам. У разі, якщо Вашу адресу зареєстровано у одній із таких систем, Ви можете уточнити інформацію, чи була вже проведена розсилка, починаючи з другого тижня після дати реєстрації"
+				]
+			},
+			{
+				"question": "Якщо я не пройду тест, чи буде \nмені надіслано листа з інформацією?",
+				"answer": [
+					"Так. Незалежно від отриманого результату, Ви отримаєте повідомлення на електронну адресу, вказану під час реєстрації."
+				]
+			},
+			{
+				"question": "Я не згоден з результатами свого тесту. \nЧи можна його подивитися?",
+				"answer": [
+					"Результати тесту не оскаржуються і не надаються для ознайомлення"
+				]
+			},
+			{
+				"question": "Які основні етапи програми?",
+				"answer": [
+					"Програма, умовно, ділиться на наступні етапи:\n - Зовнішній факультатив (два-чотири місяці), що проходить на базі ВНЗ;\n - Робота в pre-production лабораторії на базі компанії під керівництвом практиків з тривалим досвідом роботи;\n - Робота в компанії."
+				]
+			},
+			{
+				"question": "Чи можу я одночасно писати тести \nпо декількох напрямках?",
+				"answer": [
+					"Так, Ви можете одночасно писати тест за кількома напрямками. Однак, ми рекомендуємо Вам заздалегідь визначити найбільш цікаве, так як в разі успішного проходження на кілька напрямків, Ви будете зараховані тільки на одне із них."
+				]
+			},
+			{
+				"question": "Чи можливо отримати роботу у Вашій \nкомпанії після закінчення тренінгу \nз позитивним результатом?",
+				"answer": [
+					"Так. У разі успішного проходження всіх етапів програми, Вам буде запропонована посада Junior в компанії."
+				]
+			}
+		]
+	},
+	{
+		"lang": "en-us",
+		"QAs": [
+			{
+				"question": "When do the courses start?",
+				"answer": [
+					"Enrollment starts twice a year in September and February. More information on directions is available via https://www.training.by"
+				]
+			},
+			{
+				"question": "Is it a paid program?",
+				"answer": [
+					"Participation is free. Enrollment in groups is based on the results of qualitative testing."
+				]
+			},
+			{
+				"question": "I applied, but no one has contacted me yet",
+				"answer": [
+					"If you have submitted an application during the selection period, we will contact you within two weeks of the registration date. By the end of this term, it is a great request not to contact us because of the large number of emails during this period.",
+					"All correspondence will be from studkyiv@epam.com. Please ensure that emails from this addressee are not in spam.",
+					"Because mailing is widespread, some mail systems (including mail.ru, list.ru, ua.fm, bigmir.net, ukr.net, i.ua, others) can filter emails and they won't even get into spam . If your address is registered in one of these systems, you can clarify whether the mailing has already taken place, starting from the second week after the date of registration."
+				]
+			},
+			{
+				"question": "Can I see examples of test tasks?",
+				"answer": [
+					"We do not provide examples of test tasks."
+				]
+			},
+			{
+				"question": "I have been through testing but have not yet received information where can I find it?",
+				"answer": [
+					"Since screening tests take time, you will receive a results letter within two weeks of the test writing date. By the end of this term, it is a great request not to contact us because of the large number of emails during this period.",
+					"All correspondence will be from studkyiv@epam.com. Please ensure that emails from this addressee are not in spam.",
+					"Because mailing is widespread, some mail systems (including mail.ru, list.ru, ua.fm, bigmir.net, ukr.net, i.ua, others) can filter emails and they won't even get into spam . If your address is registered in one of these systems, you can clarify whether the mailing has already taken place, starting from the second week after the date of registration."
+				]
+			},
+			{
+				"question": "If I do not pass the test, will\n I be sent a letter with information?",
+				"answer": [
+					"Yes. Regardless of the result, you will receive a message\n at the email address you provided when you registered."
+				]
+			},
+			{
+				"question": "I disagree with the results of my test.\n Can I see it?",
+				"answer": [
+					"Test results are not contested and are not available for review"
+				]
+			},
+			{
+				"question": "What are the main stages of the program?",
+				"answer": [
+					"The program is divided into the following stages: \n - External elective (two to four months), held at the university; \n - Work in a pre-production laboratory based on a company with long-term practitioners; \n - Work in the company."
+				]
+			},
+			{
+				"question": "Can I write tests \n in multiple directions at the same time?",
+				"answer": [
+					"Yes, you can test multiple directions at a time.\n However, we advise you to determine the most interesting in advance,\n because if you successfully pass several directions,\n you will be credited to only one of them."
+				]
+			},
+			{
+				"question": "Is it possible to get a job with your \n company after the training \n with a positive result?",
+				"answer": [
+					"Yes. If you successfully complete all stages\n of the program, you will be offered\n a Junior position in the company."
+				]
+			}
+		]
+	}
+]
