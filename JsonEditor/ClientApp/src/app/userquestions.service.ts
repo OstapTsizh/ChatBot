@@ -4,23 +4,24 @@ import { HttpClient } from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class FeedbackMessageService {
+export class UserquestionsService {
 
   baseUrl: string;
 
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') baseUrl: string) {
-    this.baseUrl = baseUrl + '/api/Feedbacks';
+    this.baseUrl = baseUrl + '/api/Questions';
   }
 
-  getFeedbacks() {
+  getUserQuestions() {
     return this.http.get(this.baseUrl);
   }
 
-  deleteFeedback(feedback) {
-    let url = this.baseUrl + '/' + feedback.id;
+  deleteUserQuestion(userQuestion){
+    let url = this.baseUrl + '/' + userQuestion.id;
     return this.http.delete(url);
   }
+
 
 }

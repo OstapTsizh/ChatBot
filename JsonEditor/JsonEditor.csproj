@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bot.Core\StuddyBot.Core.csproj" />
+    <ProjectReference Include="..\QuestionConstructor\DecisionMakers.csproj" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
