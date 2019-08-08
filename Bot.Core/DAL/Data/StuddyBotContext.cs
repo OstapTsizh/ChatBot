@@ -91,8 +91,8 @@ namespace StuddyBot.Core.DAL.Data
                 var Course = new Course()
                 {
                     Name = course.Name,
-                    RegistrationStartDate = DateTime.Now,
-                    StartDate = DateTime.Now
+                    RegistrationStartDate = course.RegistrationStartDate,
+                    StartDate = course.StartDate
                 };
                 Courses.Add(Course);
             }

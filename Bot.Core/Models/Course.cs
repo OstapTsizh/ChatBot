@@ -18,5 +18,10 @@ namespace StuddyBot.Core.Models
         /// Resources of the course.
         /// </summary>
         public string Resources { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime RegistrationStartDate { get; set; }
+
+
+
     }
 }

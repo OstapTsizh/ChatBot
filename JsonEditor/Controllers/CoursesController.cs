@@ -96,6 +96,11 @@ namespace JsonEditor.Controllers
 
             if (jsonModel != null)
             {
+                foreach (var item in jsonModel)
+                {
+                    item.courses[j].RegistrationStartDate = model.RegistrationStartDate;
+                    item.courses[j].StartDate = model.StartDate;
+                }
                 //Write to json.
                 jsonModel[i].courses[j] = model;
                 System.IO.File.WriteAllText(_pathCourses, JsonConvert.SerializeObject(jsonModel));

@@ -348,7 +348,7 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                if (item["lang"].ToObject<string>().Contains(lang))
                 {
                     var items = item["events"];
 
