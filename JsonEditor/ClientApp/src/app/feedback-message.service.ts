@@ -11,11 +11,16 @@ export class FeedbackMessageService {
   constructor(
     private http: HttpClient,
     @Inject('BASE_URL') baseUrl: string) {
-      this.baseUrl = baseUrl + '/api/Feedbacks';
-     }
+    this.baseUrl = baseUrl + '/api/Feedbacks';
+  }
 
   getFeedbacks() {
     return this.http.get(this.baseUrl);
   }
-  
+
+  deleteFeedback(feedback) {
+    let url = this.baseUrl + '/' + feedback.id;
+    return this.http.delete(url);
+  }
+
 }

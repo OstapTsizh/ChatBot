@@ -152,7 +152,8 @@ namespace StuddyBot.Core.DAL.Data
         {
             Feedback.Add(new Feedback()
             {
-                Message = feedback
+                Message = feedback,
+                Date = DateTime.Now
             });
         }
     }

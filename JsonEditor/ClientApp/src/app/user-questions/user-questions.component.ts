@@ -40,5 +40,12 @@ export class UserQuestionsComponent implements OnInit {
   
   }
 
+  Delete(element: IUserQuestion)
+  {
+    this.isLoading = true;
+    this.uqService.deleteUserQuestion(element).subscribe(() => {
+      this.ngOnInit();
+    })
+  }
 
 }
