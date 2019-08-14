@@ -78,7 +78,7 @@ namespace StuddyBot.Dialogs
                 Prompt = MessageFactory.Text(prompt), // Choose a question:
                 Choices = choices,
                 RetryPrompt = MessageFactory.Text(reprompt), // Try one more time, please:
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = options.Prompt.Text;

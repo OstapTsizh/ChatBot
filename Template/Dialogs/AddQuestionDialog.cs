@@ -71,7 +71,7 @@ namespace StuddyBot.Dialogs
             {
                 Prompt = MessageFactory.Text(prompt),
                 RetryPrompt = MessageFactory.Text(reprompt),
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = options.Prompt.Text;

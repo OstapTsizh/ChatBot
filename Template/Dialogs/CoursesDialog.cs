@@ -83,7 +83,7 @@ namespace StuddyBot.Dialogs
                     Prompt = MessageFactory.Text(prompt),
                     RetryPrompt = MessageFactory.Text(reprompt),
                     Choices = choices,
-                    Style = ListStyle.HeroCard
+                    Style = ListStyle.SuggestedAction//.HeroCard
                 };
 
                 var message = options.Prompt.Text;

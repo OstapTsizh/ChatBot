@@ -86,7 +86,7 @@ namespace StuddyBot.Dialogs
                     Prompt = MessageFactory.Text(prompt),
                     RetryPrompt = MessageFactory.Text(reprompt),
                     Choices = choices,
-                    Style = ListStyle.HeroCard
+                    Style = ListStyle.SuggestedAction
                 };
 
                 var message = options.Prompt.Text;
@@ -122,7 +122,7 @@ namespace StuddyBot.Dialogs
                 Prompt = MessageFactory.Text(prompt),
                 RetryPrompt = MessageFactory.Text(reprompt),
                 Choices = choices,
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = options.Prompt.Text;
@@ -137,7 +137,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CallMenuDialogStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text("City successfully selected, starting MainMenuDialog"),
+                   cancellationToken: cancellationToken);
             return await stepContext.BeginDialogAsync(nameof(MainMenuDialog), _country, cancellationToken);
         }
 

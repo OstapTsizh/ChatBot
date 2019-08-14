@@ -92,7 +92,7 @@ namespace StuddyBot.Dialogs
                     Prompt = MessageFactory.Text(prompt),
                     RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
                     Choices = choices,
-                    Style = ListStyle.HeroCard
+                    Style = ListStyle.SuggestedAction
                 };
 
                 var message = options.Prompt.Text;

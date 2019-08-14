@@ -98,7 +98,7 @@ namespace StuddyBot.Dialogs
                     Prompt = MessageFactory.Text("Choose needed topic, please."),
                     RetryPrompt = MessageFactory.Text("Try one more time, please."),
                     Choices = choices,
-                    Style = ListStyle.HeroCard
+                    Style = ListStyle.SuggestedAction
                 };
                 
                 var message = options.Prompt.Text;
@@ -171,7 +171,7 @@ namespace StuddyBot.Dialogs
                 Prompt = promptText,
                 RetryPrompt = MessageFactory.Text("Try one more time, please"),
                 Choices = choices,
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
 

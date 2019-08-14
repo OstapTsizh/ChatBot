@@ -114,7 +114,7 @@ namespace StuddyBot.Dialogs
                     new Choice(deleteEmail),
                     new Choice(back)
                 },
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = optionsManageEmail.Prompt.Text;
@@ -147,7 +147,7 @@ namespace StuddyBot.Dialogs
                 {
                     Prompt = MessageFactory.Text(promptAddress),
                     RetryPrompt = MessageFactory.Text(reprompt),
-                    Style = ListStyle.HeroCard
+                    Style = ListStyle.SuggestedAction
                 };
 
                 var message = options.Prompt.Text;

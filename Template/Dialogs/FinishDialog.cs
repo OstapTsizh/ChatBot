@@ -64,10 +64,11 @@ namespace StuddyBot.Dialogs
         {
             var choices = new List<Choice>();
 
-            var leaveFeedback = DialogsMUI.FinishDictionary["leave"];// Yes/Leave feedback
+            var leaveFeedback = DialogsMUI.FinishDictionary["leave"];// Leave feedback
             var answered = DialogsMUI.FinishDictionary["answered"]; // Did I answer all your questions?
 
             {
+                choices.Add(new Choice(DialogsMUI.MainDictionary["yes"]));
                 choices.Add(new Choice(leaveFeedback)); 
                 choices.Add(new Choice(DialogsMUI.MainDictionary["no"]));
             }
@@ -76,7 +77,7 @@ namespace StuddyBot.Dialogs
             {
                 Prompt = MessageFactory.Text(answered),
                 Choices = choices,
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = options.Prompt.Text;
@@ -97,19 +98,23 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> LeaveFeedbackStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
-
-            var feedback = DialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
-
+            
             if (choiceValue==DialogsMUI.MainDictionary["no"]) 
             {
                 return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
+            else if (choiceValue == DialogsMUI.MainDictionary["yes"])
+            {
+                return await stepContext.CancelAllDialogsAsync(cancellationToken);
+            }
+
+            var feedback = DialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
 
             var options = new PromptOptions()
             {
                 Prompt = MessageFactory.Text(feedback), 
-                Style = ListStyle.HeroCard
+                Style = ListStyle.SuggestedAction
             };
 
             var message = options.Prompt.Text;

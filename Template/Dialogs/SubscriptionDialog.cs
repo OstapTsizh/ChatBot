@@ -115,7 +115,7 @@ namespace StuddyBot.Dialogs
                         Prompt = MessageFactory.Text(DialogsMUI.SubscriptionDictionary["chooseNumber"]),
                         RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
                         Choices = variants,
-                        Style = ListStyle.HeroCard
+                        Style = ListStyle.SuggestedAction
                     },
                     cancellationToken);
             }
