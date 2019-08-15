@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using StuddyBot.Core.Interfaces;
+using StuddyBot.Core.Models;
 
 namespace StuddyBot.Bots
 {
@@ -48,8 +49,13 @@ namespace StuddyBot.Bots
 
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
+            // Get the state properties from the turn context.
+            var userStateAccessors = UserState.CreateProperty<DialogInfo>(nameof(DialogInfo));
+            var userProfile = await userStateAccessors.GetAsync(turnContext, () => new DialogInfo());
+            
+
             // Run the Dialog with the new message Activity.s
-          
+
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 

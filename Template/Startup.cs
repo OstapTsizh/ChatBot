@@ -65,7 +65,7 @@ namespace StuddyBot
             services.AddSingleton<UserState>();
 
             // Create the model with information about a Dialog.
-            services.AddScoped((s) => new DialogInfo()); //AddTransient((s) => new DialogInfo());
+            services.AddTransient((s) => new DialogInfo()); //AddTransient((s) => new DialogInfo());
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();
@@ -86,7 +86,7 @@ namespace StuddyBot
             services.Configure<PathSettings>(Configuration.GetSection("PathSettings"));
 
             // Create the Email Sender for sending emails for users.
-            services.AddTransient<IEmailSender, EmailSender.EmailSender>(); //AddSingleton<IEmailSender, EmailSender.EmailSender>();
+            services.AddSingleton<IEmailSender, EmailSender.EmailSender>(); //AddSingleton<IEmailSender, EmailSender.EmailSender>();
 
             // Create the database context as StuddyBotContext.
             services.AddTransient((s) => new StuddyBotContext(
@@ -107,7 +107,7 @@ namespace StuddyBot
             services.AddSingleton<MainDialog>(); //AddSingleton<MainDialog>();
 
             // Create the bot as a transient. In this case the ASP Controller is expecting an IBot.
-            services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
+            services.AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>(); // AddTransient<IBot, DialogAndWelcomeBot<MainDialog>>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

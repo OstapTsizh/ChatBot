@@ -59,7 +59,7 @@ namespace StuddyBot.Core.DAL.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"Server=tcp:studdybotdbserver.database.windows.net,1433;Initial Catalog=StuddyBot_db1;Persist Security Info=False;User ID=Admin123;Password=!23Admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
             //"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
             //"Server=tcp:studdybotdbserver.database.windows.net,1433;Initial Catalog=StuddyBot_db1;Persist Security Info=False;User ID=Admin123;Password=!23Admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
         }
