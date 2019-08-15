@@ -83,7 +83,7 @@ namespace LoggerService
                 catch (Exception e)
                 {
                     Console.WriteLine(e.InnerException);
-                    throw;
+                    throw e;
                 }
                 //_unitOfWork.Users.Create(new User { Id = user_id, Language = userLanguage});
                 //_unitOfWork.Save();
