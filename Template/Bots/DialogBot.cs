@@ -50,10 +50,13 @@ namespace StuddyBot.Bots
         protected override async Task OnMessageActivityAsync(ITurnContext<IMessageActivity> turnContext, CancellationToken cancellationToken)
         {
             // Get the state properties from the turn context.
-            var userStateAccessors = UserState.CreateProperty<DialogInfo>(nameof(DialogInfo));
-            var userProfile = await userStateAccessors.GetAsync(turnContext, () => new DialogInfo());
-            
+            //var dialogStateAccessors = UserState.CreateProperty<DialogState>("DialogState");
+            //var dialogState = await dialogStateAccessors.GetAsync(turnContext, () => new DialogState());
 
+            var userStateAccessors = UserState.CreateProperty<DialogInfo>(nameof(DialogInfo));
+            var dialogInfo = await userStateAccessors.GetAsync(turnContext, () => new DialogInfo());
+
+            //await turnContext.Activity.Entities.Add(new Entity { Type = DialogInfo } );
             // Run the Dialog with the new message Activity.s
 
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);

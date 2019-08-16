@@ -22,6 +22,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private List<MainMenuItem> _menuItems;
         private List<string> _menuItemsNeutral;
@@ -29,7 +30,7 @@ namespace StuddyBot.Dialogs
 
 
 
-        public MainMenuDialog(IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
+        public MainMenuDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences,
@@ -41,16 +42,17 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
 
-            AddDialog(new CoursesDialog(DecisionMaker,emailSender,SubscriptionManager, _myLogger, dialogInfo,
+            AddDialog(new CoursesDialog(dialogInfoStateProperty, DecisionMaker, emailSender,SubscriptionManager, _myLogger, dialogInfo,
                 conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new PlannedEventsDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new QAsDialog(DecisionMaker,emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new MailingDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new PlannedEventsDialog(dialogInfoStateProperty, DecisionMaker, _myLogger, dialogInfo, conversationReferences));
+            AddDialog(new QAsDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new MailingDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -73,7 +75,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> GetMenuItemsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
             {
                 _menuItems = DecisionMaker.GetMainMenuItems(_DialogInfo.Language);
                 //_menuItemsNeutral = DecisionMaker.GetMainMenuItemsNeutral();
@@ -109,6 +111,8 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var selectedDialog = (string)(stepContext.Result as FoundChoice).Value;
+
+            //await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
 
             switch (_menuItems.FirstOrDefault(i => i.Name == selectedDialog).Dialog)
             {

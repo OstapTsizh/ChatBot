@@ -33,8 +33,9 @@ namespace StuddyBot.Dialogs
         private string userEmail;
         private string validationCode;
         private bool isNotification;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
-        public MailingDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
+        public MailingDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger,
                              DialogInfo dialogInfo,
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -47,6 +48,7 @@ namespace StuddyBot.Dialogs
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -54,7 +56,7 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt("validation", CodeValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 CheckForEmailStepAsync,

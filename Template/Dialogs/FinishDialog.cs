@@ -26,9 +26,10 @@ namespace StuddyBot.Dialogs
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
-        
-        public FinishDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
+
+        public FinishDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -40,9 +41,10 @@ namespace StuddyBot.Dialogs
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DidWeFinishStepAsync,

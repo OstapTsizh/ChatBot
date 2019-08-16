@@ -31,10 +31,11 @@ namespace StuddyBot.Dialogs
         private IEmailSender EmailSender;
         private string userEmail;
         private string validationCode;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private ICollection<UserCourse> userSubscription;
 
-        public EmailDialog(IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
+        public EmailDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
                              ThreadedLogger _myLogger,
                              DialogInfo dialogInfo,
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -46,13 +47,14 @@ namespace StuddyBot.Dialogs
             EmailSender = emailSender;
             _DialogInfo = dialogInfo;
             _db = db;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new TextPrompt("email", EmailFormValidator));
             AddDialog(new ChoicePrompt("validation", CodeValidator));
-            AddDialog(new SubscriptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,

@@ -65,7 +65,7 @@ namespace StuddyBot
             services.AddSingleton<UserState>();
 
             // Create the model with information about a Dialog.
-            services.AddTransient((s) => new DialogInfo()); //AddTransient((s) => new DialogInfo());
+            //services.AddTransient((s) => new DialogInfo()); //AddTransient((s) => new DialogInfo());
 
             // Create the Conversation state. (Used by the Dialog system itself.)
             services.AddSingleton<ConversationState>();

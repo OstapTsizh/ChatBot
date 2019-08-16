@@ -27,11 +27,12 @@ namespace StuddyBot.Dialogs
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private Dictionary<string, string> _newQuestion;
 
 
-        public AddQuestionDialog(IDecisionMaker decisionMaker, IEmailSender emailSender, 
+        public AddQuestionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
@@ -43,6 +44,7 @@ namespace StuddyBot.Dialogs
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             //AddDialog(new FinishDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));

@@ -23,11 +23,12 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private Dictionary<string, List<string>> _events;
 
 
-        public PlannedEventsDialog(IDecisionMaker decisionMaker, 
+        public PlannedEventsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
                              DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences)
@@ -38,6 +39,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
+            _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             

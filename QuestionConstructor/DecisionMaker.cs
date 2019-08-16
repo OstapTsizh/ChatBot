@@ -431,6 +431,11 @@ namespace DecisionMakers
                 //Set the static property value
                 destinationProp.SetValue(null, prop.GetValue(tmpOptions));
             }
+            //var result = new List<string>();
+            //destinationProperties.ToList()
+            //.ForEach(item => result.Add(item.Name));
+
+            //var locatin = DialogsMUI.LocationDictionary[""];
         }
     }
 }
