@@ -6,6 +6,14 @@
 using DecisionMakers;
 using LoggerService;
 using Services;
+
+using Autofac;
+using System.Configuration;
+using Microsoft.Bot.Connector;
+using Microsoft.Bot.Builder.Azure;
+using Microsoft.Bot.Builder.Dialogs;
+//using Microsoft.Bot.Builder.Dialogs.Internals;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -59,7 +67,7 @@ namespace StuddyBot
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            services.AddSingleton<IStorage, MemoryStorage>();
+            services.AddSingleton<IStorage, BotAzureBlobStorage>(); //<IStorage, MemoryStorage>();
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
