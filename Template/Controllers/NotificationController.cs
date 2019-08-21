@@ -103,17 +103,18 @@ namespace StuddyBot.Controllers
                                 !matchedCourse.Notified)
                             {
                                 var language = _db.User.First(user => user.Id == matchedCourse.UserId).Language;
+                                var dialogsMUI = _decisionMaker.GetDialogsMui(language);
                                 var courseByName = _decisionMaker.GetCourses(language)
                                     .First(item => item.Name == matchedCourse.Course.Name);
 
-                                var message = $"<h3>{DialogsMUI.SubscriptionDictionary["title"]}</h3> <br>" +
-                                              $"<h5>{DialogsMUI.SubscriptionDictionary["info"]} {matchedCourse.Course.Name}," +
-                                              $" {DialogsMUI.SubscriptionDictionary["registrationStarts"]} {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
-                                              $" {DialogsMUI.SubscriptionDictionary["courseStarts"]} {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
+                                var message = $"<h3>{dialogsMUI.SubscriptionDictionary["title"]}</h3> <br>" +
+                                              $"<h5>{dialogsMUI.SubscriptionDictionary["info"]} {matchedCourse.Course.Name}," +
+                                              $" {dialogsMUI.SubscriptionDictionary["registrationStarts"]} {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
+                                              $" {dialogsMUI.SubscriptionDictionary["courseStarts"]} {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
                                               $"{courseByName.Resources}";
 
                                 await _emailSender.SendEmailAsync(matchedCourse.User.Email,
-                                DialogsMUI.SubscriptionDictionary["subject"],
+                                dialogsMUI.SubscriptionDictionary["subject"],
                                     message);
 
                                 matchedCourse.Notified = true;

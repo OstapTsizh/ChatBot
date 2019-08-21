@@ -21,9 +21,9 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        private List<Country> _countries;
-        private Country _country;
-        private readonly bool _onlyInUkraine = true;
+        //private List<Country> _countries;
+        //private Country _country;
+        //private readonly bool _onlyInUkraine = true;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
 
@@ -68,7 +68,7 @@ namespace StuddyBot.Dialogs
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
-            _country =new Country();
+            var _country =new Country();
 
             //if (_onlyInUkraine)
             //{
@@ -77,7 +77,7 @@ namespace StuddyBot.Dialogs
             //}
 
             {
-                _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
+                var _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
                 var choices = new List<Choice>();
 
                 foreach (var country in _countries)
@@ -85,8 +85,10 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(country.CountryName));
                 }
 
-                var prompt = DialogsMUI.LocationDictionary["promptCountry"]; // "Choose needed country, please.";
-                var reprompt = DialogsMUI.MainDictionary["reprompt"]; // "Try one more time, please:";
+                var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+
+                var prompt = dialogsMUI.LocationDictionary["promptCountry"]; // "Choose needed country, please.";
+                var reprompt = dialogsMUI.MainDictionary["reprompt"]; // "Try one more time, please:";
                 
                 var options = new PromptOptions()
                 {
@@ -114,9 +116,11 @@ namespace StuddyBot.Dialogs
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             //if (!_onlyInUkraine)
-            {
-                _country = _countries.FirstOrDefault(c=>c.CountryName==(stepContext.Result as FoundChoice).Value);
-            }
+            
+            var _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
+
+            var _country = _countries.FirstOrDefault(c=>c.CountryName==(stepContext.Result as FoundChoice).Value);
+            
 
             _DialogInfo.Country = _country.CountryName;
 
@@ -127,8 +131,10 @@ namespace StuddyBot.Dialogs
                 choices.Add(new Choice(city));
             }
 
-            var prompt = DialogsMUI.LocationDictionary["promptCity"];// "Choose needed city, please.";
-            var reprompt = DialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+
+            var prompt = dialogsMUI.LocationDictionary["promptCity"];// "Choose needed city, please.";
+            var reprompt = dialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
 
             var options = new PromptOptions()
             {
@@ -153,6 +159,10 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
+            var _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
+
+            var _country = _countries.FirstOrDefault(c => c.CountryName == _DialogInfo.Country);
 
             {
                 _DialogInfo.City = _country.Cities.FirstOrDefault(c => c == (stepContext.Result as FoundChoice).Value);

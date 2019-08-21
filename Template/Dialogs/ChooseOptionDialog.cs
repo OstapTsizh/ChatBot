@@ -71,9 +71,11 @@ namespace StuddyBot.Dialogs
 
             var choices = new List<Choice>();
 
-            var mainMenu = DialogsMUI.ChooseOptionDictionary["mainMenu"]; // "Main Menu";
-            var sendEmail = DialogsMUI.ChooseOptionDictionary["sendEmail"];// "Send conversation to email";
-            var subscriptions = DialogsMUI.ChooseOptionDictionary["subscriptions"];// "My subscriptions";
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+
+            var mainMenu = dialogsMUI.ChooseOptionDictionary["mainMenu"]; // "Main Menu";
+            var sendEmail = dialogsMUI.ChooseOptionDictionary["sendEmail"];// "Send conversation to email";
+            var subscriptions = dialogsMUI.ChooseOptionDictionary["subscriptions"];// "My subscriptions";
 
             var ch1 = mainMenu;
             var ch2 = sendEmail;
@@ -87,20 +89,20 @@ namespace StuddyBot.Dialogs
 
             if (stepOptions=="qa")
             {
-                var ch4 = DialogsMUI.ChooseOptionDictionary["questions/answers"]; // "Questions/Answers";
-                var ch5 = DialogsMUI.ChooseOptionDictionary["proposeQuestion"]; ; // "Propose a new question";
+                var ch4 = dialogsMUI.ChooseOptionDictionary["questions/answers"]; // "Questions/Answers";
+                var ch5 = dialogsMUI.ChooseOptionDictionary["proposeQuestion"]; ; // "Propose a new question";
 
                 choices.Add(new Choice(ch4));
                 choices.Add(new Choice(ch5));
             }
 
             {
-                var ch6 = DialogsMUI.ChooseOptionDictionary["endDialog"]; // "End dialog";
+                var ch6 = dialogsMUI.ChooseOptionDictionary["endDialog"]; // "End dialog";
                 choices.Add(new Choice(ch6));
             }
 
-            var msg = DialogsMUI.ChooseOptionDictionary["next"];// "What to do next?";
-            var retryMsg = DialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
+            var msg = dialogsMUI.ChooseOptionDictionary["next"];// "What to do next?";
+            var retryMsg = dialogsMUI.MainDictionary["reprompt"];// "Try one more time, please:";
 
             var options = new PromptOptions()
             {

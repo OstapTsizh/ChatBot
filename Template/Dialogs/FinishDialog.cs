@@ -23,7 +23,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
@@ -66,17 +66,18 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> DidWeFinishStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var choices = new List<Choice>();
 
-            var leaveFeedback = DialogsMUI.FinishDictionary["leave"];// Leave feedback
-            var answered = DialogsMUI.FinishDictionary["answered"]; // Did I answer all your questions?
+            var leaveFeedback = dialogsMUI.FinishDictionary["leave"];// Leave feedback
+            var answered = dialogsMUI.FinishDictionary["answered"]; // Did I answer all your questions?
 
             {
-                choices.Add(new Choice(DialogsMUI.MainDictionary["yes"]));
+                choices.Add(new Choice(dialogsMUI.MainDictionary["yes"]));
                 choices.Add(new Choice(leaveFeedback)); 
-                choices.Add(new Choice(DialogsMUI.MainDictionary["no"]));
+                choices.Add(new Choice(dialogsMUI.MainDictionary["no"]));
             }
 
             var options = new PromptOptions()
@@ -103,19 +104,21 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> LeaveFeedbackStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
             
-            if (choiceValue==DialogsMUI.MainDictionary["no"]) 
+            if (choiceValue==dialogsMUI.MainDictionary["no"]) 
             {
                 return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
             }
-            else if (choiceValue == DialogsMUI.MainDictionary["yes"])
+            else if (choiceValue == dialogsMUI.MainDictionary["yes"])
             {
                 return await stepContext.CancelAllDialogsAsync(cancellationToken);
             }
 
-            var feedback = DialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
+            var feedback = dialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
 
             var options = new PromptOptions()
             {

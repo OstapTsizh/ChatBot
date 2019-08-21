@@ -80,9 +80,9 @@ namespace StuddyBot.Dialogs
                 {
                     choices.Add(new Choice(course.Name));
                 }
-
-                var prompt = DialogsMUI.CoursesDictionary["prompt"];// "What you are interested in?";
-                var reprompt = DialogsMUI.CoursesDictionary["reprompt"];
+                var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+                var prompt = dialogsMUI.CoursesDictionary["prompt"];// "What you are interested in?";
+                var reprompt = dialogsMUI.CoursesDictionary["reprompt"];
 
                 var options = new PromptOptions()
                 {
@@ -119,11 +119,12 @@ namespace StuddyBot.Dialogs
 
             await stepContext.Context.SendActivityAsync(MessageFactory.Text(msgText), cancellationToken: cancellationToken);
 
-            var prompt = DialogsMUI.CoursesDictionary["promptNotification"];//Do you want to receive a notification about the start?
-            var reprompt = DialogsMUI.CoursesDictionary["reprompt"];
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var prompt = dialogsMUI.CoursesDictionary["promptNotification"];//Do you want to receive a notification about the start?
+            var reprompt = dialogsMUI.CoursesDictionary["reprompt"];
 
-            var yes = DialogsMUI.MainDictionary["yes"];
-            var no = DialogsMUI.MainDictionary["no"];
+            var yes = dialogsMUI.MainDictionary["yes"];
+            var no = dialogsMUI.MainDictionary["no"];
 
 
         var options = new PromptOptions()
@@ -146,10 +147,10 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var foundChoice = (stepContext.Result as FoundChoice).Value;
             
-            if (foundChoice == DialogsMUI.MainDictionary["yes"])
+            if (foundChoice == dialogsMUI.MainDictionary["yes"])
             {
                 _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
                 _db.SaveChanges();

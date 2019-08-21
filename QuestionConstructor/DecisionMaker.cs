@@ -38,6 +38,8 @@ namespace DecisionMakers
         public DecisionMaker(IOptions<PathSettings> pathSettings)
         {
             _pathSettings = pathSettings.Value;
+            DialogsMUI = new Dictionary<string, DialogsMUI>();
+            LoadDialogsMUI();
         }
 
         /// <summary>
@@ -399,11 +401,16 @@ namespace DecisionMakers
             return options;
         }
 
-        public void GetDialogsMui()
+        public DialogsMUI GetDialogsMui(string lang)
+        {
+            return DialogsMUI[lang];
+        }
+
+        private void LoadDialogsMUI()
         {
             var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathDialogsMUI)));
             var rss = JArray.Parse(json);
-            var tmpOptions = new DialogsMUIObject();
+            var tmpOptions = new DialogsMUI();
 
             // Taking array of all tokens.
             var tokens = rss.Children();
@@ -411,33 +418,14 @@ namespace DecisionMakers
             // Searching in array token with given topic 
             foreach (var item in tokens)
             {
-                if (item["lang"].ToObject<string[]>().Contains(lang))
+                //if (item["lang"].ToObject<string[]>().Contains(lang)
                 {
                     var dialogs = item["Dialogs"];
 
-                    tmpOptions = dialogs.ToObject<DialogsMUIObject>();
+                    tmpOptions = dialogs.ToObject<DialogsMUI>();
+                    DialogsMUI.Add(item["lang"].ToObject<string[]>()[0], tmpOptions);
                 }
             }
-
-            var sourceProperties = tmpOptions.GetType().GetProperties();
-
-            var destinationProperties = typeof(DialogsMUI)
-                .GetProperties(BindingFlags.Public | BindingFlags.Static);
-
-            foreach (var prop in sourceProperties)
-            {
-                //Find matching property by name
-                var destinationProp = destinationProperties
-                    .Single(p => p.Name == prop.Name);
-
-                //Set the static property value
-                destinationProp.SetValue(null, prop.GetValue(tmpOptions));
-            }
-            //var result = new List<string>();
-            //destinationProperties.ToList()
-            //.ForEach(item => result.Add(item.Name));
-
-            //var locatin = DialogsMUI.LocationDictionary[""];
         }
     }
 }

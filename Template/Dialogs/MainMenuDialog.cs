@@ -20,7 +20,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
@@ -88,7 +88,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> GetMenuItemsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
             {
                 _menuItems = DecisionMaker.GetMainMenuItems(_DialogInfo.Language);
                 //_menuItemsNeutral = DecisionMaker.GetMainMenuItemsNeutral();
@@ -100,12 +100,14 @@ namespace StuddyBot.Dialogs
                     choices.Add(new Choice(item.Name));
                 }
 
-                var prompt = DialogsMUI.MainMenuDictionary["prompt"];// "What you are interested in?";
+                var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+
+                var prompt = dialogsMUI.MainMenuDictionary["prompt"];// "What you are interested in?";
 
                 var options = new PromptOptions()
                 {
                     Prompt = MessageFactory.Text(prompt),
-                    RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
+                    RetryPrompt = MessageFactory.Text(dialogsMUI.MainDictionary["reprompt"]),
                     Choices = choices,
                     Style = ListStyle.SuggestedAction
                 };

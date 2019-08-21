@@ -82,6 +82,6 @@ namespace StuddyBot.Core.Interfaces
         /// <returns></returns>
         Dictionary<string, string> GetChooseOptions(string lang);
 
-        void GetDialogsMui(string lang);
+        DialogsMUI GetDialogsMui(string lang);
     }
 }

@@ -23,7 +23,7 @@ namespace StuddyBot.Dialogs
         private readonly ISubscriptionManager _subscriptionManager;
         private List<string> UserAnswers;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private bool isNeededToGetQuestions = false;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
@@ -60,8 +60,9 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
 
             userSubscription = _subscriptionManager.GetUserSubscriptions(conversationReference.User.Id);
@@ -69,8 +70,8 @@ namespace StuddyBot.Dialogs
             if (userSubscription != null && userSubscription.Count != 0)
             {
                 var subs = userSubscription.ToList();
-
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.SubscriptionDictionary["subscriptions"]));
+                
+                await stepContext.Context.SendActivityAsync(MessageFactory.Text(dialogsMUI.SubscriptionDictionary["subscriptions"]));
 
                 var message = "";
                 
@@ -78,33 +79,34 @@ namespace StuddyBot.Dialogs
                 {
                     var courseInfo = _subscriptionManager.GetCourseInfo(subs[i].CourseId.ToString());
                     message +=
-                        $"\n\n**{i+1}** {DialogsMUI.SubscriptionDictionary["name"]} {courseInfo.Name}," +
-                        $" {DialogsMUI.SubscriptionDictionary["registrationStarts"]} {courseInfo.RegistrationStartDate.ToShortDateString()}," +
-                        $" {DialogsMUI.SubscriptionDictionary["courseStarts"]} {courseInfo.StartDate.Date.ToShortDateString()};";
+                        $"\n\n**{i+1}** {dialogsMUI.SubscriptionDictionary["name"]} {courseInfo.Name}," +
+                        $" {dialogsMUI.SubscriptionDictionary["registrationStarts"]} {courseInfo.RegistrationStartDate.ToShortDateString()}," +
+                        $" {dialogsMUI.SubscriptionDictionary["courseStarts"]} {courseInfo.StartDate.Date.ToShortDateString()};";
                 }
 
                 await stepContext.Context.SendActivityAsync(MessageFactory.Text(message), cancellationToken);
 
-                var unsubQuestion = DialogsMUI.SubscriptionDictionary["unsubQuestion"];
+                var unsubQuestion = dialogsMUI.SubscriptionDictionary["unsubQuestion"];
 
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
                         Prompt = MessageFactory.Text(unsubQuestion),
-                        Choices = new List<Choice> {new Choice(DialogsMUI.MainDictionary["yes"]), new Choice(DialogsMUI.MainDictionary["no"])}
+                        Choices = new List<Choice> {new Choice(dialogsMUI.MainDictionary["yes"]), new Choice(dialogsMUI.MainDictionary["no"])}
                     },
                     cancellationToken);
             }
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.SubscriptionDictionary["noSubs"]), cancellationToken);
+            await stepContext.Context.SendActivityAsync(MessageFactory.Text(dialogsMUI.SubscriptionDictionary["noSubs"]), cancellationToken);
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin", cancellationToken);
         }
 
         private async Task<DialogTurnResult> UnsubStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var foundChoice = (stepContext.Result as FoundChoice).Value;
-
-            if (foundChoice == DialogsMUI.MainDictionary["yes"] && userSubscription.Count != 0)
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            if (foundChoice == dialogsMUI.MainDictionary["yes"] && userSubscription.Count != 0)
             {
                 var subs = userSubscription.ToList();
 
@@ -118,8 +120,8 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync(nameof(ChoicePrompt),
                     new PromptOptions()
                     {
-                        Prompt = MessageFactory.Text(DialogsMUI.SubscriptionDictionary["chooseNumber"]),
-                        RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
+                        Prompt = MessageFactory.Text(dialogsMUI.SubscriptionDictionary["chooseNumber"]),
+                        RetryPrompt = MessageFactory.Text(dialogsMUI.MainDictionary["reprompt"]),
                         Choices = variants,
                         Style = ListStyle.SuggestedAction
                     },

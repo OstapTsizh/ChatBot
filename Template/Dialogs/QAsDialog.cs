@@ -22,11 +22,11 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
-        private Dictionary<string, List<string>> _QAs;
+        //private Dictionary<string, List<string>> _QAs;
 
 
         public QAsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
@@ -67,12 +67,13 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectQAStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
-            _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
-
-            var prompt = DialogsMUI.QAsDictionary["prompt"];
-            var reprompt = DialogsMUI.QAsDictionary["reprompt"];
+            var _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var prompt = dialogsMUI.QAsDictionary["prompt"];
+            var reprompt = dialogsMUI.QAsDictionary["reprompt"];
 
             var choices = new List<Choice>();
 
@@ -107,8 +108,9 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
-
+            var _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
             var msg = MessageFactory.Text(string.Join("\n" ,_QAs[choiceValue]));
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;

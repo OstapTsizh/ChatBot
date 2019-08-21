@@ -67,7 +67,7 @@ namespace StuddyBot
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            services.AddSingleton<IStorage, BotAzureBlobStorage>(); //<IStorage, MemoryStorage>();
+            services.AddSingleton<IStorage, MemoryStorage>(); //<IStorage, MemoryStorage>();  BotAzureBlobStorage
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();

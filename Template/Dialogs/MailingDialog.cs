@@ -28,7 +28,7 @@ namespace StuddyBot.Dialogs
         private readonly IEmailSender EmailSender;
         private readonly ThreadedLogger _myLogger;
         private StuddyBotContext _db;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private string userEmail;
         private string validationCode;
@@ -103,8 +103,8 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var stepOption = stepContext.Options.ToString();
             isNotification = stepOption == "notification";
 
@@ -113,7 +113,7 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(userEmail))
             {
-                var promptMessage = $"{DialogsMUI.MailingDictionary["prompt"]}\n**{userEmail}**";
+                var promptMessage = $"{dialogsMUI.MailingDictionary["prompt"]}\n**{userEmail}**";
 
                 var message = promptMessage;
                 var sender = "bot";
@@ -125,7 +125,7 @@ namespace StuddyBot.Dialogs
                     new PromptOptions()
                     {
                         Prompt = MessageFactory.Text(promptMessage),
-                        Choices = new List<Choice> { new Choice(DialogsMUI.MainDictionary["yes"]), new Choice(DialogsMUI.MainDictionary["no"]) }
+                        Choices = new List<Choice> { new Choice(dialogsMUI.MainDictionary["yes"]), new Choice(dialogsMUI.MainDictionary["no"]) }
                     },
                     cancellationToken);
             }
@@ -142,12 +142,13 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskEmailStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var foundChoice = stepContext.Context.Activity.Text;
-
-            var promptEmail = DialogsMUI.MailingDictionary["promptEmail"];// "Enter Your email, please:";
-            var reprompt = DialogsMUI.MainDictionary["reprompt"];
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var promptEmail = dialogsMUI.MailingDictionary["promptEmail"];// "Enter Your email, please:";
+            var reprompt = dialogsMUI.MainDictionary["reprompt"];
             
-            if (foundChoice == DialogsMUI.MainDictionary["no"] || stepContext.Result.ToString() == "í³")
+            if (foundChoice == dialogsMUI.MainDictionary["no"] || stepContext.Result.ToString() == "í³")
 
             {
                 validationCode = string.Empty;
@@ -167,7 +168,7 @@ namespace StuddyBot.Dialogs
                 return await stepContext.PromptAsync("email", options, cancellationToken);
             }
 
-            if (foundChoice == DialogsMUI.MainDictionary["yes"])
+            if (foundChoice == dialogsMUI.MainDictionary["yes"])
             {
                 var dialogId = _DialogInfo.DialogId;
                 var message = _db.GetUserConversation(dialogId);
@@ -192,17 +193,18 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> SendDialogStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             userEmail = stepContext.Result.ToString();
             var message = GenerateCode();
-
-            await EmailSender.SendEmailAsync(userEmail, DialogsMUI.EmailDictionary["subjectValidationCode"], $"{DialogsMUI.EmailDictionary["emailMessage"]} <b>{message}</b>.");
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            await EmailSender.SendEmailAsync(userEmail, dialogsMUI.EmailDictionary["subjectValidationCode"], $"{dialogsMUI.EmailDictionary["emailMessage"]} <b>{message}</b>.");
 
 
             var options = new PromptOptions()
             {
-                Prompt = MessageFactory.Text(DialogsMUI.EmailDictionary["promptCode"]),
-                RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]),
-                Choices = new List<Choice> { new Choice(DialogsMUI.EmailDictionary["back"]) }
+                Prompt = MessageFactory.Text(dialogsMUI.EmailDictionary["promptCode"]),
+                RetryPrompt = MessageFactory.Text(dialogsMUI.MainDictionary["reprompt"]),
+                Choices = new List<Choice> { new Choice(dialogsMUI.EmailDictionary["back"]) }
             };
 
             var messageCode = options.Prompt.Text;
@@ -216,7 +218,9 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            if (stepContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"])
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            if (stepContext.Context.Activity.Text == dialogsMUI.EmailDictionary["back"])
             {
                 return await stepContext.ReplaceDialogAsync(nameof(FinishDialog), cancellationToken: cancellationToken);
             }
@@ -236,29 +240,33 @@ namespace StuddyBot.Dialogs
                 cancellationToken: cancellationToken);
         }
 
-        private Task<bool> EmailFormValidator(PromptValidatorContext<string> promptcontext, CancellationToken cancellationtoken)
+        private async Task<bool> EmailFormValidator(PromptValidatorContext<string> promptcontext, CancellationToken cancellationtoken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(promptcontext.Context);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             try
             {
                 var mail = new System.Net.Mail.MailAddress(promptcontext.Context.Activity.Text);
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
             catch
             {
-                promptcontext.Context.SendActivityAsync(MessageFactory.Text(DialogsMUI.EmailDictionary["wrongFormat"]), cancellationtoken);
-                return Task.FromResult(false);
+                promptcontext.Context.SendActivityAsync(MessageFactory.Text(dialogsMUI.EmailDictionary["wrongFormat"]), cancellationtoken);
+                return await Task.FromResult(false);
             }
         }
 
-        private Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
+        private async Task<bool> CodeValidator(PromptValidatorContext<FoundChoice> promptContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(promptContext.Context);
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             if (promptContext.Context.Activity.Text == validationCode
-                || promptContext.Context.Activity.Text == DialogsMUI.EmailDictionary["back"]
+                || promptContext.Context.Activity.Text == dialogsMUI.EmailDictionary["back"]
                 || promptContext.Context.Activity.Text == "passcode")
             {
-                return Task.FromResult(true);
+                return await Task.FromResult(true);
             }
-            return Task.FromResult(false);
+            return await Task.FromResult(false);
         }
 
         private string GenerateCode()

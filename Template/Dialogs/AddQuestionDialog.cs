@@ -69,9 +69,9 @@ namespace StuddyBot.Dialogs
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
-            var prompt = DialogsMUI.AddQuestionDictionary["prompt"]; // Type Your question, please:
-            var reprompt = DialogsMUI.AddQuestionDictionary["reprompt"];
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var prompt = dialogsMUI.AddQuestionDictionary["prompt"]; // Type Your question, please:
+            var reprompt = dialogsMUI.AddQuestionDictionary["reprompt"];
 
             var options = new PromptOptions()
             {
@@ -109,7 +109,8 @@ namespace StuddyBot.Dialogs
             _db.AddQuestion(stepContext.Context.Activity.Text);
             _db.SaveChanges();
 
-            var message = DialogsMUI.AddQuestionDictionary["message"]; // "Thank you for your help!";
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var message = dialogsMUI.AddQuestionDictionary["message"]; // "Thank you for your help!";
             var sender = "bot";
             var time = stepContext.Context.Activity.Timestamp.Value;
 

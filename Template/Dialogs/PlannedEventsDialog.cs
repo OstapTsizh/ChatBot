@@ -21,7 +21,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
@@ -61,6 +61,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectEventStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             _events = DecisionMaker.GetPlannedEvents(_DialogInfo.Language);
@@ -71,14 +72,14 @@ namespace StuddyBot.Dialogs
             {
                 choices.Add(new Choice(q));
             }
-
-            var prompt = DialogsMUI.PlannedEventsDictionary["prompt"];// Choose a question:
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+            var prompt = dialogsMUI.PlannedEventsDictionary["prompt"];// Choose a question:
 
             var options = new PromptOptions()
             {
                 Prompt = MessageFactory.Text(prompt),
                 Choices = choices,
-                RetryPrompt = MessageFactory.Text(DialogsMUI.MainDictionary["reprompt"]), // Try one more time, please
+                RetryPrompt = MessageFactory.Text(dialogsMUI.MainDictionary["reprompt"]), // Try one more time, please
                 Style = ListStyle.SuggestedAction
             };
 
@@ -100,6 +101,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
 
             var msg = MessageFactory.Text(string.Join("\n", _events[choiceValue]));
