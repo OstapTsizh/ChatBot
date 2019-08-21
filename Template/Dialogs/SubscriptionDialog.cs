@@ -32,7 +32,7 @@ namespace StuddyBot.Dialogs
         
         public SubscriptionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager subscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(SubscriptionDialog))
         {
@@ -43,7 +43,9 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager,  _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager,  _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
@@ -58,6 +60,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
 
             userSubscription = _subscriptionManager.GetUserSubscriptions(conversationReference.User.Id);

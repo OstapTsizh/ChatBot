@@ -37,7 +37,7 @@ namespace StuddyBot.Dialogs
 
         public EmailDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager subscriptionManager, IEmailSender emailSender,
                              ThreadedLogger _myLogger,
-                             DialogInfo dialogInfo,
+                             //DialogInfo dialogInfo,
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(EmailDialog))
         {
@@ -45,7 +45,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             _subscriptionManager = subscriptionManager;
             EmailSender = emailSender;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -53,8 +53,12 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new TextPrompt("email", EmailFormValidator));
             AddDialog(new ChoicePrompt("validation", CodeValidator));
-            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
@@ -70,6 +74,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             userEmail = _db.GetUserEmail(_DialogInfo);
 
             if (string.IsNullOrEmpty(userEmail))

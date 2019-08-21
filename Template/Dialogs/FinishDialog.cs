@@ -31,20 +31,22 @@ namespace StuddyBot.Dialogs
 
         public FinishDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(FinishDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 DidWeFinishStepAsync,
@@ -64,6 +66,8 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> DidWeFinishStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             var choices = new List<Choice>();
 
             var leaveFeedback = DialogsMUI.FinishDictionary["leave"];// Leave feedback

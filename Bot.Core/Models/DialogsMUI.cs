@@ -4,20 +4,20 @@ using System.Text;
 
 namespace StuddyBot.Core.Models
 {
-    public static class DialogsMUI
+    public class DialogsMUI
     {
-        public static Dictionary<string, string> AddQuestionDictionary { get; set; }
-        public static Dictionary<string, string> CancelAndRestartDictionary { get; set; }
-        public static Dictionary<string, string> ChooseOptionDictionary { get; set; }
-        public static Dictionary<string, string> CoursesDictionary { get; set; }
-        public static Dictionary<string, string> EmailDictionary { get; set; }
-        public static Dictionary<string, string> FinishDictionary { get; set; }
-        public static Dictionary<string, string> LocationDictionary { get; set; }
-        public static Dictionary<string, string> MailingDictionary { get; set; }
-        public static Dictionary<string, string> MainDictionary { get; set; }
-        public static Dictionary<string, string> MainMenuDictionary { get; set; }
-        public static Dictionary<string, string> PlannedEventsDictionary { get; set; }
-        public static Dictionary<string, string> SubscriptionDictionary { get; set; }
-        public static Dictionary<string, string> QAsDictionary { get; set; }
+        public Dictionary<string, string> AddQuestionDictionary { get; set; }
+        public Dictionary<string, string> CancelAndRestartDictionary { get; set; }
+        public Dictionary<string, string> ChooseOptionDictionary { get; set; }
+        public Dictionary<string, string> CoursesDictionary { get; set; }
+        public Dictionary<string, string> EmailDictionary { get; set; }
+        public Dictionary<string, string> FinishDictionary { get; set; }
+        public Dictionary<string, string> LocationDictionary { get; set; }
+        public Dictionary<string, string> MailingDictionary { get; set; }
+        public Dictionary<string, string> MainDictionary { get; set; }
+        public Dictionary<string, string> MainMenuDictionary { get; set; }
+        public Dictionary<string, string> PlannedEventsDictionary { get; set; }
+        public Dictionary<string, string> SubscriptionDictionary { get; set; }
+        public Dictionary<string, string> QAsDictionary { get; set; }
     }
 }

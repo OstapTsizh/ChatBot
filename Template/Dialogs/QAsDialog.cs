@@ -31,20 +31,24 @@ namespace StuddyBot.Dialogs
 
         public QAsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(QAsDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new AddQuestionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, _myLogger, dialogInfo, conversationReferences, db));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new AddQuestionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskSelectQAStepAsync,
@@ -63,6 +67,8 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectQAStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
 
             var prompt = DialogsMUI.QAsDictionary["prompt"];

@@ -30,14 +30,14 @@ namespace StuddyBot.Dialogs
 
         public PlannedEventsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences)
             : base(nameof(PlannedEventsDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -61,6 +61,8 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskSelectEventStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             _events = DecisionMaker.GetPlannedEvents(_DialogInfo.Language);
 
             var choices = new List<Choice>();

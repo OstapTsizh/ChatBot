@@ -19,7 +19,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private List<Country> _countries;
         private Country _country;
@@ -29,19 +29,22 @@ namespace StuddyBot.Dialogs
 
         public LocationDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender)
             : base(nameof(LocationDialog))
+             
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
-            AddDialog(new MainMenuDialog(dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _myLogger, _DialogInfo, _conversationReferences, db, emailSender));
+            AddDialog(new MainMenuDialog(dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _myLogger,
+                //_DialogInfo,
+                _conversationReferences, db, emailSender));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -63,7 +66,7 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> GetCountryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             _country =new Country();
 
@@ -108,7 +111,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetCityStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
-            //_DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             //if (!_onlyInUkraine)
             {
@@ -149,6 +152,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CallMenuDialogStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             {
                 _DialogInfo.City = _country.Cities.FirstOrDefault(c => c == (stepContext.Result as FoundChoice).Value);
             }

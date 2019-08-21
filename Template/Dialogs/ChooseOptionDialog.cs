@@ -20,7 +20,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
@@ -29,14 +29,14 @@ namespace StuddyBot.Dialogs
 
         public ChooseOptionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(ChooseOptionDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -63,6 +63,10 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             _chooseOptionList = DecisionMaker.GetChooseOptions(_DialogInfo.Language);
 
             var choices = new List<Choice>();
@@ -124,6 +128,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> RunDialogCourseStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             var choiceValue = (string)(stepContext.Result as FoundChoice).Value;
             var choice = _chooseOptionList[choiceValue];
             switch (choice)

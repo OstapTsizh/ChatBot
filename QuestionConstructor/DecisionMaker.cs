@@ -28,6 +28,8 @@ namespace DecisionMakers
         //public readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
         //public readonly string _pathChooseOptionList = @"..\Bot.Core\DataFiles\ChooseOptionList.json";
 
+        public readonly Dictionary<string, DialogsMUI> DialogsMUI;
+
         private StuddyBotContext studdyBotContext;
 
         /// <summary>
@@ -397,7 +399,7 @@ namespace DecisionMakers
             return options;
         }
 
-        public void GetDialogsMui(string lang)
+        public void GetDialogsMui()
         {
             var json = Encoding.Unicode.GetString(Encoding.Unicode.GetBytes(File.ReadAllText(_pathSettings.PathDialogsMUI)));
             var rss = JArray.Parse(json);

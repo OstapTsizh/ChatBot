@@ -22,7 +22,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        private DialogInfo _DialogInfo;
+        //private DialogInfo _DialogInfo;
         private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
         private List<Course> courses;
@@ -32,14 +32,14 @@ namespace StuddyBot.Dialogs
 
         public CoursesDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
-                             DialogInfo dialogInfo, 
+                             //DialogInfo dialogInfo, 
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(CoursesDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
@@ -47,7 +47,9 @@ namespace StuddyBot.Dialogs
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskCourseStepAsync,
@@ -67,6 +69,8 @@ namespace StuddyBot.Dialogs
         /// <returns></returns>
         private async Task<DialogTurnResult> AskCourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             courses = DecisionMaker.GetCourses(_DialogInfo.Language);
 
             {
@@ -107,6 +111,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> SendInfoAboutCourseStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
             var msgText = courses.FirstOrDefault(it => it.Name == selectedCourse).Resources;
             //string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
@@ -139,6 +145,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskForNotifyStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             var foundChoice = (stepContext.Result as FoundChoice).Value;
             
             if (foundChoice == DialogsMUI.MainDictionary["yes"])

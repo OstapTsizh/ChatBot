@@ -37,7 +37,7 @@ namespace StuddyBot.Dialogs
 
         public MailingDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger,
-                             DialogInfo dialogInfo,
+                             //DialogInfo dialogInfo,
                              ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
             : base(nameof(MailingDialog))
         {
@@ -45,7 +45,7 @@ namespace StuddyBot.Dialogs
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             EmailSender = emailSender;
-            _DialogInfo = dialogInfo;
+            //_DialogInfo = dialogInfo;
             _conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
@@ -56,7 +56,9 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt("validation", CodeValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger, dialogInfo, conversationReferences, db));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+                //dialogInfo,
+                conversationReferences, db));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 CheckForEmailStepAsync,
@@ -101,6 +103,8 @@ namespace StuddyBot.Dialogs
 
         private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
+            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+
             var stepOption = stepContext.Options.ToString();
             isNotification = stepOption == "notification";
 
