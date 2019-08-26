@@ -7,6 +7,8 @@ using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
 using Microsoft.Extensions.Logging;
 using StuddyBot.Core.Interfaces;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace StuddyBot.Bots
 {
@@ -42,8 +44,29 @@ namespace StuddyBot.Bots
             //}
         }
 
-       
 
+        private void AddConversationReference(Activity activity)
+        {
+            var conversationReference = activity.GetConversationReference();
+            var jsonModel = JsonConvert.SerializeObject(conversationReference).ToString();
+            try
+            {
+                _Logger.AddConversationReference(conversationReference.User.Id, jsonModel);
+                //var userFound = _db.User.First(user => user.Id == conversationReference.User.Id);
+                //userFound.ConversationReference = jsonModel;
+                //_db.SaveChanges();
+            }
+            catch {
+            }
+            //.First(user => user.Id == conversationReference.User.Id).ConversationReference = jsonModel;
+        }
+
+        protected override Task OnConversationUpdateActivityAsync(ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
+        {
+            AddConversationReference(turnContext.Activity as Activity);
+
+            return base.OnConversationUpdateActivityAsync(turnContext, cancellationToken);
+        }
     }
 }
 

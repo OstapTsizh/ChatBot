@@ -21,7 +21,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private List<MainMenuItem> _menuItems;
@@ -30,42 +30,42 @@ namespace StuddyBot.Dialogs
 
 
 
-        public MainMenuDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
+        public MainMenuDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker,
+            ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences,
-                             StuddyBotContext db, IEmailSender emailSender)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                             StuddyBotContext db,
+                             IEmailSender emailSender)
             : base(nameof(MainMenuDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
 
-            AddDialog(new CoursesDialog(dialogInfoStateProperty, DecisionMaker, emailSender,SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
-            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
-            AddDialog(new PlannedEventsDialog(dialogInfoStateProperty, DecisionMaker, _myLogger,
-                //dialogInfo,
-                conversationReferences));
-            AddDialog(new QAsDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
-            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
-            AddDialog(new MailingDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
-                //dialogInfo,
-                conversationReferences, db));
+            AddDialog(new CoursesDialog(dialogInfoStateProperty, DecisionMaker, emailSender,SubscriptionManager, 
+                _myLogger, db
+                ));
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new PlannedEventsDialog(dialogInfoStateProperty, DecisionMaker, _myLogger, db
+                ));
+            AddDialog(new QAsDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, 
+                _myLogger, db
+                ));
+            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new MailingDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -89,6 +89,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetMenuItemsStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
+            _DialogInfo.LastDialogName = this.Id;
             {
                 _menuItems = DecisionMaker.GetMainMenuItems(_DialogInfo.Language);
                 //_menuItemsNeutral = DecisionMaker.GetMainMenuItemsNeutral();

@@ -5,8 +5,10 @@
 
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
@@ -15,9 +17,12 @@ namespace StuddyBot.Dialogs
     /// </summary>
     public class CancelAndRestartDialog : ComponentDialog
     {
-        public CancelAndRestartDialog(string id)
+        private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
+
+        public CancelAndRestartDialog(string id, IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty)
             : base(id)
         {
+            _dialogInfoStateProperty = dialogInfoStateProperty;
         }
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -47,9 +52,16 @@ namespace StuddyBot.Dialogs
             if (innerDc.Context.Activity.Type == ActivityTypes.Message)
             {
                 var text = innerDc.Context.Activity.Text.ToLower();
-
+                var _DialogInfo = await _dialogInfoStateProperty.GetAsync(innerDc.Context);
                 switch (text)
                 {
+                    case "lang":
+                        var activeDialogId = _DialogInfo.LastDialogName;
+
+                        await innerDc.ReplaceDialogAsync(nameof(LanguageDialog),
+                            cancellationToken: cancellationToken);
+                        
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
                     case "restart":
                     case "again":
                     case "new":

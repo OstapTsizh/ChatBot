@@ -25,7 +25,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
         private bool isNeededToGetQuestions = false;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private ICollection<UserCourse> userSubscription;
@@ -33,7 +33,9 @@ namespace StuddyBot.Dialogs
         public SubscriptionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager subscriptionManager,
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             StuddyBotContext db
+            )
             : base(nameof(SubscriptionDialog))
         {
             this._myLogger = _myLogger;
@@ -43,9 +45,12 @@ namespace StuddyBot.Dialogs
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager,  _myLogger,
+            AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, subscriptionManager,
+                _myLogger,
                 //dialogInfo,
-                conversationReferences, db));
+                //conversationReferences, 
+                db
+                ));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 FirstStepAsync,
@@ -61,7 +66,7 @@ namespace StuddyBot.Dialogs
             CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            _DialogInfo.LastDialogName = this.Id;
             var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var conversationReference = stepContext.Context.Activity.GetConversationReference();
 

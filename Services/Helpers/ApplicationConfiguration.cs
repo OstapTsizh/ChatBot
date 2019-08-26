@@ -9,7 +9,7 @@ namespace Services.Helpers
         public static TimeSpan AlphaWorkerPeriod
         {
             //get { return TimeSpan.Parse(ConfigurationManager.AppSettings["AlphaWorkerPeriod"]); }
-            get { return TimeSpan.FromDays(1); }
+            get { return TimeSpan.FromDays(1); } //FromDays(1)
         }
 
 

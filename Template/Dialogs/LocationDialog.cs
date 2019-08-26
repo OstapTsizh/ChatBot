@@ -20,7 +20,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         //private List<Country> _countries;
         //private Country _country;
         //private readonly bool _onlyInUkraine = true;
@@ -30,21 +30,25 @@ namespace StuddyBot.Dialogs
         public LocationDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db, IEmailSender emailSender)
-            : base(nameof(LocationDialog))
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             IEmailSender emailSender,
+                             StuddyBotContext db)
+            : base(nameof(LocationDialog), dialogInfoStateProperty)
              
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new MainMenuDialog(dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _myLogger,
                 //_DialogInfo,
-                _conversationReferences, db, emailSender));
+                //_conversationReferences, 
+                db, 
+                emailSender));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
@@ -67,7 +71,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> GetCountryStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            _DialogInfo.LastDialogName = this.Id;
             var _country =new Country();
 
             //if (_onlyInUkraine)
@@ -118,8 +122,8 @@ namespace StuddyBot.Dialogs
             //if (!_onlyInUkraine)
             
             var _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
-
-            var _country = _countries.FirstOrDefault(c=>c.CountryName==(stepContext.Result as FoundChoice).Value);
+            var choice = (stepContext.Result as FoundChoice).Value;
+            var _country = _countries.FirstOrDefault(c=>c.CountryName == choice);
             
 
             _DialogInfo.Country = _country.CountryName;
@@ -169,8 +173,8 @@ namespace StuddyBot.Dialogs
             }
                        
 
-            await stepContext.Context.SendActivityAsync(MessageFactory.Text("City successfully selected, starting MainMenuDialog"),
-                   cancellationToken: cancellationToken);
+            //await stepContext.Context.SendActivityAsync(MessageFactory.Text("City successfully selected, starting MainMenuDialog"),
+            //       cancellationToken: cancellationToken);
 
 
 
@@ -190,32 +194,32 @@ namespace StuddyBot.Dialogs
         /// </summary>
         /// <param name="activity"></param>
         /// <returns></returns>
-        private bool CheckConversationReference(Activity activity)
-        {
-            return _conversationReferences.ContainsKey(activity.GetConversationReference().User.Id);
-        }
+        //private bool CheckConversationReference(Activity activity)
+        //{
+        //    return _conversationReferences.ContainsKey(activity.GetConversationReference().User.Id);
+        //}
 
         /// <summary>
         /// Adds the current ConversationReference into
         /// the collection of ConversationReferences.
         /// </summary>
         /// <param name="activity"></param>
-        private void AddConversationReference(Activity activity)
-        {
-            var conversationReference = activity.GetConversationReference();
-            _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
-        }
+        //private void AddConversationReference(Activity activity)
+        //{
+        //    var conversationReference = activity.GetConversationReference();
+        //    _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
+        //}
 
         /// <summary>
         /// Deletes the current ConversationReference from
         /// the collection of ConversationReferences.
         /// </summary>
         /// <param name="activity"></param>
-        private void DeleteConversationReference(Activity activity)
-        {
-            var conversationReference = activity.GetConversationReference();
-            _conversationReferences.TryRemove(conversationReference.User.Id, out _);
-        }
+        //private void DeleteConversationReference(Activity activity)
+        //{
+        //    var conversationReference = activity.GetConversationReference();
+        //    _conversationReferences.TryRemove(conversationReference.User.Id, out _);
+        //}
 
     }
 }
