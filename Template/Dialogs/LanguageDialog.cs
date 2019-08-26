@@ -88,9 +88,9 @@ namespace StuddyBot.Dialogs
 
             try
             {
-                var languageTest = await Task.Run(() => stepContext.Context.Activity.Locale.ToLower()); // stepContext.Context.Activity.Locale.ToLower(); "en-us";
-                                                                                                    //await stepContext.Context.SendActivityAsync(MessageFactory.Text(languageTest + " - dynamic"),
-                                                                                                    //    cancellationToken: cancellationToken);
+                var languageTest =await Task.Run(() => stepContext.Context.Activity.Locale.ToLower()); // stepContext.Context.Activity.Locale.ToLower(); "en-us";
+                //await stepContext.Context.SendActivityAsync(MessageFactory.Text(languageTest + " - dynamic"),
+                //    cancellationToken: cancellationToken);
                 _DialogInfo.Language = languageTest;
             }
             catch
