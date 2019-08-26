@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using StuddyBot.Core.BLL.Repositories;
 using StuddyBot.Core.DAL.Data;
+using System.Transactions;
 
 namespace DecisionMakers
 {
@@ -35,9 +36,32 @@ namespace DecisionMakers
         /// <summary>
         /// Initializes a new instance of the <see cref="DecisionMaker"/> class.
         /// </summary>
-        public DecisionMaker(IOptions<PathSettings> pathSettings)
+        public DecisionMaker(IOptions<PathSettings> pathSettings, IOptions<PathSettingsLocal> localPathSettings,
+            StuddyBotContext studdyBotContext)
         {
-            _pathSettings = pathSettings.Value;
+            this.studdyBotContext = studdyBotContext;
+            var lPathSettings = localPathSettings.Value;
+            var tmpPathSettings = pathSettings.Value;
+            if (lPathSettings.IsLocalStart)
+            {
+                var props = tmpPathSettings.GetType().GetProperties();
+                foreach (PropertyInfo prop in props)
+                {
+                    //var oldPropValue = prop.GetValue(tmpPathSettings) ??null;
+                    //if (oldPropValue!=null)
+                    //{
+                        //var newPropValue = oldPropValue.ToString().Insert(2, lPathSettings.RootForLocalStart);
+                        //prop.GetValue(tmpPathSettings).ToString().Insert(2, lPathSettings.RootForLocalStart);
+                        prop.SetValue(tmpPathSettings, 
+                            prop.GetValue(tmpPathSettings).ToString()
+                            .Insert(2, lPathSettings.RootForLocalStart));
+                    //}
+                    
+                }
+
+            }
+            _pathSettings = tmpPathSettings;
+            //_pathSettings = pathSettings.Value;
             DialogsMUI = new Dictionary<string, DialogsMUI>();
             LoadDialogsMUI();
         }
@@ -272,39 +296,39 @@ namespace DecisionMakers
                 if (item["lang"].ToObject<string>()==lang)
                 {
                     var items = item["courses"];
-
                     courses = items.ToObject<List<Course>>();
+                    break;
                 }
             }
 
-            // ToDo check this !!!!!
-
+            
             // Insert into db
-            studdyBotContext = new StuddyBotContext();
-            if (!studdyBotContext.Courses.Any())
+            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
             {
-                var coursesDB = new List<Course>();
-                foreach (var item in tokens)
+                if (!studdyBotContext.Courses.Any())
                 {
-                    if (item["lang"].ToObject<string>().ToLower() == "en-us")
+                    var coursesDB = new List<Course>();
+                    foreach (var item in tokens)
                     {
-                        var items = item["courses"];
+                        if (item["lang"].ToObject<string>().ToLower() == "en-us")
+                        {
+                            var items = item["courses"];
 
-                        coursesDB = items.ToObject<List<Course>>();
+                            coursesDB = items.ToObject<List<Course>>();
+                        }
                     }
+                    studdyBotContext.PushCoursesToDB(coursesDB);
+                    studdyBotContext.SaveChanges();
                 }
-                studdyBotContext.PushCoursesToDB(coursesDB);
-                studdyBotContext.SaveChanges();
+                scope.Complete();
             }
+            
 
             return courses;
         }
 
-        //public List<string> GetAbout()
-        //{
-
-        //}
-
+        
         /// <summary>
         /// Gets questions/answers from the json.
         /// </summary>

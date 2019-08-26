@@ -9,6 +9,8 @@
 
         public int DialogId { get; set; }
 
+        public string LastDialogName { get; set; }
+
         /// <summary>
         /// Specified country name.
         /// </summary>

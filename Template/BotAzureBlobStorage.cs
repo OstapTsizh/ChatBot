@@ -18,11 +18,9 @@ namespace StuddyBot
     {
         private readonly IStorage azureBlob;
 
-        public BotAzureBlobStorage()
+        public BotAzureBlobStorage(string storageConnectionString, string storageContainerName)
         {
-            azureBlob= new AzureBlobStorage(
-                  "DefaultEndpointsProtocol=https;AccountName=rdbotstorage;AccountKey=8mePuJGlKxPah6H8UZ6B44WLW9HYzmT82KERgGLDCGQDHA7Xtt+isqt1oQeAr/SPjP0DsrZRUt2blEsPDiHUPg==;EndpointSuffix=core.windows.net",
-                  "blobcontainerforrdbot");
+            azureBlob= new AzureBlobStorage(storageConnectionString,storageContainerName);
         }
 
         public Task DeleteAsync(string[] keys, CancellationToken cancellationToken = default)

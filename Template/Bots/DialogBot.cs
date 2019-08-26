@@ -17,6 +17,7 @@ using System.Configuration;
 using Microsoft.Bot.Connector;
 using Microsoft.Bot.Builder.Azure;
 using Microsoft.Bot.Builder.Dialogs;
+using StuddyBot.Core.DAL.Data;
 //using Microsoft.Bot.Builder.Dialogs.Internals;
 
 namespace StuddyBot.Bots
@@ -33,10 +34,8 @@ namespace StuddyBot.Bots
         protected readonly BotState UserState;
         protected readonly ILogger Logger;
         protected readonly IDecisionMaker DecisionMaker;
-
-        private readonly static IStorage azureBlobStorage = new AzureBlobStorage("DefaultEndpointsProtocol=https;AccountName=rdbotstorage;AccountKey=8mePuJGlKxPah6H8UZ6B44WLW9HYzmT82KERgGLDCGQDHA7Xtt+isqt1oQeAr/SPjP0DsrZRUt2blEsPDiHUPg==;EndpointSuffix=core.windows.net",
-                "blobcontainerforrdbot");
-
+        protected readonly StuddyBotContext _db = new StuddyBotContext();
+        
 
         public DialogBot(ConversationState conversationState, UserState userState, T dialog,
             ILogger<DialogBot<T>> logger, IDecisionMaker decisionMaker)
@@ -73,6 +72,6 @@ namespace StuddyBot.Bots
             await Dialog.Run(turnContext, ConversationState.CreateProperty<DialogState>("DialogState"), cancellationToken);
         }
 
-
+        
     }
 }

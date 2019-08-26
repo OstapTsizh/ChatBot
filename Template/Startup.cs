@@ -66,11 +66,39 @@ namespace StuddyBot
             // Create the Bot Framework Adapter with error handling enabled.
             services.AddSingleton<IBotFrameworkHttpAdapter, AdapterWithErrorHandler>();
 
+            var storageConnectionString = Configuration.GetSection("ConnectionStrings")["StorageConnectionString"];
+            var storageContainerName = Configuration.GetSection("ConnectionStrings")["StorageContainerName"];
+
+
+            // Get settings for paths in Decision Maker
+            services.Configure<PathSettings>(Configuration.GetSection("PathSettings"));
+            services.Configure<PathSettingsLocal>(Configuration.GetSection("PathSettingsLocal"));
+
+            var pathSettingsLocal = Configuration.GetSection("PathSettingsLocal")["IsLocalStart"];
+
             // Create the storage we'll be using for User and Conversation state. (Memory is great for testing purposes.)
-            services.AddSingleton<IStorage, MemoryStorage>(); //<IStorage, MemoryStorage>();  BotAzureBlobStorage
+            if (pathSettingsLocal == "true")
+            {
+                services.AddSingleton<IStorage, MemoryStorage>();
+            }
+            else
+            {
+                //services.AddSingleton<IStorage, BotAzureBlobStorage>(
+                //    (s) => new BotAzureBlobStorage(storageConnectionString, storageContainerName));
+
+                services.AddSingleton<IStorage, AzureBlobStorage>(
+                    (s) => new AzureBlobStorage(storageConnectionString, storageContainerName));
+            }
+
+
+
+
 
             // Create the User state. (Used in this bot's Dialog implementation.)
             services.AddSingleton<UserState>();
+
+            services.AddSingleton<IStatePropertyAccessor<DialogInfo>>(s=>s.GetRequiredService<UserState>().CreateProperty<DialogInfo>(nameof(DialogInfo)));
+
 
             // Create the model with information about a Dialog.
             //services.AddTransient((s) => new DialogInfo()); //AddTransient((s) => new DialogInfo());
@@ -90,22 +118,22 @@ namespace StuddyBot
             // Get settings for EmailSender.
             services.Configure<EmailSettings>(Configuration.GetSection("EmailSettings"));
 
-            // Get settings for paths in Decision Maker
-            services.Configure<PathSettings>(Configuration.GetSection("PathSettings"));
+            
 
             // Create the Email Sender for sending emails for users.
             services.AddSingleton<IEmailSender, EmailSender.EmailSender>(); //AddSingleton<IEmailSender, EmailSender.EmailSender>();
 
+            var defaultConnectionString = Configuration.GetConnectionString("DefaultConnection");
             // Create the database context as StuddyBotContext.
             services.AddTransient((s) => new StuddyBotContext(
-                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(Configuration
-                    .GetConnectionString("DefaultConnection")).Options));
+                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(defaultConnectionString).Options));//,
+                //defaultConnectionString));
 
             // Create a pattern Unit Of Work for accessing Database.
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             // Create a dictionary with Conversation References to make possible user notification for courses.
-            services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
+            //services.AddSingleton<ConcurrentDictionary<string, ConversationReference>>();
 
             services.AddScoped<IGetCoursesHelper, GetCoursesHelper>();
 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Bot.Builder.Dialogs;
+using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using StuddyBot.Core.DAL.Entities;
 using System;
@@ -16,9 +17,13 @@ namespace StuddyBot.Core.DAL.Data
     {
         public StuddyBotContext() : base() { }
 
-        public StuddyBotContext(DbContextOptions<StuddyBotContext> options)
+        public StuddyBotContext(DbContextOptions<StuddyBotContext> options)//, string defaultConnectionString)
             : base(options)
-        { }
+        {
+            //_DefaultConnectionString = defaultConnectionString;
+        }
+
+        //private string _DefaultConnectionString;
 
         /// <summary>
         /// A model to save a Dialog(Messages).
@@ -57,12 +62,16 @@ namespace StuddyBot.Core.DAL.Data
         public DbSet<Feedback> Feedback { get; set; }
 
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
-            //"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
-            //"Server=tcp:studdybotdbserver.database.windows.net,1433;Initial Catalog=StuddyBot_db1;Persist Security Info=False;User ID=Admin123;Password=!23Admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
+
+        //    //_ = optionsBuilder.UseSqlServer(_DefaultConnectionString).Options;
+
+        //    // @"Server=tcp:studdybotdbserver.database.windows.net,1433;Initial Catalog=StuddyBot_db1;Persist Security Info=False;User ID=Admin123;Password=!23Admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        //    //"Server=(localdb)\mssqllocaldb;Database=StuddyBotDB;Integrated Security=True;");
+        //    //"Server=tcp:studdybotdbserver.database.windows.net,1433;Initial Catalog=StuddyBot_db1;Persist Security Info=False;User ID=Admin123;Password=!23Admin;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;");
+        //}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -25,7 +25,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
@@ -35,14 +35,16 @@ namespace StuddyBot.Dialogs
         public AddQuestionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, 
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             StuddyBotContext db
+            )
             : base(nameof(AddQuestionDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -67,7 +69,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskForQuestionStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            _DialogInfo.LastDialogName = this.Id;
             _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var prompt = dialogsMUI.AddQuestionDictionary["prompt"]; // Type Your question, please:

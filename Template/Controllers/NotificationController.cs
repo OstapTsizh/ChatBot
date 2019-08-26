@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using EmailSender.Interfaces;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
+using Newtonsoft.Json;
 
 namespace StuddyBot.Controllers
 {
@@ -23,22 +24,23 @@ namespace StuddyBot.Controllers
     {
         private readonly IBotFrameworkHttpAdapter _adapter;
         private readonly string _appId;
-        private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        private readonly StuddyBotContext _db;
+        //private readonly ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        private readonly StuddyBotContext _db = new StuddyBotContext();
         private readonly IEmailSender _emailSender;
         private readonly ISubscriptionManager _subscriptionManager;
         private readonly IDecisionMaker _decisionMaker;
+        private string message;
 
         public NotificationController(IBotFrameworkHttpAdapter adapter,
                                       ICredentialProvider credentials,
-                                      ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                                      //ConcurrentDictionary<string, ConversationReference> conversationReferences,
                                       StuddyBotContext db,
                                       IEmailSender emailSender,
                                       ISubscriptionManager subscriptionManager,
                                       IDecisionMaker decisionMaker)
         {
             _adapter = adapter;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _appId = ((SimpleCredentialProvider)credentials).AppId;
             _db = db;
             _emailSender = emailSender;
@@ -86,10 +88,11 @@ namespace StuddyBot.Controllers
                     // This is for notification into the chat.
                     //foreach (var conversationReference in _conversationReferences.Values)
                     //{
+                        
                     //    await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
                     //}
 
-                    // This is for notification on email.
+                    // This is for notification on email and chat
 
 
                     var matchedCourses = _db.UserCourses.Where(item => item.CourseId == course.Id);
@@ -99,23 +102,43 @@ namespace StuddyBot.Controllers
                     {
                         foreach (var matchedCourse in matchedCourses)
                         {
-                            if (!string.IsNullOrEmpty(_db.User.First(user => user.Id == matchedCourse.UserId).Email) &&
-                                !matchedCourse.Notified)
+                            var user = _db.User.First(u => u.Id == matchedCourse.UserId);
+                            
+                            if (!matchedCourse.Notified)
                             {
-                                var language = _db.User.First(user => user.Id == matchedCourse.UserId).Language;
+                                var language = user.Language;
                                 var dialogsMUI = _decisionMaker.GetDialogsMui(language);
                                 var courseByName = _decisionMaker.GetCourses(language)
                                     .First(item => item.Name == matchedCourse.Course.Name);
 
-                                var message = $"<h3>{dialogsMUI.SubscriptionDictionary["title"]}</h3> <br>" +
+                                var msg = $"<h3>{dialogsMUI.SubscriptionDictionary["title"]}</h3> <br>" +
                                               $"<h5>{dialogsMUI.SubscriptionDictionary["info"]} {matchedCourse.Course.Name}," +
                                               $" {dialogsMUI.SubscriptionDictionary["registrationStarts"]} {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
                                               $" {dialogsMUI.SubscriptionDictionary["courseStarts"]} {matchedCourse.Course.StartDate.ToShortDateString()}. <br> </h5>" +
                                               $"{courseByName.Resources}";
 
-                                await _emailSender.SendEmailAsync(matchedCourse.User.Email,
-                                dialogsMUI.SubscriptionDictionary["subject"],
-                                    message);
+                                // Notifying into the chat
+                                if (!string.IsNullOrEmpty(user.ConversationReference))
+                                {
+                                    message = $"**{dialogsMUI.SubscriptionDictionary["subject"]}**\n\n" +
+                                              $"{dialogsMUI.SubscriptionDictionary["title"]}\n\n" +
+                                              $"{dialogsMUI.SubscriptionDictionary["info"]} {matchedCourse.Course.Name}," +
+                                              $" {dialogsMUI.SubscriptionDictionary["registrationStarts"]} {matchedCourse.Course.RegistrationStartDate.ToShortDateString()}" +
+                                              $" {dialogsMUI.SubscriptionDictionary["courseStarts"]} {matchedCourse.Course.StartDate.ToShortDateString()}.\n\n" +
+                                              $"{courseByName.Resources}";
+                                    var conversationReference = JsonConvert.DeserializeObject<ConversationReference>(user.ConversationReference);
+                                    await ((BotAdapter)_adapter).ContinueConversationAsync(_appId, conversationReference, BotCallback, default(CancellationToken));
+                                }
+
+                                message = string.Empty;
+
+                                // Notifying into the mail
+                                if (!string.IsNullOrEmpty(user.Email))
+                                {
+                                    await _emailSender.SendEmailAsync(matchedCourse.User.Email,
+                                    dialogsMUI.SubscriptionDictionary["subject"],
+                                        msg);
+                                }
 
                                 matchedCourse.Notified = true;
                                 _db.SaveChanges();
@@ -123,26 +146,21 @@ namespace StuddyBot.Controllers
                                 Console.WriteLine("-----------------\n" +
                                                   "Notification sent!!!\n" +
                                                   "-----------------");
-                            }
+                            }                            
                         }
                     }
 
                 }
             }
-
-
-
-
-
         }
 
         private async Task BotCallback(ITurnContext turnContext, CancellationToken cancellationToken)
         {
-            await turnContext.SendActivityAsync("NOTIFICATION!!!!!!!");
+            var step = turnContext.Responded;
+            await turnContext.SendActivityAsync(message);
+            //await turnContext.SendActivityAsync(step.AsMessageActivity());
+
         }
-
-
-
 
     }
 }

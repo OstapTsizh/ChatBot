@@ -29,7 +29,7 @@ namespace StuddyBot.Dialogs
         private readonly ThreadedLogger _myLogger;
         private StuddyBotContext _db;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private string userEmail;
         private string validationCode;
         private bool isNotification;
@@ -38,7 +38,9 @@ namespace StuddyBot.Dialogs
         public MailingDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger,
                              //DialogInfo dialogInfo,
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             StuddyBotContext db
+            )
             : base(nameof(MailingDialog))
         {
 
@@ -46,7 +48,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             EmailSender = emailSender;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -56,9 +58,12 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt("validation", CodeValidator));
             AddDialog(new ConfirmPrompt(nameof(ConfirmPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger,
                 //dialogInfo,
-                conversationReferences, db));
+                //conversationReferences, 
+                db
+                ));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 CheckForEmailStepAsync,
@@ -104,6 +109,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            _DialogInfo.LastDialogName = this.Id;
             var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var stepOption = stepContext.Options.ToString();
             isNotification = stepOption == "notification";

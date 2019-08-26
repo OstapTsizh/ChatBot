@@ -16,7 +16,7 @@ using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
-    public class LoopingDialog : CancelAndRestartDialog
+    public class LoopingDialog : ComponentDialog //CancelAndRestartDialog
     {
         private QuestionAndAnswerModel QuestionAndAnswerModel;
         private DecisionModel _DecisionModel;
@@ -83,6 +83,7 @@ namespace StuddyBot.Dialogs
                 QuestionAndAnswerModel.QuestionModel = new QuestionModel();
                 _DecisionModel = new DecisionModel();
 
+                //_DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId, _DialogInfo.Language).Result;
                 _DialogInfo.DialogId = _myLogger.LogDialog(_DialogInfo.UserId).Result;
                 isNeededToGetQuestions = true;
 

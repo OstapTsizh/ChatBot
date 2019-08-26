@@ -8,6 +8,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
 
@@ -22,7 +23,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private Dictionary<string, List<string>> _events;
@@ -31,14 +32,16 @@ namespace StuddyBot.Dialogs
         public PlannedEventsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, 
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences,
+                             StuddyBotContext db
+            )
             : base(nameof(PlannedEventsDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -62,7 +65,7 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskSelectEventStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
+            _DialogInfo.LastDialogName = this.Id;
 
             _events = DecisionMaker.GetPlannedEvents(_DialogInfo.Language);
 

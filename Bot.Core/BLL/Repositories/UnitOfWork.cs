@@ -4,6 +4,7 @@ using StuddyBot.Core.DAL.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StuddyBot.Core.BLL.Repositories
 {

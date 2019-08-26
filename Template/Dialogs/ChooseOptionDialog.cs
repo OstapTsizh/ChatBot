@@ -21,7 +21,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private Dictionary<string, string> _chooseOptionList;
@@ -30,14 +30,16 @@ namespace StuddyBot.Dialogs
         public ChooseOptionDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             StuddyBotContext db
+            )
             : base(nameof(ChooseOptionDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
@@ -64,9 +66,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FirstStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
-            _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
+            _DialogInfo.LastDialogName = this.Id;
+            
             _chooseOptionList = DecisionMaker.GetChooseOptions(_DialogInfo.Language);
 
             var choices = new List<Choice>();

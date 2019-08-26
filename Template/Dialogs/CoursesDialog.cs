@@ -23,9 +23,9 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
         //private DialogInfo _DialogInfo;
-        private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private StuddyBotContext _db;
-        private List<Course> courses;
+        //private List<Course> courses;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         private string selectedCourse;
@@ -33,23 +33,28 @@ namespace StuddyBot.Dialogs
         public CoursesDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              //DialogInfo dialogInfo, 
-                             ConcurrentDictionary<string, ConversationReference> conversationReferences, StuddyBotContext db)
+                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
+                             StuddyBotContext db
+            )
             : base(nameof(CoursesDialog))
         {
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             //_DialogInfo = dialogInfo;
-            _conversationReferences = conversationReferences;
+            //_conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             //AddDialog(new ChooseOptionDialog(DecisionMaker, _myLogger, dialogInfo, conversationReferences));
-            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager, _myLogger,
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger,
                 //dialogInfo,
-                conversationReferences, db));
+                //conversationReferences, 
+                db
+                ));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
             {
                 AskCourseStepAsync,
@@ -70,8 +75,8 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> AskCourseStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
-
-            courses = DecisionMaker.GetCourses(_DialogInfo.Language);
+            _DialogInfo.LastDialogName = this.Id;
+            var courses = DecisionMaker.GetCourses(_DialogInfo.Language);
 
             {
                 var choices = new List<Choice>();
@@ -114,6 +119,7 @@ namespace StuddyBot.Dialogs
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
 
             selectedCourse = (string)(stepContext.Result as FoundChoice).Value;
+            var courses = DecisionMaker.GetCourses(_DialogInfo.Language);
             var msgText = courses.FirstOrDefault(it => it.Name == selectedCourse).Resources;
             //string.Join("\n", courses.FirstOrDefault(it => it.Name == selectedCourse).Resources);
 
