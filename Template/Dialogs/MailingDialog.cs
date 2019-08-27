@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
@@ -177,7 +178,13 @@ namespace StuddyBot.Dialogs
             if (foundChoice == dialogsMUI.MainDictionary["yes"])
             {
                 var dialogId = _DialogInfo.DialogId;
-                var message = _db.GetUserConversation(dialogId);
+                string message;
+
+                //using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+                //new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+                {
+                    message = _db.GetUserConversation(dialogId);
+                }
 
                 await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
 
@@ -239,9 +246,13 @@ namespace StuddyBot.Dialogs
                 await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
             }
 
-            _db.EditUserEmail(_DialogInfo, userEmail);
-            _db.SaveChanges();
-
+            //using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            //    new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+            {
+                _db.EditUserEmail(_DialogInfo, userEmail);
+                _db.SaveChanges();
+            }
+            
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
@@ -158,8 +159,12 @@ namespace StuddyBot.Dialogs
             
             if (foundChoice == dialogsMUI.MainDictionary["yes"])
             {
-                _db.AddSubscriptionToCourse(_DialogInfo.UserId,selectedCourse);
-                _db.SaveChanges();
+                //using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+                //new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+                {
+                    _db.AddSubscriptionToCourse(_DialogInfo.UserId, selectedCourse);
+                    _db.SaveChanges();
+                }
 
                 return await stepContext.ReplaceDialogAsync(nameof(MailingDialog), "notification",
                     cancellationToken: cancellationToken);

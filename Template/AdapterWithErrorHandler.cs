@@ -23,7 +23,16 @@ namespace StuddyBot
 
                 // Send a catch-all apology to the user.
                 await turnContext.SendActivityAsync("Sorry, it looks like something went wrong.");
-                await turnContext.SendActivityAsync(exception.InnerException.ToString());
+                if (exception.InnerException==null)
+                {
+                    await turnContext.SendActivityAsync(exception.Message + "\n\n-+-+-+-+-+-+-+-+-\n\n");
+                    await turnContext.SendActivityAsync(exception.ToString());
+                }
+                else
+                {
+                    await turnContext.SendActivityAsync(exception.InnerException.ToString());
+                }
+                
 
                 if (conversationState != null)
                 {

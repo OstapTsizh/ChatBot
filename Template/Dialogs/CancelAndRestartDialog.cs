@@ -77,6 +77,7 @@ namespace StuddyBot.Dialogs
                     case "q":
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
+                        innerDc.Context.Activity.AsEndOfConversationActivity();
                         return await innerDc.CancelAllDialogsAsync();
 
                     case "sub":

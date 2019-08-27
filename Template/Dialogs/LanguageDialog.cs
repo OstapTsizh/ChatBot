@@ -10,6 +10,7 @@ using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Builder.Dialogs.Choices;
 using Microsoft.Bot.Schema;
+using Microsoft.Extensions.Configuration;
 using StuddyBot.Core.DAL.Data;
 using StuddyBot.Core.Interfaces;
 using StuddyBot.Core.Models;
@@ -21,12 +22,14 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _Logger;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
+        private IConfiguration _Configuration;
 
 
         public LanguageDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger, 
                              IEmailSender emailSender,
-                             StuddyBotContext db)
+                             StuddyBotContext db,
+                             IConfiguration configuration)
             : base(nameof(LanguageDialog))
              
         {
@@ -35,6 +38,7 @@ namespace StuddyBot.Dialogs
             DecisionMaker = decisionMaker;
             
             _dialogInfoStateProperty = dialogInfoStateProperty;
+            _Configuration = configuration;
 
             //AddDialog(new LocationDialog(_dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _Logger,
 
@@ -95,9 +99,10 @@ namespace StuddyBot.Dialogs
             }
             catch
             {
-                _DialogInfo.Language = "en-us";
-                await stepContext.Context.SendActivityAsync(MessageFactory.Text("Error on getting user's language from activity"),
-                    cancellationToken: cancellationToken);
+                // Get default language for new user
+                _DialogInfo.Language = _Configuration.GetValue<string>("DefaultLanguageForNewUser").ToLower();
+                //await stepContext.Context.SendActivityAsync(MessageFactory.Text("Error on getting user's language from activity"),
+                //    cancellationToken: cancellationToken);
             }
 
             try

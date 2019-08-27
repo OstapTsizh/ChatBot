@@ -161,6 +161,10 @@ namespace LoggerService
                     //await Task.Run(() => _unitOfWork.Save());
                     _unitOfWork.Dialogs.Create(new Dialogs { UserId = userId });
                     _unitOfWork.Save();
+                    var dialogs = _unitOfWork.Dialogs.GetAll();
+                    //var maxId = await Task.Run(() => dialogs.Max(d => d.Id));
+                    var maxId = dialogs.Max(d => d.Id);
+                    return maxId;
                 }
                 catch (Exception e)
                 {
@@ -175,27 +179,27 @@ namespace LoggerService
                     //Console.WriteLine(e.InnerException);
                     throw e;
                 }
-                finally
-                {
-                    scope.Complete();
-                }
-            }
-            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
-                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
-                {
+            ////    finally
+            ////    {
+            ////        scope.Complete();
+            ////    }
+            ////}
+            ////using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+            ////    new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+            ////    {
 
-                try
-                {
-                    var dialogs = _unitOfWork.Dialogs.GetAll();
-                    //var maxId = await Task.Run(() => dialogs.Max(d => d.Id));
-                    var maxId = dialogs.Max(d => d.Id);
-                    return maxId;
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.InnerException);
-                    throw e;
-                }
+            //    try
+            //    {
+            //        var dialogs = _unitOfWork.Dialogs.GetAll();
+            //        //var maxId = await Task.Run(() => dialogs.Max(d => d.Id));
+            //        var maxId = dialogs.Max(d => d.Id);
+            //        return maxId;
+            //    }
+            //    catch (Exception e)
+            //    {
+            //        Console.WriteLine(e.InnerException);
+            //        throw e;
+            //    }
                 finally
                 {
                     scope.Complete();

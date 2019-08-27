@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using EmailSender.Interfaces;
 using LoggerService;
 using Microsoft.Bot.Builder;
@@ -153,8 +154,13 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(feedback))
             {
-                _db.AddFeedback(feedback);
-                _db.SaveChanges();
+                using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+                {
+                    _db.AddFeedback(feedback);
+                    _db.SaveChanges();
+                }
+                
             }
 
             return await stepContext.CancelAllDialogsAsync(cancellationToken);
