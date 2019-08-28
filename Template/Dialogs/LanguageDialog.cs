@@ -33,45 +33,11 @@ namespace StuddyBot.Dialogs
             : base(nameof(LanguageDialog))//, dialogInfoStateProperty)
              
         {
-            
             _Logger = _myLogger;
             DecisionMaker = decisionMaker;
             
             _dialogInfoStateProperty = dialogInfoStateProperty;
             _Configuration = configuration;
-
-            //AddDialog(new LocationDialog(_dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _Logger,
-
-            //    emailSender));
-
-            //AddDialog(new MainMenuDialog(_dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _Logger,
-                
-            //    emailSender));
-
-
-            //AddDialog(new CoursesDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _Logger
-            //    ));
-            //AddDialog(new ChooseOptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _Logger
-            //    ));
-            //AddDialog(new PlannedEventsDialog(dialogInfoStateProperty, DecisionMaker, _Logger
-            //    ));
-            //AddDialog(new QAsDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _Logger
-            //    ));
-            //AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _Logger
-            //    ));
-            //AddDialog(new MailingDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _myLogger
-            //    ));
-            //AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
-            //    _Logger
-            //    ));
-
-
-
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
@@ -89,15 +55,20 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CheckLanguageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
-
+            bool isUserInDb=false;
             try
             {
                 var languageTest = await _Logger.UserLanguageInDb(stepContext.Context.Activity.From.Id);
                 if (string.IsNullOrEmpty(languageTest))
                 {
+                    isUserInDb = false;
                     languageTest = await Task.Run(() => stepContext.Context.Activity.Locale.ToLower());
                 }
-
+                else
+                {
+                    _DialogInfo.UserId = stepContext.Context.Activity.From.Id;
+                    isUserInDb = true;
+                }
                   // stepContext.Context.Activity.Locale.ToLower(); "en-us";
                 //await stepContext.Context.SendActivityAsync(MessageFactory.Text(languageTest + " - dynamic"),
                 //    cancellationToken: cancellationToken);
@@ -113,8 +84,15 @@ namespace StuddyBot.Dialogs
 
             try
             {
-                _DialogInfo.UserId = //stepContext.Context.Activity.From.Id;
-                     await _Logger.LogUser(stepContext.Context.Activity.From.Id, _DialogInfo.Language);
+                if (isUserInDb)
+                {
+                    _DialogInfo.UserId = stepContext.Context.Activity.From.Id;                     
+                }
+                else
+                {
+                    _DialogInfo.UserId = 
+                        await _Logger.LogUser(stepContext.Context.Activity.From.Id, _DialogInfo.Language);
+                }
             }
             catch (Exception e)
             {
