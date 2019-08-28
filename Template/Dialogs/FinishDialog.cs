@@ -24,8 +24,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        //private DialogInfo _DialogInfo;
-        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
+        
         private StuddyBotContext _db;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
@@ -57,6 +56,7 @@ namespace StuddyBot.Dialogs
             {
                 DidWeFinishStepAsync,
                 LeaveFeedbackStepAsync,
+                //testStepAsync,
                 FinalStepAsync
             }));
 
@@ -121,7 +121,7 @@ namespace StuddyBot.Dialogs
             }
             else if (choiceValue == dialogsMUI.MainDictionary["yes"])
             {
-                return await stepContext.CancelAllDialogsAsync(cancellationToken);
+                return await stepContext.CancelAllDialogsAsync();
             }
 
             var feedback = dialogsMUI.FinishDictionary["feedback"]; // Type Your feedback, please:
@@ -141,6 +141,7 @@ namespace StuddyBot.Dialogs
             return await stepContext.PromptAsync(nameof(TextPrompt), options, cancellationToken);
         }
 
+        
         /// <summary>
         /// Ends dialog(s) if a user has not any questions.
         /// </summary>

@@ -78,6 +78,22 @@ namespace LoggerService
             }
         }
 
+        public async Task<string> UserLanguageInDb(string user_id)
+        {
+            using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
+                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+            {
+                var user = _unitOfWork.Users.Get(user_id);
+                if (user != null)
+                {
+                    return user.Language;                    
+                }
+                scope.Complete();
+            }
+            
+            return string.Empty;
+        }
+
         public async Task<string> LogUser(string user_id, string userLanguage)
         {
             using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,

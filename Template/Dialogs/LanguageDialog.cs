@@ -30,7 +30,7 @@ namespace StuddyBot.Dialogs
                              IEmailSender emailSender,
                              StuddyBotContext db,
                              IConfiguration configuration)
-            : base(nameof(LanguageDialog))
+            : base(nameof(LanguageDialog))//, dialogInfoStateProperty)
              
         {
             
@@ -92,7 +92,13 @@ namespace StuddyBot.Dialogs
 
             try
             {
-                var languageTest =await Task.Run(() => stepContext.Context.Activity.Locale.ToLower()); // stepContext.Context.Activity.Locale.ToLower(); "en-us";
+                var languageTest = await _Logger.UserLanguageInDb(stepContext.Context.Activity.From.Id);
+                if (string.IsNullOrEmpty(languageTest))
+                {
+                    languageTest = await Task.Run(() => stepContext.Context.Activity.Locale.ToLower());
+                }
+
+                  // stepContext.Context.Activity.Locale.ToLower(); "en-us";
                 //await stepContext.Context.SendActivityAsync(MessageFactory.Text(languageTest + " - dynamic"),
                 //    cancellationToken: cancellationToken);
                 _DialogInfo.Language = languageTest;

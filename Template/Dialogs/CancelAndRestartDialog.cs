@@ -47,16 +47,17 @@ namespace StuddyBot.Dialogs
             return await base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
 
-        private async Task<DialogTurnResult> InterruptAsync(DialogContext innerDc, CancellationToken cancellationToken)
+        protected async Task<DialogTurnResult> InterruptAsync(DialogContext innerDc, CancellationToken cancellationToken)
         {
             if (innerDc.Context.Activity.Type == ActivityTypes.Message)
             {
                 var text = innerDc.Context.Activity.Text.ToLower();
                 var _DialogInfo = await _dialogInfoStateProperty.GetAsync(innerDc.Context);
+                
                 switch (text)
                 {
                     case "lang":
-                        var activeDialogId = _DialogInfo.LastDialogName;
+                        
 
                         await innerDc.ReplaceDialogAsync(nameof(LanguageDialog),
                             cancellationToken: cancellationToken);
@@ -68,16 +69,20 @@ namespace StuddyBot.Dialogs
                     case "reload":
                         innerDc.Context.Activity.Text = "begin";
                         await innerDc.ReplaceDialogAsync(nameof(LocationDialog), "begin", cancellationToken);
-                        //await innerDc.EndDialogAsync(nameof(LoopingDialog), cancellationToken);
-                        //await innerDc.BeginDialogAsync(nameof(LoopingDialog), "begin", cancellationToken);
+                        
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
+                    case "finishdialog":
                     case "cancel":
                     case "quit":
                     case "q":
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
-                        innerDc.Context.Activity.AsEndOfConversationActivity();
+                        
+                        //var endActivity = innerDc.Context.Activity;
+                        //endActivity.Code = EndOfConversationCodes.UserCancelled;
+                        //endActivity.AsEndOfConversationActivity();
+                        
                         return await innerDc.CancelAllDialogsAsync();
 
                     case "sub":
@@ -95,5 +100,6 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
+        
     }
 }

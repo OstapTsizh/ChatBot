@@ -15,15 +15,11 @@ using StuddyBot.Core.Models;
 
 namespace StuddyBot.Dialogs
 {
-    public class LocationDialog : CancelAndRestartDialog
+    public class LocationDialog : ComponentDialog
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        //private DialogInfo _DialogInfo;
-        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
-        //private List<Country> _countries;
-        //private Country _country;
-        //private readonly bool _onlyInUkraine = true;
+        
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
 
@@ -33,7 +29,7 @@ namespace StuddyBot.Dialogs
                              //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
                              IEmailSender emailSender,
                              StuddyBotContext db)
-            : base(nameof(LocationDialog), dialogInfoStateProperty)
+            : base(nameof(LocationDialog))//, dialogInfoStateProperty)
              
         {
             
@@ -74,11 +70,7 @@ namespace StuddyBot.Dialogs
             _DialogInfo.LastDialogName = this.Id;
             var _country =new Country();
 
-            //if (_onlyInUkraine)
-            //{
-            //    _country.CountryName = "Ukraine";
-            //    return await stepContext.NextAsync(cancellationToken:cancellationToken);
-            //}
+            
 
             {
                 var _countries = DecisionMaker.GetCountries(_DialogInfo.Language);
@@ -182,44 +174,6 @@ namespace StuddyBot.Dialogs
 
             return await stepContext.BeginDialogAsync(nameof(MainMenuDialog), _country, cancellationToken);
         }
-
-
-        // ToDo move next methods to the Subscription Dialog
-
-
-
-        /// <summary>
-        /// Checks if current ConversationReference is in
-        /// the collection of ConversationReferences.
-        /// </summary>
-        /// <param name="activity"></param>
-        /// <returns></returns>
-        //private bool CheckConversationReference(Activity activity)
-        //{
-        //    return _conversationReferences.ContainsKey(activity.GetConversationReference().User.Id);
-        //}
-
-        /// <summary>
-        /// Adds the current ConversationReference into
-        /// the collection of ConversationReferences.
-        /// </summary>
-        /// <param name="activity"></param>
-        //private void AddConversationReference(Activity activity)
-        //{
-        //    var conversationReference = activity.GetConversationReference();
-        //    _conversationReferences.AddOrUpdate(conversationReference.User.Id, conversationReference, (key, newValue) => conversationReference);
-        //}
-
-        /// <summary>
-        /// Deletes the current ConversationReference from
-        /// the collection of ConversationReferences.
-        /// </summary>
-        /// <param name="activity"></param>
-        //private void DeleteConversationReference(Activity activity)
-        //{
-        //    var conversationReference = activity.GetConversationReference();
-        //    _conversationReferences.TryRemove(conversationReference.User.Id, out _);
-        //}
 
     }
 }
