@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using StuddyBot.Core.DAL.Data;
+using JsonEditor.ConfigurationModels;
 
 namespace JsonEditor.Controllers
 {
@@ -17,13 +18,13 @@ namespace JsonEditor.Controllers
     public class CoursesController : ControllerBase
     {
 
-        private readonly string _pathCourses = @"..\Bot.Core\DataFiles\Courses.json";
-
         private StuddyBotContext _db;
+        private readonly string _pathCourses;
 
-        public CoursesController(StuddyBotContext db)
+        public CoursesController(StuddyBotContext db, IPathSettings ps)
         {
             _db = db;
+            _pathCourses = ps.PathCourses;
         }
 
 

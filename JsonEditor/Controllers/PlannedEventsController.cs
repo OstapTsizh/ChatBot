@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonEditor.ConfigurationModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -12,7 +13,12 @@ namespace JsonEditor.Controllers
     [ApiController]
     public class PlannedEventsController : ControllerBase
     {
-        private readonly string _pathPlannedEvents = @"..\Bot.Core\DataFiles\PlannedEvents.json";
+        private readonly string _pathPlannedEvents;
+
+        public PlannedEventsController(IPathSettings ps)
+        {
+            _pathPlannedEvents = ps.PathPlannedEvents;
+        }
 
         // GET: api/PlannedEvents
         [HttpGet]

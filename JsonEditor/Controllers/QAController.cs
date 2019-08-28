@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonEditor.ConfigurationModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -12,7 +13,13 @@ namespace JsonEditor.Controllers
     [ApiController]
     public class QAController : ControllerBase
     {
-        private readonly string _pathQAs = @"..\Bot.Core\DataFiles\QAs.json";
+        private readonly string _pathQAs;
+
+        public QAController(IPathSettings ps)
+        {
+            _pathQAs = ps.PathQAs;
+        }
+
 
         [HttpGet]
         public IActionResult Get()
