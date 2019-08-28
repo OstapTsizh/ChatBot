@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using JsonEditor.ConfigurationModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -12,7 +13,14 @@ namespace JsonEditor.Controllers
     [ApiController]
     public class LocationsController : ControllerBase
     {
-        private readonly string _pathLocations = @"..\Bot.Core\DataFiles\Locations.json";
+
+        private readonly string _pathLocations;
+
+        public LocationsController(IPathSettings ps)
+        {
+            _pathLocations = ps.PathLocations;
+        }
+
 
         // GET: api/Locations
         [HttpGet]

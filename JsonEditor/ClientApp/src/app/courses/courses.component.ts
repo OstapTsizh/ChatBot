@@ -30,10 +30,10 @@ export class CoursesComponent {
 
   constructor(private http: HttpClient, @Inject('BASE_URL') baseUrl: string, private dialog: MatDialog) {
 
-    this.baseUrl = baseUrl + '/api/Courses';
+    this.baseUrl = baseUrl + 'api/Courses';
 
     http.get<ICourseModel[]>(this.baseUrl)
-      .subscribe(result => {
+      .subscribe(result => {        
         this.courses = result;
       },
         error => console.error(error));
