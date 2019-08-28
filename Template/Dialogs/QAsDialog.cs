@@ -99,7 +99,7 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.Timestamp.Value;
+            var time = stepContext.Context.Activity.LocalTimestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -120,7 +120,7 @@ namespace StuddyBot.Dialogs
             var _QAs = DecisionMaker.GetQAs(_DialogInfo.Language);
             var msg = MessageFactory.Text(string.Join("\n" ,_QAs[choiceValue]));
             var sender = "bot";
-            var time = stepContext.Context.Activity.Timestamp.Value;
+            var time = stepContext.Context.Activity.LocalTimestamp.Value;
 
             _myLogger.LogMessage(msg.Text, sender, time, _DialogInfo.DialogId);
 
