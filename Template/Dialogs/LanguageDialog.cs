@@ -55,13 +55,16 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CheckLanguageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
+            
             bool isUserInDb=false;
             try
             {
+                
                 var languageTest = await _Logger.UserLanguageInDb(stepContext.Context.Activity.From.Id);
                 if (string.IsNullOrEmpty(languageTest))
                 {
                     isUserInDb = false;
+                    
                     languageTest = await Task.Run(() => stepContext.Context.Activity.Locale.ToLower());
                 }
                 else
@@ -113,7 +116,7 @@ namespace StuddyBot.Dialogs
                     $"{e.InnerException}"),
                     cancellationToken: cancellationToken);
             }
-
+            
             string language;
 
             switch (_DialogInfo.Language)
@@ -128,7 +131,7 @@ namespace StuddyBot.Dialogs
                     language = "English";
                     break;
             }
-
+            
             var choices = new List<Choice>();
             {
                 choices.Add(new Choice("Yes"));
@@ -146,9 +149,14 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            //await stepContext.Context.SendActivityAsync("time for message");
+            var time = stepContext.Context.Activity.Timestamp.Value;
+            //await stepContext.Context.SendActivityAsync("time value: " + time);
+            //await stepContext.Context.SendActivityAsync("Logging first bot's message with LocalTimeStamp");
 
             _Logger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            //await stepContext.Context.SendActivityAsync("Logged successfully");
 
             await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
 
@@ -183,7 +191,7 @@ namespace StuddyBot.Dialogs
 
                 var promptMessage = promptOptions.Prompt.Text;
                 var promptSender = "bot";
-                var promptTime = stepContext.Context.Activity.LocalTimestamp.Value;
+                var promptTime = stepContext.Context.Activity.Timestamp.Value;
 
                 _Logger.LogMessage(promptMessage, promptSender, promptTime, _DialogInfo.DialogId);
 

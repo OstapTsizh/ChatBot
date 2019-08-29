@@ -9,5 +9,7 @@ namespace DecisionMakers
         public bool IsLocalStart { get; set; }
 
         public string RootForLocalStart { get; set; }
+
+        public string RootForRemoteStart { get; set; }
     }
 }

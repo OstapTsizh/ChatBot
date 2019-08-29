@@ -96,7 +96,7 @@ namespace StuddyBot.Dialogs
 
                 var message = options.Prompt.Text;
                 var sender = "bot";
-                var time = stepContext.Context.Activity.LocalTimestamp.Value;
+                var time = stepContext.Context.Activity.Timestamp.Value;
 
                 _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -142,7 +142,7 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 

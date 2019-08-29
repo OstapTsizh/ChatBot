@@ -26,7 +26,6 @@ namespace JsonEditor.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Feedback>>> GetFeedback()
         {
-            Thread.Sleep(2_000);
             return await _context.Feedback.ToListAsync();
         }
 

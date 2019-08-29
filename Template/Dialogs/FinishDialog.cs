@@ -95,7 +95,7 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -134,7 +134,7 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -155,13 +155,8 @@ namespace StuddyBot.Dialogs
 
             if (!string.IsNullOrEmpty(feedback))
             {
-                using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
-                new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
-                {
-                    _db.AddFeedback(feedback);
-                    _db.SaveChanges();
-                }
-                
+                _db.AddFeedback(feedback);
+                _db.SaveChanges();
             }
 
             return await stepContext.CancelAllDialogsAsync(cancellationToken);

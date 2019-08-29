@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -23,7 +23,7 @@
     <ProjectReference Include="..\Bot.Core\StuddyBot.Core.csproj" />
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
     <ProjectReference Include="..\QuestionConstructor\DecisionMakers.csproj" />
-    <ProjectReference Include="..\Template\StuddyBot.csproj" />
+    <ProjectReference Include="..\Template\StuddyBot.Bot.csproj" />
   </ItemGroup>
 
   <ItemGroup>

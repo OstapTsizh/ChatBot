@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DecisionMakers", "QuestionC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot.Core", "Bot.Core\StuddyBot.Core.csproj", "{00E5ABE3-0E2B-4977-A9FF-489441A2D2BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot", "Template\StuddyBot.csproj", "{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StuddyBot.Bot", "Template\StuddyBot.Bot.csproj", "{E771FE0F-1EAA-42DD-A9D2-1CA28914AD2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{72B87271-49D2-4058-A8AD-0F851EA4FD4B}"
 EndProject

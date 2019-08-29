@@ -42,9 +42,9 @@ namespace DecisionMakers
             this.studdyBotContext = studdyBotContext;
             var lPathSettings = localPathSettings.Value;
             var tmpPathSettings = pathSettings.Value;
+            var props = tmpPathSettings.GetType().GetProperties();
             if (lPathSettings.IsLocalStart)
             {
-                var props = tmpPathSettings.GetType().GetProperties();
                 foreach (PropertyInfo prop in props)
                 {
                     //var oldPropValue = prop.GetValue(tmpPathSettings) ??null;
@@ -59,6 +59,15 @@ namespace DecisionMakers
                     
                 }
 
+            }
+            else
+            {
+                foreach (PropertyInfo prop in props)
+                {
+                    prop.SetValue(tmpPathSettings,
+                        prop.GetValue(tmpPathSettings).ToString()
+                        .Insert(2, lPathSettings.RootForRemoteStart));
+                }
             }
             _pathSettings = tmpPathSettings;
             //_pathSettings = pathSettings.Value;

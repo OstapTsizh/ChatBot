@@ -84,7 +84,7 @@ namespace StuddyBot.Dialogs
 
             var message = options.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -114,7 +114,7 @@ namespace StuddyBot.Dialogs
             var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
             var message = dialogsMUI.AddQuestionDictionary["message"]; // "Thank you for your help!";
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 

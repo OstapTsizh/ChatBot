@@ -47,7 +47,7 @@ namespace StuddyBot.Dialogs
             return await base.OnContinueDialogAsync(innerDc, cancellationToken);
         }
 
-        protected async Task<DialogTurnResult> InterruptAsync(DialogContext innerDc, CancellationToken cancellationToken)
+        private async Task<DialogTurnResult> InterruptAsync(DialogContext innerDc, CancellationToken cancellationToken)
         {
             if (innerDc.Context.Activity.Type == ActivityTypes.Message)
             {
@@ -72,7 +72,6 @@ namespace StuddyBot.Dialogs
                         
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
-                    case "finishdialog":
                     case "cancel":
                     case "quit":
                     case "q":

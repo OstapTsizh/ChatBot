@@ -7,7 +7,7 @@
 </div>
 
 
-<div class="mat-elevation-z8">
+<div class="mat-elevation-z8" *ngIf="!isLoading">
     
   <table mat-table [dataSource]="dataSource" matSort>    
 

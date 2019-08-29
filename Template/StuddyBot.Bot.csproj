@@ -6,40 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="wwwroot\DataFiles\ChooseOptionList.json" />
-    <Content Remove="wwwroot\DataFiles\Courses.json" />
-    <Content Remove="wwwroot\DataFiles\DialogsMUI.json" />
-    <Content Remove="wwwroot\DataFiles\Locations.json" />
-    <Content Remove="wwwroot\DataFiles\MainMenu.json" />
-    <Content Remove="wwwroot\DataFiles\PlannedEvents.json" />
-    <Content Remove="wwwroot\DataFiles\QAs.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\DataFiles\ChooseOptionList.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\Courses.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\DialogsMUI.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\Locations.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\MainMenu.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\PlannedEvents.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="wwwroot\DataFiles\QAs.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Autofac.WebApi2" Version="4.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Bot.Builder.AI.Luis" Version="4.5.1" />
@@ -61,6 +27,27 @@
   <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\ChooseOptionList.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\Courses.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\DialogsMUI.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\Locations.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\MainMenu.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\PlannedEvents.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\DataFiles\QAs.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
 

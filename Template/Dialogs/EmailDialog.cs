@@ -104,7 +104,7 @@ namespace StuddyBot.Dialogs
 
                 var messageAdd = msg + "\n" + optionsAddEmail.Prompt.Text;
                 var senderAdd = "bot";
-                var timeAdd = stepContext.Context.Activity.LocalTimestamp.Value;
+                var timeAdd = stepContext.Context.Activity.Timestamp.Value;
 
                 _myLogger.LogMessage(messageAdd, senderAdd, timeAdd, _DialogInfo.DialogId);
 
@@ -136,7 +136,7 @@ namespace StuddyBot.Dialogs
 
             var message = optionsManageEmail.Prompt.Text;
             var sender = "bot";
-            var time = stepContext.Context.Activity.LocalTimestamp.Value;
+            var time = stepContext.Context.Activity.Timestamp.Value;
 
             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -170,7 +170,7 @@ namespace StuddyBot.Dialogs
 
                 var message = options.Prompt.Text;
                 var sender = "bot";
-                var time = stepContext.Context.Activity.LocalTimestamp.Value;
+                var time = stepContext.Context.Activity.Timestamp.Value;
 
                 _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
 
@@ -187,7 +187,7 @@ namespace StuddyBot.Dialogs
 
                 var messageDelete = optionsDeleteEmail.Prompt.Text;
                 var senderDelete = "bot";
-                var timeDelete = stepContext.Context.Activity.LocalTimestamp.Value;
+                var timeDelete = stepContext.Context.Activity.Timestamp.Value;
 
                 _myLogger.LogMessage(messageDelete, senderDelete, timeDelete, _DialogInfo.DialogId);
 

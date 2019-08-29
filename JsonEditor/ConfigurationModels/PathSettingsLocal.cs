@@ -10,5 +10,7 @@ namespace JsonEditor.ConfigurationModels
         public string IsLocalStart { get; set; }
 
         public string RootForLocalStart { get; set; }
+
+        public string RootForRemoteStart { get; set; }
     }
 }

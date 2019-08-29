@@ -88,6 +88,15 @@ namespace JsonEditor
                                                    .Insert(2, localPathSettings.RootForLocalStart));
                     }
                 }
+                else
+                {
+                    foreach (var prop in pathSetting.GetType().GetProperties())
+                    {
+                        prop.SetValue(pathSetting, prop.GetValue(pathSetting)
+                                                   .ToString()
+                                                   .Insert(2, localPathSettings.RootForRemoteStart));
+                    }
+                }
             }
 
             //throw new Exception("Throwed in JsonEditor.Startup.ConfigurePahs method");
