@@ -59,7 +59,7 @@ namespace StuddyBot.Dialogs
                     case "lang":
                         
 
-                        await innerDc.ReplaceDialogAsync(nameof(LanguageDialog),
+                        await innerDc.ReplaceDialogAsync(nameof(LanguageDialog), "ChangeLanguage",
                             cancellationToken: cancellationToken);
                         
                         return new DialogTurnResult(DialogTurnStatus.Waiting);

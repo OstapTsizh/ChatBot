@@ -55,7 +55,11 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> CheckLanguageStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);//new DialogState()
+
+            string changeLangOptions = stepContext.Options?.ToString();
+
             
+
             bool isUserInDb=false;
             try
             {
@@ -69,7 +73,6 @@ namespace StuddyBot.Dialogs
                 }
                 else
                 {
-                    _DialogInfo.UserId = stepContext.Context.Activity.From.Id;
                     isUserInDb = true;
                 }
                   // stepContext.Context.Activity.Locale.ToLower(); "en-us";
@@ -116,7 +119,12 @@ namespace StuddyBot.Dialogs
                     $"{e.InnerException}"),
                     cancellationToken: cancellationToken);
             }
-            
+
+            if (isUserInDb && string.IsNullOrEmpty(changeLangOptions))
+            {
+                return await stepContext.ReplaceDialogAsync(nameof(LocationDialog), cancellationToken: cancellationToken);
+            }
+
             string language;
 
             switch (_DialogInfo.Language)
@@ -250,14 +258,8 @@ namespace StuddyBot.Dialogs
             }
 
             await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
-
-            //if (_DialogInfo.LastDialogName == string.Empty)
-            //{
-            //    return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);// .BeginDialogAsync(nameof(LocationDialog), cancellationToken: cancellationToken);
-            //}
-
+            
             return await stepContext.ReplaceDialogAsync(nameof(LocationDialog), cancellationToken: cancellationToken);
-            return await stepContext.EndDialogAsync(cancellationToken: cancellationToken);// .BeginDialogAsync(nameof(LocationDialog), cancellationToken: cancellationToken);
         }
 
     }

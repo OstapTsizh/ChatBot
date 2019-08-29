@@ -29,13 +29,13 @@ namespace StuddyBot.Bots
         protected override async Task OnMembersAddedAsync(IList<ChannelAccount> membersAdded, ITurnContext<IConversationUpdateActivity> turnContext, CancellationToken cancellationToken)
         {
             //foreach (var member in membersAdded)
-            //{                
+            //{
             //    if (member.Id != turnContext.Activity.Recipient.Id)
             //    {
             //        //_decisionMaker
             //        var msg = //"Привіт, друже! Мене звати RDBot, Ваш персональний помічник!";
             //            "Hello Friend! My name is RDBot, your personal assistant!";
-                    
+
             //        await turnContext.SendActivityAsync(MessageFactory.Text(msg), cancellationToken);
 
             //        msg = "Send me something to start conversation.";
