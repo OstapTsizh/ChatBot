@@ -121,6 +121,8 @@ namespace StuddyBot.Dialogs
             }
             else if (choiceValue == dialogsMUI.MainDictionary["yes"])
             {
+                var byeBye = dialogsMUI.FinishDictionary["byeBye"];
+                await stepContext.Context.SendActivityAsync(byeBye);
                 return await stepContext.CancelAllDialogsAsync();
             }
 
@@ -151,13 +153,18 @@ namespace StuddyBot.Dialogs
         private async Task<DialogTurnResult> FinalStepAsync(WaterfallStepContext stepContext,
             CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             var feedback = stepContext.Result.ToString();
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
 
             if (!string.IsNullOrEmpty(feedback))
             {
                 _db.AddFeedback(feedback);
                 _db.SaveChanges();
             }
+
+            var byeBye = dialogsMUI.FinishDictionary["byeBye"];
+            await stepContext.Context.SendActivityAsync(byeBye);
 
             return await stepContext.CancelAllDialogsAsync(cancellationToken);
         }

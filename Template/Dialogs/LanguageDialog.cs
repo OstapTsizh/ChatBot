@@ -129,9 +129,9 @@ namespace StuddyBot.Dialogs
 
             switch (_DialogInfo.Language)
             {
-                case "ru-ru":
-                    language = "Русский";
-                    break;
+                //case "ru-ru":
+                //    language = "Русский";
+                //    break;
                 case "uk-ua":
                     language = "Українська";
                     break;
@@ -184,7 +184,7 @@ namespace StuddyBot.Dialogs
                 var choices = new List<Choice>();
                 {
                     choices.Add(new Choice("Ukrainian"));
-                    choices.Add(new Choice("Russian"));
+                    //choices.Add(new Choice("Russian"));
                     choices.Add(new Choice("English"));
                 }
 
@@ -232,9 +232,9 @@ namespace StuddyBot.Dialogs
             {
                 switch (choiceValue)
                 {
-                    case "Russian":
-                        _DialogInfo.Language = "ru-ru";
-                        break;
+                    //case "Russian":
+                    //    _DialogInfo.Language = "ru-ru";
+                    //    break;
                     case "Ukrainian":
                         _DialogInfo.Language = "uk-ua";
                         break;
@@ -258,7 +258,7 @@ namespace StuddyBot.Dialogs
             }
 
             await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
-            
+
             return await stepContext.ReplaceDialogAsync(nameof(LocationDialog), cancellationToken: cancellationToken);
         }
 

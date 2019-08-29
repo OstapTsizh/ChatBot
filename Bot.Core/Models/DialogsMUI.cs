@@ -12,6 +12,7 @@ namespace StuddyBot.Core.Models
         public Dictionary<string, string> CoursesDictionary { get; set; }
         public Dictionary<string, string> EmailDictionary { get; set; }
         public Dictionary<string, string> FinishDictionary { get; set; }
+        public Dictionary<string, List<string>> HelpDictionary { get; set; }
         public Dictionary<string, string> LocationDictionary { get; set; }
         public Dictionary<string, string> MailingDictionary { get; set; }
         public Dictionary<string, string> MainDictionary { get; set; }

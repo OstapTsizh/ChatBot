@@ -160,17 +160,24 @@ namespace StuddyBot.Dialogs
 
             var _country = _countries.FirstOrDefault(c => c.CountryName == _DialogInfo.Country);
 
-            {
-                _DialogInfo.City = _country.Cities.FirstOrDefault(c => c == (stepContext.Result as FoundChoice).Value);
-            }
-                       
-
+            _DialogInfo.City = _country.Cities.FirstOrDefault(c => c == (stepContext.Result as FoundChoice).Value);
+            
             //await stepContext.Context.SendActivityAsync(MessageFactory.Text("City successfully selected, starting MainMenuDialog"),
             //       cancellationToken: cancellationToken);
 
-
-
             await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
+
+            var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
+
+            var helpMsg = dialogsMUI.HelpDictionary["message"];
+            var message = string.Join("\n", helpMsg);
+
+            var sender = "bot";
+            var time = stepContext.Context.Activity.Timestamp.Value;
+
+            _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
+            await stepContext.Context.SendActivityAsync(message);
 
             return await stepContext.BeginDialogAsync(nameof(MainMenuDialog), _country, cancellationToken);
         }

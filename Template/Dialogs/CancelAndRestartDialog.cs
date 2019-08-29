@@ -72,26 +72,24 @@ namespace StuddyBot.Dialogs
                         
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
-                    case "cancel":
                     case "quit":
-                    case "q":
                     case "exit":
                         await innerDc.Context.SendActivityAsync($"Cancelling", cancellationToken: cancellationToken);
-                        
-                        //var endActivity = innerDc.Context.Activity;
-                        //endActivity.Code = EndOfConversationCodes.UserCancelled;
-                        //endActivity.AsEndOfConversationActivity();
                         
                         return await innerDc.CancelAllDialogsAsync();
 
                     case "sub":
-                    case "subscription":
+                    case "subscriptions":
                         await innerDc.ReplaceDialogAsync(nameof(SubscriptionDialog),
                             cancellationToken: cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
 
                     case "email":
                         await innerDc.ReplaceDialogAsync(nameof(EmailDialog),
+                            cancellationToken: cancellationToken);
+                        return new DialogTurnResult(DialogTurnStatus.Waiting);
+                    case "help":
+                        await innerDc.ReplaceDialogAsync(nameof(HelpDialog),
                             cancellationToken: cancellationToken);
                         return new DialogTurnResult(DialogTurnStatus.Waiting);
                 }
