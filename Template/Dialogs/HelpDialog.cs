@@ -40,6 +40,31 @@ namespace StuddyBot.Dialogs
                 _myLogger, db
                 ));
 
+
+
+            AddDialog(new MainMenuDialog(dialogInfoStateProperty, DecisionMaker, SubscriptionManager, _myLogger,
+                db,
+                emailSender));
+            AddDialog(new CoursesDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new PlannedEventsDialog(dialogInfoStateProperty, DecisionMaker, _myLogger, db
+                ));
+            AddDialog(new QAsDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new SubscriptionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new MailingDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+            AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
+                _myLogger, db
+                ));
+
+
+
             AddDialog(new TextPrompt(nameof(TextPrompt)));
             
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
