@@ -22,11 +22,7 @@ namespace StuddyBot.Dialogs
     {
         private readonly IDecisionMaker DecisionMaker;
         private readonly ThreadedLogger _myLogger;
-        //private DialogInfo _DialogInfo;
-        //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
-
-        //private Dictionary<string, List<string>> _QAs;
 
 
         public QAsDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
@@ -40,20 +36,15 @@ namespace StuddyBot.Dialogs
             
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
-            //_DialogInfo = dialogInfo;
-            //_conversationReferences = conversationReferences;
+            
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
-            AddDialog(new AddQuestionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, _myLogger,
-                //dialogInfo,
-                //conversationReferences, 
+            AddDialog(new AddQuestionDialog(dialogInfoStateProperty, DecisionMaker, emailSender, _myLogger, 
                 db
                 ));
             AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
                 _myLogger,
-                //dialogInfo,
-                //conversationReferences,
                 db
                 ));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]

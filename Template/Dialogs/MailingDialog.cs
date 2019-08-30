@@ -38,8 +38,6 @@ namespace StuddyBot.Dialogs
 
         public MailingDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
                              ThreadedLogger _myLogger,
-                             //DialogInfo dialogInfo,
-                             //ConcurrentDictionary<string, ConversationReference> conversationReferences, 
                              StuddyBotContext db
             )
             : base(nameof(MailingDialog))
@@ -48,8 +46,6 @@ namespace StuddyBot.Dialogs
             this._myLogger = _myLogger;
             DecisionMaker = decisionMaker;
             EmailSender = emailSender;
-            //_DialogInfo = dialogInfo;
-            //_conversationReferences = conversationReferences;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
 
@@ -61,8 +57,6 @@ namespace StuddyBot.Dialogs
             AddDialog(new ChoicePrompt(nameof(ChoicePrompt)));
             AddDialog(new FinishDialog(dialogInfoStateProperty, DecisionMaker, emailSender, SubscriptionManager,
                 _myLogger,
-                //dialogInfo,
-                //conversationReferences, 
                 db
                 ));
             AddDialog(new WaterfallDialog(nameof(WaterfallDialog), new WaterfallStep[]
@@ -77,35 +71,6 @@ namespace StuddyBot.Dialogs
             InitialDialogId = nameof(WaterfallDialog);
         }
 
-
-        /// <summary>
-
-
-
-        //Check this
-        /// Asks the user does he want to receive the dialog to email.
-        /// </summary>
-        /// <param name="stepContext"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /* private async Task<DialogTurnResult> AskSendToEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
-         {
-             var promptMessage = "Хочете отримати діалог на email?";// "Do you want to receive the dialog to email?";
-
-             var message = promptMessage;
-             var sender = "bot";
-             var time = stepContext.Context.Activity.Timestamp.Value;
-
-             _myLogger.LogMessage(message, sender, time, _DialogInfo.DialogId);
-
-             return await stepContext.PromptAsync(nameof(ChoicePrompt),
-                 new PromptOptions()
-                 {
-                     Prompt = MessageFactory.Text(promptMessage),
-                     Choices = new List<Choice> { new Choice("так"), new Choice("ні") }
-                 },
-                 cancellationToken);
-         }*/
 
         private async Task<DialogTurnResult> CheckForEmailStepAsync(WaterfallStepContext stepContext, CancellationToken cancellationToken)
         {
