@@ -109,16 +109,5 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
-
-        /// <summary>
-        /// Logs message from a user.
-        /// </summary>
-        /// <param name="message"></param>
-        /// <param name="time"></param>
-        private void LogMessage(string message, DateTimeOffset time)
-        {
-            _Logger.LogMessage(message, "user", time, _DialogInfo.DialogId);
-        }
-
     }
 }
