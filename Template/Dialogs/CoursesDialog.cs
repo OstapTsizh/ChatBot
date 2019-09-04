@@ -165,11 +165,14 @@ namespace StuddyBot.Dialogs
                     _db.AddSubscriptionToCourse(_DialogInfo.UserId, selectedCourse);
                     _db.SaveChanges();
                 }
-
-                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog), "notification",
+                _DialogInfo.IsNotification = true;
+                await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
+                return await stepContext.ReplaceDialogAsync(nameof(MailingDialog),
                     cancellationToken: cancellationToken);
             }
 
+            _DialogInfo.IsNotification = false;
+            await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
             return await stepContext.ReplaceDialogAsync(nameof(ChooseOptionDialog), "begin",
                     cancellationToken: cancellationToken);
         }

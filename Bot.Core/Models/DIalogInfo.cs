@@ -10,7 +10,9 @@
         public int DialogId { get; set; }
 
         public string LastDialogName { get; set; }
-        
+
+        public bool IsNotification { get; set; }
+
         /// <summary>
         /// Specified country name.
         /// </summary>

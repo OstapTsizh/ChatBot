@@ -33,7 +33,7 @@ namespace StuddyBot.Dialogs
         //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
         private string userEmail;
         private string validationCode;
-        private bool isNotification;
+        //private bool isNotification;
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
 
         public MailingDialog(IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty, IDecisionMaker decisionMaker, IEmailSender emailSender, ISubscriptionManager SubscriptionManager,
@@ -77,10 +77,7 @@ namespace StuddyBot.Dialogs
             var _DialogInfo = await _dialogInfoStateProperty.GetAsync(stepContext.Context);
             _DialogInfo.LastDialogName = this.Id;
             var dialogsMUI = DecisionMaker.GetDialogsMui(_DialogInfo.Language);
-            var stepOption = stepContext.Options.ToString();
-            isNotification = stepOption == "notification";
-
-
+            
             userEmail = _db.GetUserEmail(_DialogInfo);
 
             if (!string.IsNullOrEmpty(userEmail))
@@ -206,9 +203,10 @@ namespace StuddyBot.Dialogs
             var dialogId = _DialogInfo.DialogId;
             var message = _db.GetUserConversation(dialogId);
 
-            if (!isNotification)
+            if (!_DialogInfo.IsNotification)
             {
                 await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
+                _DialogInfo.IsNotification = false;
             }
 
             //using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
@@ -217,7 +215,9 @@ namespace StuddyBot.Dialogs
                 _db.EditUserEmail(_DialogInfo, userEmail);
                 _db.SaveChanges();
             }
+
             
+            await _dialogInfoStateProperty.SetAsync(stepContext.Context, _DialogInfo);
             return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                 cancellationToken: cancellationToken);
         }
