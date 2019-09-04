@@ -3,8 +3,10 @@
 //
 // Generated with Bot Builder V4 SDK Template for Visual Studio CoreBot v4.3.0
 
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using LoggerService;
 using Microsoft.Bot.Builder;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Schema;
@@ -18,11 +20,14 @@ namespace StuddyBot.Dialogs
     public class CancelAndRestartDialog : ComponentDialog
     {
         private IStatePropertyAccessor<DialogInfo> _dialogInfoStateProperty;
+        protected ThreadedLogger _Logger;
 
-        public CancelAndRestartDialog(string id, IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty)
+        public CancelAndRestartDialog(string id, IStatePropertyAccessor<DialogInfo> dialogInfoStateProperty,
+            ThreadedLogger logger)
             : base(id)
         {
             _dialogInfoStateProperty = dialogInfoStateProperty;
+            _Logger = logger;
         }
 
         protected override async Task<DialogTurnResult> OnBeginDialogAsync(DialogContext innerDc, object options, CancellationToken cancellationToken = default(CancellationToken))
@@ -38,6 +43,13 @@ namespace StuddyBot.Dialogs
 
         protected override async Task<DialogTurnResult> OnContinueDialogAsync(DialogContext innerDc, CancellationToken cancellationToken)
         {
+            var _DialogInfo = await _dialogInfoStateProperty.GetAsync(innerDc.Context);
+            string message = innerDc.Context.Activity.Text;
+            var sender = "user";
+            var time = innerDc.Context.Activity.Timestamp.Value;
+            
+            _Logger.LogMessage(message, sender, time, _DialogInfo.DialogId);
+
             var result = await InterruptAsync(innerDc, cancellationToken);
             if (result != null)
             {
@@ -97,6 +109,16 @@ namespace StuddyBot.Dialogs
 
             return null;
         }
-        
+
+        /// <summary>
+        /// Logs message from a user.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="time"></param>
+        private void LogMessage(string message, DateTimeOffset time)
+        {
+            _Logger.LogMessage(message, "user", time, _DialogInfo.DialogId);
+        }
+
     }
 }
