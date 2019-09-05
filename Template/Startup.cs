@@ -125,9 +125,11 @@ namespace StuddyBot
 
             var defaultConnectionString = Configuration.GetConnectionString("DefaultConnection");
             // Create the database context as StuddyBotContext.
-            services.AddTransient((s) => new StuddyBotContext(
-                new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(defaultConnectionString).Options));//,
-                //defaultConnectionString));
+            services.AddDbContext<StuddyBotContext>(options => 
+            options.UseSqlServer(defaultConnectionString), ServiceLifetime.Transient);
+            //services.AddTransient((s) => new StuddyBotContext(
+            //    new DbContextOptionsBuilder<StuddyBotContext>().UseSqlServer(defaultConnectionString).Options));//,
+            //    //defaultConnectionString));
 
             // Create a pattern Unit Of Work for accessing Database.
             services.AddTransient<IUnitOfWork, UnitOfWork>();
