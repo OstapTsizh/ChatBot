@@ -28,6 +28,7 @@ namespace StuddyBot.Dialogs
         private readonly IDecisionMaker DecisionMaker;
         private readonly IEmailSender EmailSender;
         private readonly ThreadedLogger _myLogger;
+        private readonly ISubscriptionManager _subscriptionManager;
         private StuddyBotContext _db;
         //private DialogInfo _DialogInfo;
         //private ConcurrentDictionary<string, ConversationReference> _conversationReferences;
@@ -48,6 +49,7 @@ namespace StuddyBot.Dialogs
             EmailSender = emailSender;
             _db = db;
             _dialogInfoStateProperty = dialogInfoStateProperty;
+            _subscriptionManager = SubscriptionManager;
 
             AddDialog(new TextPrompt(nameof(TextPrompt)));
 
@@ -144,12 +146,12 @@ namespace StuddyBot.Dialogs
 
                 //using (var scope = new TransactionScope(TransactionScopeOption.RequiresNew,
                 //new TransactionOptions() { IsolationLevel = IsolationLevel.ReadCommitted }))
+                if (!_DialogInfo.IsNotification)
                 {
                     message = _db.GetUserConversation(dialogId);
+                    await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
                 }
-
-                await EmailSender.SendEmailAsync(userEmail, "StuddyBot", message);
-
+                
                 return await stepContext.ReplaceDialogAsync(nameof(FinishDialog),
                     cancellationToken: cancellationToken);
             }
